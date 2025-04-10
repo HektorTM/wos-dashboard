@@ -27,29 +27,35 @@ const EditCurrency = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     const updatedCurrency = {
-      ...currency,
+      name: currency.name,
+      shortName: currency.shortName,
+      icon: currency.icon || null,
+      color: currency.color,
+      hiddenIfZero: currency.hiddenIfZero ? 1 : 0,
     };
-
+  
     try {
       const res = await fetch(`http://localhost:3001/api/currencies/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedCurrency),
       });
-
+  
       if (res.ok) {
         alert('Currency updated!');
-        navigate('/currencies');
+        navigate('/currencies'); // Redirect after update
       } else {
-        alert('Error updating currency');
+        const errorData = await res.json();
+        alert(errorData.error || 'Error updating currency');
       }
     } catch (err) {
       console.error(err);
       alert('Failed to update currency');
     }
   };
+  
 
   return (
     <div className="container mt-4">

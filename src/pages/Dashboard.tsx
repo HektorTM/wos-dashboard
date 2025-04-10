@@ -1,4 +1,3 @@
-import Sidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -6,13 +5,12 @@ const Dashboard = () => {
 
   return (
     <div className="d-flex">
-      <Sidebar />
       <div className="p-4 flex-grow-1">
         <h2>Dashboard</h2>
         <p>Welcome to the tech management dashboard.</p>
         <button
           className="btn btn-primary mt-3"
-          onClick={() => navigate('/create-currency')}
+          onClick={() => navigate('/currencies/create')}
         >
           Create Currency
         </button>

@@ -66,3 +66,46 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Light mode styles */
+body.light {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.navbar, .sidebar, .btn {
+  background-color: #ffffff;
+  color: #212529;
+}
+
+.table {
+  background-color: #ffffff;
+}
+
+/* Dark mode styles */
+body.dark {
+  background-color: #212529;
+  color: #f8f9fa;
+}
+
+.navbar, .sidebar, .btn {
+  background-color: #343a40;
+  color: #f8f9fa;
+}
+
+.table {
+  background-color: #343a40;
+  color: #f8f9fa;
+}
+
+.table th, .table td {
+  border-color: #6c757d;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: #f8f9fa;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #adb5bd;
+}
