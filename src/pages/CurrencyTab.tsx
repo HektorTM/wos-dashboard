@@ -121,7 +121,7 @@ const CurrencyTab = () => {
                   <td colSpan={7} className="text-center text-muted">
                     No currencies found.
                   </td>
-                </tr>
+                </tr>//
               )}
             </tbody>
           </table>
