@@ -2,45 +2,51 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // TODO: Replace with real backend check
-    if (email && password) {
-      localStorage.setItem('user', JSON.stringify({ email }));
+
+
+    if (username && password) {
+      localStorage.setItem('authToken', JSON.stringify({ username }));
       navigate('/dashboard');
     }
-  };
+
+};
 
   return (
-    <div className="container mt-5" style={{ maxWidth: '400px' }}>
-      <h2>Login</h2>
+    <div className="card p-4 shadow-sm mx-auto" style={{ maxWidth: '400px' }}>
+      <h3 className="mb-3">Login</h3>
       <form onSubmit={handleLogin}>
         <div className="mb-3">
-          <label>Email</label>
+          <label className="form-label">Username</label>
           <input
-            type="email"
+            type="text"
             className="form-control"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
+
         <div className="mb-3">
-          <label>Password</label>
+          <label className="form-label">Password</label>
           <input
             type="password"
             className="form-control"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <button className="btn btn-primary w-100" type="submit">Login</button>
+
+        <button type="submit" className="btn btn-primary w-100">
+          Log In
+        </button>
       </form>
     </div>
   );
