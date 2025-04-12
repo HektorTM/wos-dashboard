@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PERMISSIONS } from '../utils/permissions';
+import { PERMISSIONS } from '../../utils/permissions';
 
 const CreateUser = () => {
   const [username, setUsername] = useState('');

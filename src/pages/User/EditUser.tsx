@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { PERMISSIONS, PermissionKey } from '../utils/permissions';
+import { PERMISSIONS, PermissionKey } from '../../utils/permissions';
 
 const EditUser = () => {
   const { id } = useParams();

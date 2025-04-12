@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PERMISSIONS } from '../utils/permissions'; 
+import { PERMISSIONS } from '../../utils/permissions'; 
 
 const getPermissionLabels = (keys: string[]) => {
     return PERMISSIONS.filter((p) => keys.includes(p.key)).map((p) => p.label).join(', ');

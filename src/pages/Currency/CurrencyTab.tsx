@@ -55,8 +55,11 @@ const CurrencyTab = () => {
   };
 
   const filteredCurrencies = currencies.filter((c) =>
-    [c.id, c.name, c.shortName].some((field) => field.toLowerCase().includes(search.toLowerCase()))
+    [c.id, c.name, c.shortName].some((field) =>
+      String(field || '').toLowerCase().includes(search.toLowerCase())
+    )
   );
+  
 
   return (
     <div className="container mt-4">

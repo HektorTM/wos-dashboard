@@ -1,7 +1,7 @@
 {/*AdminRoutes.js*/}
 const express = require('express');
 const bcrypt = require('bcrypt');
-const db = require('./db'); // Make sure this uses better-sqlite3 and exports the db instance
+const db = require('../db'); // Make sure this uses better-sqlite3 and exports the db instance
 
 const router = express.Router();
 

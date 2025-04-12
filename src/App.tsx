@@ -5,12 +5,16 @@ import MainLayout from './components/MainLayout';
 import AuthLayout from './components/AuthLayout';
 
 import Dashboard from './pages/Dashboard';
-import UserList from './pages/UserList';
-import EditUser from './pages/EditUser';
-import CreateUser from './pages/CreateUser';
-import CurrencyTab from './pages/CurrencyTab';
-import CreateCurrency from './pages/CreateCurrency';
-import EditCurrency from './pages/EditCurrency';
+import UserList from './pages/User/UserList';
+import EditUser from './pages/User/EditUser';
+import CreateUser from './pages/User/CreateUser';
+import CurrencyTab from './pages/Currency/CurrencyTab';
+import CreateCurrency from './pages/Currency/CreateCurrency';
+import EditCurrency from './pages/Currency/EditCurrency';
+import UnlockableTab from './pages/Unlockables/UnlockableTab';
+import CreateUnlockable from './pages/Unlockables/CreateUnlockable';
+import EditUnlockable from './pages/Unlockables/EditUnlockable';
+import CitemTab from './pages/Citems/CitemTab';
 import Login from './pages/Login';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ThemeProvider } from './ThemeContext';
@@ -45,6 +49,10 @@ const App = () => {
               <Route path="/currencies" element={<CurrencyTab />} />
               <Route path="/currencies/create" element={ <CreateCurrency /> }/>
               <Route path="/currencies/edit/:id" element={<EditCurrency />} />
+              <Route path="/unlockables" element={<UnlockableTab />} />
+              <Route path="/unlockables/create" element={<CreateUnlockable />} />
+              <Route path="/unlockables/edit/:id" element={<EditUnlockable />} />
+              <Route path="/citems" element={<CitemTab />} />
           </Route>
 
         </Routes>
