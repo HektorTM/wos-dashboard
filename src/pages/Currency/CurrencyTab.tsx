@@ -65,7 +65,7 @@ const CurrencyTab = () => {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>Currencies</h3>
-        <Link to="/currencies/create" className="btn btn-primary">
+        <Link to="/create/currency" className="btn btn-primary">
           + Create Currency
         </Link>
       </div>
@@ -106,7 +106,7 @@ const CurrencyTab = () => {
                   <td>
                     <button
                       className="btn btn-warning btn-sm me-2"
-                      onClick={() => navigate(`/currencies/edit/${currency.id}`)}
+                      onClick={() => navigate(`/view/currency/${currency.id}`)}
                     >
                       Edit
                     </button>

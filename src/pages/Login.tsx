@@ -4,50 +4,81 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(false);
+    setError('');
 
-
-
-    if (username && password) {
-      localStorage.setItem('authToken', JSON.stringify({ username }));
-      navigate('/dashboard');
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (username && password) {
+        localStorage.setItem('authToken', JSON.stringify({ username }));
+        navigate('/dashboard');
+      } else {
+        setError('Please enter both username and password');
+      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      setError('Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-
-};
+  };
 
   return (
-    <div className="card p-4 shadow-sm mx-auto" style={{ maxWidth: '400px' }}>
-      <h3 className="mb-3">Login</h3>
-      <form onSubmit={handleLogin}>
-        <div className="mb-3">
-          <label className="form-label">Username</label>
-          <input
-            type="text"
-            className="form-control"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
+    <div className="login-page-container">
+      <div className="login-center-wrapper">
+        <div className="login-card">
+          <div className="login-header">
+            <h2>Welcome Back</h2>
+            <p>Please enter your credentials</p>
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+          {error && <div className="login-error">{error}</div>}
 
-        <button type="submit" className="btn btn-primary w-100">
-          Log In
-        </button>
-      </form>
+          <form onSubmit={handleLogin}>
+            <div className="form-group">
+              <label>Username</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your username"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <span className="spinner"></span>
+              ) : (
+                'Log In'
+              )}
+            </button>
+          </form>
+
+          <div className="login-footer">
+            <p>Forgot password? <a href="/reset-password">Reset here</a></p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

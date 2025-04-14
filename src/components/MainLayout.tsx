@@ -6,7 +6,7 @@ const Layout = () => {
   return (
     <div className="d-flex">
       <Sidebar />
-      <div className="flex-grow-1 p-4">
+      <div className="flex-grow-1">
         <Outlet /> {/* This renders the page-specific content */}
       </div>
     </div>

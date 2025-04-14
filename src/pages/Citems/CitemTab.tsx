@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { parseMinecraftColorCodes } from '../../utils/parser';
 
 type Citem = {
   id: string;
   material: string;
-  displayname: string;
+  display_name: string;
   lore: string;
   enchantments: string;
   custom_model_data: number;
@@ -14,23 +15,24 @@ type Citem = {
   flag_profile_picture: string;
   action_left: string;
   action_right: string;
-   
 };
 
 const CitemTab = () => {
   const [citems, setCitems] = useState<Citem[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchCitems = async () => {
       try {
         const res = await fetch('http://localhost:3001/api/citems');
+        if (!res.ok) throw new Error('Failed to fetch citems');
         const data = await res.json();
         setCitems(data);
       } catch (err) {
         console.error(err);
-        alert('Failed to load citems.');
+        setError('Failed to load citems. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -40,65 +42,67 @@ const CitemTab = () => {
   }, []);
 
   const deleteCitem = async (id: string) => {
-    const confirmed = window.confirm('Are you sure you want to delete this Citem?');
-    if (confirmed) {
-      try {
-        const res = await fetch(`http://localhost:3001/api/citems/${id}`, {
-          method: 'DELETE',
-        });
+    if (!window.confirm('Are you sure you want to delete this Citem?')) return;
+    
+    try {
+      const res = await fetch(`http://localhost:3001/api/citems/${id}`, {
+        method: 'DELETE',
+      });
 
-        if (res.ok) {
-          setCitems(citems.filter((Citem) => Citem.id !== id));
-          alert('Citem deleted!');
-        } else {
-          alert('Error deleting Citem');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Failed to delete Citem');
-      }
+      if (!res.ok) throw new Error('Failed to delete');
+      
+      setCitems(citems.filter((citem) => citem.id !== id));
+    } catch (err) {
+      console.error(err);
+      setError('Failed to delete citem. Please try again.');
     }
   };
 
   const filteredCitems = citems.filter((c) =>
-    [c.id, c.material, c.displayname, c.lore, c.custom_model_data, c.flag_profile_bg, c.flag_profile_picture].some((field) =>
-      String(field || '').toLowerCase().includes(search.toLowerCase())
-  ));
+    [c.id, c.material, c.display_name, c.lore, c.custom_model_data, c.flag_profile_bg, c.flag_profile_picture]
+      .some((field) => String(field || '').toLowerCase().includes(search.toLowerCase()))
+  );
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>Citems</h3>
+    <div className={'citem-container §{theme}'}>
+      <div className="citem-header">
+        <h2>Citem Management</h2>
+        <div className="citem-search">
+          <input
+            type="text"
+            placeholder="Search citems..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="search-icon">🔍</span>
+        </div>
       </div>
 
-      <input
-        type="text"
-        className="form-control mb-3"
-        placeholder="Search by ID"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {error && <div className="error-message">{error}</div>}
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading citems...</p>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <table className="table table-striped table-hover align-middle">
-            <thead className="table-dark">
+        <div className="citem-table-container">
+          <table className="citem-table">
+            <thead>
               <tr>
                 <th>ID</th>
                 <th>Material</th>
                 <th>Display Name</th>
                 <th>Lore</th>
-                <th>enchantments</th>
-                <th>Custom Model Data</th>
+                <th>Enchantments</th>
+                <th>Model Data</th>
                 <th>Undroppable</th>
                 <th>Unusable</th>
                 <th>Placeable</th>
-                <th>Profile Background</th>
-                <th>Profile Picture</th>
-                <th>Action Left</th>
-                <th>Action Right</th>
+                <th>Profile BG</th>
+                <th>Profile Pic</th>
+                <th>Left Action</th>
+                <th>Right Action</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -106,34 +110,42 @@ const CitemTab = () => {
               {filteredCitems.map((citem) => (
                 <tr key={citem.id}>
                   <td>{citem.id}</td>
-                  <td>{citem.material}</td>
-                  <td>{citem.displayname}</td>
-                  <td>{citem.lore}</td>
-                  <td>{citem.enchantments}</td>
+                  <td>
+                    <img 
+                      src={`https://mc.nerothe.com/img/1.21.4/minecraft_${citem.material.toLowerCase()}.png`}
+                      alt={citem.material}
+                      title={citem.material}
+                      className="material-icon"
+                    />
+                  </td>
+                  <td className="text-cell">{parseMinecraftColorCodes(citem.display_name)}</td>
+                  <td className="text-cell">{parseMinecraftColorCodes(citem.lore)}</td>
+                  <td className="text-cell">{citem.enchantments}</td>
                   <td>{citem.custom_model_data}</td>
-                  <td>{citem.flag_undroppable ? 'True' : 'False'}</td>
-                  <td>{citem.flag_unusable ? 'True' : 'False'}</td>
-                  <td>{citem.flag_placeable ? 'True' : 'False'}</td>
-                  <td>{citem.flag_profile_bg}</td>
-                  <td>{citem.flag_profile_picture}</td>
-                  <td>{citem.action_left}</td>
-                  <td>{citem.action_right}</td>
+                  <td className="boolean-cell">{citem.flag_undroppable ? '✅' : '❌'}</td>
+                  <td className="boolean-cell">{citem.flag_unusable ? '✅' : '❌'}</td>
+                  <td className="boolean-cell">{citem.flag_placeable ? '✅' : '❌'}</td>
+                  <td className="text-cell">{citem.flag_profile_bg}</td>
+                  <td className="text-cell">{citem.flag_profile_picture}</td>
+                  <td className="text-cell">{citem.action_left}</td>
+                  <td className="text-cell">{citem.action_right}</td>
                   <td>
                     <button
-                      className="btn btn-danger btn-sm"
+                      className="delete-btn"
                       onClick={() => deleteCitem(citem.id)}
+                      title="Delete citem"
                     >
-                      Delete
+                      🗑️
                     </button>
                   </td>
                 </tr>
               ))}
               {filteredCitems.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center text-muted">
-                    No Citems found.
+                  <td colSpan={14} className="no-results">
+                    {search ? 'No matching citems found' : 'No citems available'}
                   </td>
-                </tr>//
+                </tr>
               )}
             </tbody>
           </table>

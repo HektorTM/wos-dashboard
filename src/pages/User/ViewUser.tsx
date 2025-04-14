@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PERMISSIONS, PermissionKey } from '../../utils/permissions';
 
-const EditUser = () => {
+const ViewUser = () => {
   const { id } = useParams();
   const [user, setUser] = useState<{ username: string } | null>(null);
   const [permissions, setPermissions] = useState<PermissionKey[]>([]);
@@ -118,4 +118,4 @@ const EditUser = () => {
   );
 };
 
-export default EditUser;
+export default ViewUser;

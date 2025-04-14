@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CreateCurrency = () => {
   const [id, setId] = useState('');
@@ -8,6 +9,7 @@ const CreateCurrency = () => {
   const [color, setColor] = useState('');
   const [hiddenIfZero, setHiddenIfZero] = useState(false);
   const [loading, setLoading] = useState(false);
+  const Navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +41,7 @@ const CreateCurrency = () => {
         setIcon('');
         setColor('');
         setHiddenIfZero(false);
+        Navigate('/currencies')
       } else {
         alert(`Error: ${result.error}`);
       }

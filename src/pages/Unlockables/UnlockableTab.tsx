@@ -58,7 +58,7 @@ const UnlockableTab = () => {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3>Unlockables</h3>
-        <Link to="/unlockables/create" className="btn btn-primary">
+        <Link to="/create/unlockable" className="btn btn-primary">
           + Create Unlockable
         </Link>
       </div>
@@ -91,7 +91,7 @@ const UnlockableTab = () => {
                   <td>
                     <button
                       className="btn btn-warning btn-sm me-2"
-                      onClick={() => navigate(`/unlockables/edit/${unlockable.id}`)}
+                      onClick={() => navigate(`/view/unlockable/${unlockable.id}`)}
                     >
                       Edit
                     </button>

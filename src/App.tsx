@@ -3,21 +3,23 @@ import React from 'react';
 
 import MainLayout from './components/MainLayout';
 import AuthLayout from './components/AuthLayout';
-
+import './styles/App.css';
 import Dashboard from './pages/Dashboard';
 import UserList from './pages/User/UserList';
-import EditUser from './pages/User/EditUser';
+import EditUser from './pages/User/ViewUser';
 import CreateUser from './pages/User/CreateUser';
 import CurrencyTab from './pages/Currency/CurrencyTab';
 import CreateCurrency from './pages/Currency/CreateCurrency';
-import EditCurrency from './pages/Currency/EditCurrency';
+import EditCurrency from './pages/Currency/ViewCurrency';
 import UnlockableTab from './pages/Unlockables/UnlockableTab';
 import CreateUnlockable from './pages/Unlockables/CreateUnlockable';
-import EditUnlockable from './pages/Unlockables/EditUnlockable';
+import ViewUnlockable from './pages/Unlockables/ViewUnlockable';
+import CosmeticTab from './pages/Cosmetics/CosmeticTab';
 import CitemTab from './pages/Citems/CitemTab';
+import SearchResults from './pages/Search';
 import Login from './pages/Login';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { ThemeProvider } from './ThemeContext';
+import { ThemeProvider } from './context/ThemeContext';
+
 
 
 const isAuthenticated = () => {
@@ -43,16 +45,23 @@ const App = () => {
           <Route element={<ProtectedRoute> <MainLayout /> </ProtectedRoute>}>
               <Route path="/" element={<Navigate to="/dashboard" />} />
               <Route path="/dashboard" element={ <Dashboard />} />
-              <Route path="/admin/users" element={ <UserList />} />
-              <Route path="/admin/users/create" element={ <CreateUser />} />
-              <Route path="/admin/users/edit/:id" element={ <EditUser />} />
-              <Route path="/currencies" element={<CurrencyTab />} />
-              <Route path="/currencies/create" element={ <CreateCurrency /> }/>
-              <Route path="/currencies/edit/:id" element={<EditCurrency />} />
-              <Route path="/unlockables" element={<UnlockableTab />} />
-              <Route path="/unlockables/create" element={<CreateUnlockable />} />
-              <Route path="/unlockables/edit/:id" element={<EditUnlockable />} />
+              <Route path="/search" element={<SearchResults />} />
               <Route path="/citems" element={<CitemTab />} />
+              <Route path="/admin/users" element={ <UserList />} />
+              <Route path="/currencies" element={<CurrencyTab />} />
+              <Route path="/unlockables" element={<UnlockableTab />} />
+              <Route path="/cosmetics" element={<CosmeticTab />} />
+
+              <Route path="/create/user" element={ <CreateUser />} />
+              <Route path="/create/currency" element={ <CreateCurrency /> }/>
+              <Route path="/create/unlockable" element={<CreateUnlockable />} />
+              
+              <Route path="/view/user/:id" element={ <EditUser />} />
+              <Route path="/view/currency/:id" element={<EditCurrency />} />
+              <Route path="/view/unlockable/:id" element={<ViewUnlockable />} />
+              
+              
+              
           </Route>
 
         </Routes>

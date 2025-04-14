@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const CreateUnlockable = () => {
   const [id, setId] = useState('');
   const [temp, setTemp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +24,7 @@ const CreateUnlockable = () => {
       const result = await res.json();
       if (res.ok) {
         alert('Unlockable created!');
-        navigate('/unlockables')
+        // Optional: clear form
         setId('');
         setTemp(false);
       } else {

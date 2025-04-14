@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const EditCurrency = () => {
+const ViewCurrency = () => {
   const { id } = useParams(); // Extract the currency ID from the URL
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currency, setCurrency] = useState<any>(null);
@@ -138,4 +138,4 @@ const EditCurrency = () => {
   );
 };
 
-export default EditCurrency;
+export default ViewCurrency;

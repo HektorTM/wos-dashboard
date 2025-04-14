@@ -60,7 +60,7 @@ const UserList = () => {
         <p>Loading...</p>
       ) : (
         <>
-          <Link to="/admin/users/create" className="btn btn-primary mb-3">
+          <Link to="/create/user/" className="btn btn-primary mb-3">
             Create New User
           </Link>
           <table className="table table-striped">
@@ -79,7 +79,7 @@ const UserList = () => {
                   <td>{user.username}</td>
                   <td>{Array.isArray(user.permissions) ? getPermissionLabels(user.permissions) : 'Invalid permissions'}</td>
                   <td>
-                    <Link to={`/admin/users/edit/${user.id}`} className="btn btn-warning btn-sm">
+                    <Link to={`/view/user/${user.id}`} className="btn btn-warning btn-sm">
                       Edit
                     </Link>
                     <button

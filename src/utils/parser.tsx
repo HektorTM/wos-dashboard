@@ -1,0 +1,59 @@
+import React, { JSX } from 'react';
+
+export const parseMinecraftColorCodes = (input: string): JSX.Element[] => {
+  const result: JSX.Element[] = [];
+  let i = 0;
+  let currentColor = '#fff'; // default
+  let currentText = '';
+
+  const legacyColorMap: Record<string, string> = {
+    '0': '#000000', '1': '#0000AA', '2': '#00AA00', '3': '#00AAAA',
+    '4': '#AA0000', '5': '#AA00AA', '6': '#FFAA00', '7': '#AAAAAA',
+    '8': '#555555', '9': '#5555FF', 'a': '#55FF55', 'b': '#55FFFF',
+    'c': '#FF5555', 'd': '#FF55FF', 'e': '#FFFF55', 'f': '#FFFFFF',
+  };
+
+  while (i < input.length) {
+    if (input[i] === '§') {
+      // Flush current text
+      if (currentText) {
+        result.push(
+          <span style={{ color: currentColor }} key={result.length}>
+            {currentText}
+          </span>
+        );
+        currentText = '';
+      }
+
+      // Check for hex format §x§R§R§G§G§B§B
+      if (input[i + 1] === 'x' && i + 13 < input.length) {
+        const hex = input.slice(i + 2, i + 14).split('§').join('');
+        currentColor = `#${hex}`;
+        i += 14;
+        continue;
+      }
+
+      // Legacy format
+      const code = input[i + 1];
+      if (legacyColorMap[code]) {
+        currentColor = legacyColorMap[code];
+      }
+
+      i += 2;
+    } else {
+      currentText += input[i];
+      i++;
+    }
+  }
+
+  // Push final chunk
+  if (currentText) {
+    result.push(
+      <span style={{ color: currentColor }} key={result.length}>
+        {currentText}
+      </span>
+    );
+  }
+
+  return result;
+};
