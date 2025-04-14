@@ -47,7 +47,7 @@ const App = () => {
               <Route path="/dashboard" element={ <Dashboard />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/citems" element={<CitemTab />} />
-              <Route path="/admin/users" element={ <UserList />} />
+              <Route path="/users" element={ <UserList />} />
               <Route path="/currencies" element={<CurrencyTab />} />
               <Route path="/unlockables" element={<UnlockableTab />} />
               <Route path="/cosmetics" element={<CosmeticTab />} />

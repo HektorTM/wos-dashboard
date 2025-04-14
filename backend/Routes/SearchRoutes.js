@@ -26,13 +26,20 @@ router.get('/', (req, res) => {
             
             SELECT id, badge, 'badge' AS type FROM badges 
             WHERE LOWER(badge) LIKE ? OR LOWER(description) LIKE ? OR LOWER(id) LIKE ?
-        `;
+
+            UNION ALL
+
+            SELECT id, temp, 'unlockable' AS type FROM unlockables
+            WHERE LOWER(id) LIKE ? OR LOWER(temp) LIKE ?
+         `;
 
         const results = db.prepare(query).all(
             searchPattern, searchPattern,  // users
             searchPattern, searchPattern,  // citems
             searchPattern, searchPattern,  // titles
-            searchPattern, searchPattern   // badges
+            searchPattern, searchPattern,   // badges
+            searchPattern, searchPattern // unlockables
+
         );
 
         // Group results by type for better frontend display

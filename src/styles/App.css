@@ -7,6 +7,7 @@
 @import './components/Login.css';
 @import './components/Dashboard.css';
 @import './components/CitemTab.css';
+@import './components/SearchResults.css';
 
 [data-theme="light"] {
   @import './themes/light.css';

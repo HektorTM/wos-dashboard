@@ -1,79 +1,84 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 
 const CreateUnlockable = () => {
+  const { theme } = useTheme();
   const [id, setId] = useState('');
   const [temp, setTemp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const payload = {
-      id,
-      temp,
-    };
+    setLoading(true);
+    setError('');
 
     try {
-      setLoading(true);
       const res = await fetch('http://localhost:3001/api/unlockables', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ id, temp: temp ? 1 : 0 })
       });
 
-      const result = await res.json();
-      if (res.ok) {
-        alert('Unlockable created!');
-        navigate('/unlockables')
-        setId('');
-        setTemp(false);
-      } else {
-        alert(`Error: ${result.error}`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Creation failed');
       }
+
+      alert('Unlockable created!');
+      navigate('/unlockables');
     } catch (err) {
       console.error(err);
-      alert('Connection to server failed.');
+      setError(err instanceof Error ? err.message : 'Failed to create unlockable');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mt-4" style={{ maxWidth: '600px' }}>
-      <h3>Create a New Unlockable</h3>
+    <div className={`citem-container ${theme}`}>
+      <h2>Create New Unlockable</h2>
+      {error && <div className="error-message">{error}</div>}
+      
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">ID</label>
+        <div className="form-group">
+          <label>ID</label>
           <input
             type="text"
-            className="form-control"
             value={id}
             onChange={(e) => setId(e.target.value)}
             required
+            className="form-control"
           />
         </div>
 
-        <div className="form-check mb-3">
+        <div className="form-check">
           <input
-            className="form-check-input"
             type="checkbox"
             id="temp"
+            className="form-check-input"
             checked={temp}
             onChange={(e) => setTemp(e.target.checked)}
           />
-          <label className="form-check-label" htmlFor="temp">
+          <label htmlFor="temp" className="form-check-label">
             Temporary
           </label>
         </div>
 
         <button
           type="submit"
-          className="btn btn-success"
+          className="primary-action"
           disabled={loading}
         >
-          {loading ? 'Saving...' : 'Save Unlockable'}
+          {loading ? (
+            <>
+              <span className="spinner"></span> Creating...
+            </>
+          ) : (
+            'Create Unlockable'
+          )}
         </button>
       </form>
     </div>
