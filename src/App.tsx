@@ -20,16 +20,10 @@ import CitemTab from './pages/Citems/CitemTab';
 import SearchResults from './pages/Search';
 import Login from './pages/Login';
 import { ThemeProvider } from './context/ThemeContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 
-const isAuthenticated = () => {
-  return !!localStorage.getItem('authUser');
-};
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  return isAuthenticated() ? <>{children}</> : <Navigate to="/login" />;
-};
 
 const App = () => {
   return (
@@ -43,23 +37,23 @@ const App = () => {
             </Route>
           
             {/* Main Layout */}
-            <Route element={<ProtectedRoute> <MainLayout /> </ProtectedRoute>}>
+            <Route element={<MainLayout /> }>
                 <Route path="/" element={<Navigate to="/dashboard" />} />
                 <Route path="/dashboard" element={ <Dashboard />} />
                 <Route path="/search" element={<SearchResults />} />
-                <Route path="/citems" element={<CitemTab />} />
-                <Route path="/users" element={ <UserList />} />
-                <Route path="/currencies" element={<CurrencyTab />} />
-                <Route path="/unlockables" element={<UnlockableTab />} />
-                <Route path="/cosmetics" element={<CosmeticTab />} />
+                <Route path="/citems" element={<ProtectedRoute requiredPermission='CITEM_VIEW'><CitemTab /></ProtectedRoute>} />
+                <Route path="/users" element={<ProtectedRoute requiredPermission='ADMIN'><UserList /></ProtectedRoute>} />
+                <Route path="/currencies" element={<ProtectedRoute requiredPermission='CURRENCY_VIEW'><CurrencyTab /></ProtectedRoute>} />
+                <Route path="/unlockables" element={<ProtectedRoute requiredPermission='UNLOCKABLE_VIEW'><UnlockableTab /></ProtectedRoute>} />
+                <Route path="/cosmetics" element={<ProtectedRoute requiredPermission='COSMETIC_VIEW'><CosmeticTab /></ProtectedRoute>} />
 
-                <Route path="/create/user" element={ <CreateUser />} />
-                <Route path="/create/currency" element={ <CreateCurrency /> }/>
-                <Route path="/create/unlockable" element={<CreateUnlockable />} />
+                <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
+                <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
+                <Route path="/create/unlockable" element={<ProtectedRoute requiredPermission='UNLOCKABLE_CREATE'><CreateUnlockable /></ProtectedRoute>} />
                 
-                <Route path="/view/user/:id" element={ <EditUser />} />
-                <Route path="/view/currency/:id" element={<EditCurrency />} />
-                <Route path="/view/unlockable/:id" element={<ViewUnlockable />} />  
+                <Route path="/view/user/:id" element={<ProtectedRoute requiredPermission='ADMIN'><EditUser /></ProtectedRoute>} />
+                <Route path="/view/currency/:id" element={<ProtectedRoute requiredPermission='CURRENCY_EDIT'><EditCurrency /></ProtectedRoute>} />
+                <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='UNLOCKABLE_EDIT'><ViewUnlockable /></ProtectedRoute>} />  
             </Route>
           </Routes>
         </Router>
