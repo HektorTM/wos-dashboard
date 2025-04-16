@@ -1,39 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { PERMISSIONS } from '../../utils/permissions'; 
+import { Link, useNavigate } from 'react-router-dom';
+import { PERMISSIONS } from '../../utils/permissions';
+import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 const getPermissionLabels = (keys: string[]) => {
-    return PERMISSIONS.filter((p) => keys.includes(p.key)).map((p) => p.label).join(', ');
-  };
-  
+  return PERMISSIONS.filter((p) => keys.includes(p.key)).map((p) => p.label).join(', ');
+};
 
 interface User {
-  id: number;
+  uuid: string;
   username: string;
-  permissions: string[] | string; // Allow for raw string fallback
+  permissions?: string[] | string;
+  is_active: number;
 }
 
 const UserList = () => {
+  const { theme } = useTheme();
+  const { authUser } = useAuth();
+  const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/admin/users');
+        const res = await fetch('http://localhost:3001/api/users', {method: 'GET', credentials: 'include'});
         const data = await res.json();
 
-        // Parse permissions if needed
         const parsedUsers = data.map((user: User) => ({
           ...user,
           permissions: Array.isArray(user.permissions)
             ? user.permissions
-            : JSON.parse(user.permissions),
+            : user.permissions
+            ? JSON.parse(user.permissions)
+            : [],
         }));
 
         setUsers(parsedUsers);
       } catch (err) {
         console.error('Error fetching users:', err);
+        setError('Failed to load Users. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -42,58 +51,109 @@ const UserList = () => {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (uuid: string) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await fetch(`http://localhost:3001/api/users/${id}`, { method: 'DELETE' });
-        setUsers(users.filter(user => user.id !== id));
+        await fetch(`http://localhost:3001/api/users/${uuid}`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            uuid: authUser?.uuid
+          })
+        });
+        setUsers(users.filter(user => user.uuid !== uuid));
       } catch (err) {
         console.error('Error deleting user:', err);
       }
     }
   };
 
+  const filteredUsers = users.filter((c) =>
+    [c.username, c.is_active].some((field) =>
+      String(field || '').toLowerCase().includes(search.toLowerCase())
+    )
+  );
+
   return (
-    <div className="container mt-4">
-      <h3>User Management</h3>
+    <div className={`page-container ${theme}`}>
+      <div className="page-header">
+        <h2>User Management</h2>
+        <div className='page-search'>
+          <input 
+            type="text"
+            placeholder="Search by Username, active..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="search-icon">🔍</span>
+        </div>
+        <Link to="/create/user" className="primary-action">
+          + Create User
+        </Link>
+      </div>
+
+      {error && <div className='error-message'>{error}</div>}
+
       {loading ? (
-        <p>Loading...</p>
+        <div className='loading-spinner'>
+          <div className='spinner'></div>
+          <p>Loading Users...</p>
+        </div>
       ) : (
-        <>
-          <Link to="/create/user/" className="btn btn-primary mb-3">
-            Create New User
-          </Link>
-          <table className="table table-striped">
+        <div className='page-table-container'>
+          <table className="page-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>UUID</th>
                 <th>Username</th>
+                <th>Status</th>
                 <th>Permissions</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
+              {filteredUsers.map((user) => (
+                <tr key={user.uuid}>
+                  <td>{user.uuid}</td>
                   <td>{user.username}</td>
-                  <td>{Array.isArray(user.permissions) ? getPermissionLabels(user.permissions) : 'Invalid permissions'}</td>
+                  <td>{user.is_active ? (
+                    <span className="badge active">Active</span>
+                    ) : (
+                    <span className="badge inactive">Inactive</span>
+                    )}
+                  </td>
+                  <td>{getPermissionLabels(user.permissions as string[])}</td>
                   <td>
-                    <Link to={`/view/user/${user.id}`} className="btn btn-warning btn-sm">
-                      Edit
-                    </Link>
-                    <button
-                      className="btn btn-danger btn-sm ms-2"
-                      onClick={() => handleDelete(user.id)}
+                  <button
+                      className="action-btn"
+                      onClick={() => navigate(`/view/user/${user.uuid}`)}
+                      title="Edit"
                     >
-                      Delete
+                      ✏️
+                    </button>
+                    <button
+                      className="action-btn"
+                      onClick={() => handleDelete(user.uuid)}
+                      title="Delete"
+                    > 
+                      🗑️
                     </button>
                   </td>
                 </tr>
               ))}
+              {filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan={3} className='no-results'>
+                    {search ? 'No matching Users found' : 'No Users Available'}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
-        </>
+        </div>
       )}
     </div>
   );

@@ -9,27 +9,40 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(false);
-    setError('');
+  e.preventDefault();
+  setIsLoading(true);
+  setError('');
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (username && password) {
-        localStorage.setItem('authToken', JSON.stringify({ username }));
-        navigate('/dashboard');
-      } else {
-        setError('Please enter both username and password');
-      }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      setError('Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+  try {
+    const res = await fetch('http://localhost:3001/api/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+      credentials: 'include',
+    });
+  
+    const data = await res.json();
+  
+    if (!res.ok) {
+      throw new Error(data.error || 'Login failed');
     }
-  };
+
+    const user = data.user;
+
+    if (user.is_active === 0) {
+      return setError('Your account is not activated. Message an Admin.');
+    }
+  
+    localStorage.setItem('authUser', JSON.stringify(user));
+    navigate('/dashboard');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    setError(err.message || 'Something went wrong');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="login-page-container">
@@ -37,7 +50,7 @@ const Login = () => {
         <div className="login-card">
           <div className="login-header">
             <h2>Welcome Back</h2>
-            <p>Please enter your credentials</p>
+            <p>Please enter your username and password</p>
           </div>
 
           {error && <div className="login-error">{error}</div>}
@@ -49,7 +62,7 @@ const Login = () => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                placeholder="Your Minecraft username"
                 required
               />
             </div>
@@ -66,11 +79,7 @@ const Login = () => {
             </div>
 
             <button type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <span className="spinner"></span>
-              ) : (
-                'Log In'
-              )}
+              {isLoading ? <span className="spinner"></span> : 'Log In'}
             </button>
           </form>
 

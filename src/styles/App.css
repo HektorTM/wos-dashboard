@@ -6,7 +6,7 @@
 @import './components/Sidebar.css';
 @import './components/Login.css';
 @import './components/Dashboard.css';
-@import './components/CitemTab.css';
+@import './components/Page.css';
 @import './components/SearchResults.css';
 
 [data-theme="light"] {

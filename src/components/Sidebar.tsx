@@ -1,18 +1,37 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useState } from 'react';
+import { usePermission } from '../utils/usePermission';
+import PermissionLink from './PermissionLink';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const { theme, toggleTheme } = useTheme();
+  const {authUser, setAuthUser} = useAuth();
   const [query, setQuery] = useState('');
   const [techOpen, setTechOpen] = useState(false);
   const navigate = useNavigate();
+  const { hasPermission, loading } = usePermission(); // centralized permission check
 
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    navigate('/login');
+  const handleLogout = async () => {
+    localStorage.removeItem('authUser');
+    setAuthUser(null);
+    try {
+      const response = await fetch('http://localhost:3001/api/users/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to log out');
+      }
+  
+      navigate('/login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
+  
 
   const userpage = () => {
     navigate('/users');
@@ -28,6 +47,7 @@ const Sidebar = () => {
     <div className={`sidebar ${theme}`}>
       <div className="sidebar-header">
         <h4>Admin Dashboard</h4>
+        <h5>Welcome {authUser?.username}</h5>
       </div>
 
       <div className="sidebar-search">
@@ -83,68 +103,52 @@ const Sidebar = () => {
         </div>
 
         <div className="nav-section">
-          <h6>Tech</h6>
+          <h6>Game Design</h6>
           <button className="nav-toggle" onClick={() => setTechOpen(!techOpen)}>
             {techOpen ? '▲' : '▼'}
           </button>
           {techOpen && (
             <ul className="submenu">
-              <li>
-                <Link to="/citems">Custom Items</Link>
-              </li>
-              <li>
-                <Link to="/cooldowns">Cooldowns</Link>
-              </li>
-              <li>
-                <Link to="/cosmetics">Cosmetics</Link>
-              </li>
-              <li>
-                <Link to="/currencies">Currencies</Link>
-              </li>
-              <li>
-                <Link to="/guis">GUIs</Link>
-              </li>
-              <li>
-                <Link to="/interactions">Interactions</Link>
-              </li>
-              <li>
-                <Link to="/loottables">Loot Tables</Link>
-              </li>
-              <li>
-                <Link to="/professions">Professions</Link>
-              </li>
-              <li>
-                <Link to="/stats">Stats</Link>
-              </li>
-              <li>
-                <Link to="/unlockables">Unlockables</Link>
-              </li>
+              <PermissionLink to="/citems" label="Citems" perm="CITEM_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/cooldowns" label="Cooldowns" perm="COOLDOWN_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/cosmetics" label="Cosmetics" perm="COSMETIC_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/currencies" label="Currencies" perm="CURRENCY_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/guis" label="GUIs" perm="GUI_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/interactions" label="Interactions" perm="INTERACTION_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/loottables" label="Loot Tables" perm="LOOTTABLE_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/professions" label="Professions" perm="PROFESSION_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/stats" label="Stats" perm="STATS_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/unlockables" label="Unlockables" perm="UNLOCKABLE_VIEW" hasPermission={hasPermission} loading={loading} />
             </ul>
           )}
         </div>
       </nav>
 
       <div className="sidebar-footer">
-        <button className="admin-btn"  onClick={userpage}>
-          <svg viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-          </svg>
-          Administration
-        </button>
-        <button className="logout-btn" onClick={handleLogout}>
-          <svg viewBox="0 0 24 24">
-            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-          </svg>
-          Logout
-        </button>
-        <button 
-          onClick={toggleTheme}
-          className="theme-toggle"
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙' : '☀️'}
-          <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
-        </button>
+        {hasPermission('ADMIN') && (
+          <button className="admin-btn" onClick={userpage}>
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
+            Administration
+          </button>
+        )}
+        
+        <div className="footer-buttons-row">
+          <button className="logout-btn" onClick={handleLogout}>
+            <svg viewBox="0 0 24 24">
+              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </svg>
+            Logout
+          </button>
+          <button 
+            onClick={toggleTheme}
+            className="theme-toggle-icon"
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            {theme === 'light' ? '☀️' : '🌙'}
+          </button>
+        </div>
       </div>
     </div>
   );

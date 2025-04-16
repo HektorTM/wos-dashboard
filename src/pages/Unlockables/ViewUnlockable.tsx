@@ -1,27 +1,30 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
-// same imports...
-
 const ViewUnlockable = () => {
-  const { theme } = useTheme();
-  const { id } = useParams();
-  const [unlockable, setUnlockable] = useState<{id: string, temp: number} | null>(null);
+  const { authUser } = useAuth();
+  const { id } = useParams(); // Extract the currency ID from the URL
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [unlockable, setUnlockable] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUnlockable = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/unlockables/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch unlockable');
+        const res = await fetch(`http://localhost:3001/api/unlockables/${id}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
         const data = await res.json();
         setUnlockable(data);
       } catch (err) {
         console.error(err);
-        setError('Failed to load unlockable details');
+        setError('Failed to fetch currency details.');
       } finally {
         setLoading(false);
       }
@@ -32,34 +35,42 @@ const ViewUnlockable = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!unlockable) return;
-
+  
+    const updatedUnlockable = {
+      temp: unlockable.temp ? 1 : 0,
+      uuid: authUser?.uuid,
+    };
+  
     try {
       const res = await fetch(`http://localhost:3001/api/unlockables/${id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ temp: unlockable.temp })
+        body: JSON.stringify(updatedUnlockable),
       });
-
-      if (!res.ok) throw new Error('Update failed');
-      alert('Unlockable updated!');
-      navigate('/unlockables');
+  
+      if (res.ok) {
+        alert('Unlockable updated!');
+        navigate('/unlockables'); // Redirect after update
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || 'Error updating Unlockable');
+      }
     } catch (err) {
       console.error(err);
-      setError('Failed to update unlockable');
+      setError('Failed to update Unlockable');
     }
   };
+  
 
   return (
-    <div className={`citem-container ${theme}`}>
+    <div className={`page-container ${theme}`}>
       <h2>Edit Unlockable</h2>
-      {error && <div className="error-message">{error}</div>}
-      
+      {error && <div className='error-message'>{error}</div>}
       {loading ? (
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Loading unlockable...</p>
+        <div className='loading-spinner'>
+          <div className='spinner'></div>
+          <p>Loading Unlockable...</p>
         </div>
       ) : unlockable ? (
         <form onSubmit={handleSubmit}>
@@ -67,29 +78,30 @@ const ViewUnlockable = () => {
             <label>ID</label>
             <input
               type="text"
+              className="form-control"
               value={unlockable.id}
               disabled
-              className="form-control"
             />
           </div>
 
           <div className="form-check">
             <input
-              type="checkbox"
-              id="temp"
               className="form-check-input"
+              type="checkbox"
               checked={unlockable.temp === 1}
-              onChange={(e) => setUnlockable({
-                ...unlockable,
-                temp: e.target.checked ? 1 : 0
-              })}
+              onChange={(e) =>
+                setUnlockable({
+                  ...unlockable,
+                  temp: e.target.checked ? 1 : 0,
+                })
+              }
             />
-            <label htmlFor="temp" className="form-check-label">
+            <label className="form-check-label">
               Temporary
             </label>
           </div>
 
-          <button type="submit" className="primary-action">
+          <button type="submit" className="btn btn-success">
             Save Changes
           </button>
         </form>

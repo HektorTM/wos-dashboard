@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PERMISSIONS } from '../../utils/permissions';
+import { PERMISSION_GROUPS } from '../../utils/permissions';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const CreateUser = () => {
-  const [username, setUsername] = useState('');
+  const { theme } = useTheme();
+  const [uuid, setUUID] = useState('');
   const [password, setPassword] = useState('');
   const [permissions, setPermissions] = useState<string[]>([]);
   const navigate = useNavigate();
+  const { authUser } = useAuth();
 
   const handlePermissionChange = (perm: string) => {
     setPermissions((prev) =>
@@ -16,10 +20,11 @@ const CreateUser = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newUser = { username, password, permissions };
+
+    const newUser = { uuid, password, permissions, editorUUID: authUser?.uuid, };
 
     try {
-      const res = await fetch('http://localhost:3001/api/admin/users', {
+      const res = await fetch('http://localhost:3001/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser),
@@ -27,9 +32,10 @@ const CreateUser = () => {
 
       if (res.ok) {
         alert('User created successfully!');
-        navigate('/admin/users');
+        navigate('/users');
       } else {
-        alert('Page: Error creating user');
+        const error = await res.json();
+        alert(`Server: ${error.error || 'Failed to create user'}`);
       }
     } catch (err) {
       console.error(err);
@@ -38,16 +44,19 @@ const CreateUser = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h3>Create New User</h3>
-      <form onSubmit={handleSubmit}>
+    <div className={`page-container ${theme}`}>
+      <div className='page-header'>
+        <h3>Create New User</h3>
+      </div>
+      <form onSubmit={handleSubmit} className='form-section'>
         <div className="mb-3">
-          <label className="form-label">Username</label>
+          <label className="form-label">Minecraft UUID</label>
           <input
             type="text"
             className="form-control"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={uuid}
+            onChange={(e) => setUUID(e.target.value)}
+            placeholder="Enter UUID"
             required
           />
         </div>
@@ -59,24 +68,30 @@ const CreateUser = () => {
             className="form-control"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter password"
             required
           />
         </div>
 
         <div className="mb-3">
-            <label className="form-label">Permissions</label>
-            <div>
-                {PERMISSIONS.map((perm) => (
-                <label key={perm.key} className="d-block">
+          <label className="form-label">Permissions</label>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem' }}>
+            {PERMISSION_GROUPS.map((group) => (
+              <div key={group.group}>
+                <h4>{group.group}</h4> {/* Group Title */}
+                {group.permissions.map((perm) => (
+                  <label key={perm.key} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <input
-                    type="checkbox"
-                    checked={permissions.includes(perm.key)}
-                    onChange={() => handlePermissionChange(perm.key)}
-                    />{' '}
+                      type="checkbox"
+                      checked={permissions.includes(perm.key)}
+                      onChange={() => handlePermissionChange(perm.key)}
+                    />
                     {perm.label}
-                </label>
+                  </label>
                 ))}
-            </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <button type="submit" className="btn btn-success">

@@ -26,7 +26,9 @@ const CitemTab = () => {
   useEffect(() => {
     const fetchCitems = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/citems');
+        const res = await fetch('http://localhost:3001/api/citems',
+          {credentials: 'include',}
+        );
         if (!res.ok) throw new Error('Failed to fetch citems');
         const data = await res.json();
         setCitems(data);
@@ -64,10 +66,10 @@ const CitemTab = () => {
   );
 
   return (
-    <div className={'citem-container §{theme}'}>
-      <div className="citem-header">
+    <div className={'page-container §{theme}'}>
+      <div className="page-header">
         <h2>Citem Management</h2>
-        <div className="citem-search">
+        <div className="page-search">
           <input
             type="text"
             placeholder="Search citems..."
@@ -86,8 +88,8 @@ const CitemTab = () => {
           <p>Loading citems...</p>
         </div>
       ) : (
-        <div className="citem-table-container">
-          <table className="citem-table">
+        <div className="page-table-container">
+          <table className="page-table">
             <thead>
               <tr>
                 <th>ID</th>
@@ -131,9 +133,9 @@ const CitemTab = () => {
                   <td className="text-cell">{citem.action_right}</td>
                   <td>
                     <button
-                      className="delete-btn"
+                      className="action-btn"
                       onClick={() => deleteCitem(citem.id)}
-                      title="Delete citem"
+                      title="Delete"
                     >
                       🗑️
                     </button>

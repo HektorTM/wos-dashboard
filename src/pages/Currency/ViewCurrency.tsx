@@ -1,22 +1,30 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const ViewCurrency = () => {
+  const { authUser } = useAuth();
   const { id } = useParams(); // Extract the currency ID from the URL
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currency, setCurrency] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCurrency = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/currencies/${id}`);
+        const res = await fetch(`http://localhost:3001/api/currencies/${id}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
         const data = await res.json();
         setCurrency(data);
       } catch (err) {
         console.error(err);
-        alert('Failed to fetch currency details.');
+        setError('Failed to fetch currency details.');
       } finally {
         setLoading(false);
       }
@@ -30,15 +38,17 @@ const ViewCurrency = () => {
   
     const updatedCurrency = {
       name: currency.name,
-      shortName: currency.shortName,
+      short_name: currency.short_name,
       icon: currency.icon || null,
       color: currency.color,
-      hiddenIfZero: currency.hiddenIfZero ? 1 : 0,
+      hidden_if_zero: currency.hidden_if_zero ? 1 : 0,
+      uuid: authUser?.uuid,
     };
   
     try {
       const res = await fetch(`http://localhost:3001/api/currencies/${id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedCurrency),
       });
@@ -52,20 +62,24 @@ const ViewCurrency = () => {
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to update currency');
+      setError('Failed to update currency');
     }
   };
   
 
   return (
-    <div className="container mt-4">
-      <h3>Edit Currency</h3>
+    <div className={`page-container ${theme}`}>
+      <h2>Edit Currency</h2>
+      {error && <div className='error-message'>{error}</div>}
       {loading ? (
-        <p>Loading...</p>
-      ) : (
+        <div className='loading-spinner'>
+          <div className='spinner'></div>
+          <p>Loading Currency...</p>
+        </div>
+      ) : currency ? (
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">ID</label>
+          <div className="form-group">
+            <label>ID</label>
             <input
               type="text"
               className="form-control"
@@ -74,8 +88,8 @@ const ViewCurrency = () => {
             />
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">Name</label>
+          <div className="form-group">
+            <label>Name</label>
             <input
               type="text"
               className="form-control"
@@ -84,17 +98,17 @@ const ViewCurrency = () => {
             />
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">Short Name</label>
+          <div className="form-group">
+            <label>Short Name</label>
             <input
               type="text"
               className="form-control"
-              value={currency.shortName}
-              onChange={(e) => setCurrency({ ...currency, shortName: e.target.value })}
+              value={currency.short_name}
+              onChange={(e) => setCurrency({ ...currency, short_name: e.target.value })}
             />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Icon</label>
+          <div className="form-group">
+            <label>Icon</label>
             <input
               type="text"
               className="form-control"
@@ -102,8 +116,8 @@ const ViewCurrency = () => {
               onChange={(e) => setCurrency({ ...currency, icon: e.target.value })}
             />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Color</label>
+          <div className="form-group">
+            <label>Color</label>
             <input
               type="text"
               className="form-control"
@@ -112,15 +126,15 @@ const ViewCurrency = () => {
             />
           </div>
 
-          <div className="form-check mb-3">
+          <div className="form-check">
             <input
               className="form-check-input"
               type="checkbox"
-              checked={currency.hiddenIfZero === 1}
+              checked={currency.hidden_if_zero === 1}
               onChange={(e) =>
                 setCurrency({
                   ...currency,
-                  hiddenIfZero: e.target.checked ? 1 : 0,
+                  hidden_if_zero: e.target.checked ? 1 : 0,
                 })
               }
             />
@@ -133,6 +147,8 @@ const ViewCurrency = () => {
             Save Changes
           </button>
         </form>
+      ) : (
+        <p>Currency not found</p>
       )}
     </div>
   );

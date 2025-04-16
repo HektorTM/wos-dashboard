@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 type Unlockable = {
   id: string;
@@ -9,6 +10,7 @@ type Unlockable = {
 
 const UnlockableTab = () => {
   const { theme } = useTheme();
+  const { authUser } = useAuth();
   const [unlockables, setUnlockables] = useState<Unlockable[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -18,7 +20,10 @@ const UnlockableTab = () => {
   useEffect(() => {
     const fetchUnlockables = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/unlockables');
+        const res = await fetch('http://localhost:3001/api/unlockables', {
+          method: 'GET',
+          credentials: 'include',
+        });
         if (!res.ok) throw new Error('Failed to load unlockables');
         const data = await res.json();
         setUnlockables(data);
@@ -39,10 +44,17 @@ const UnlockableTab = () => {
     try {
       const res = await fetch(`http://localhost:3001/api/unlockables/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          uuid: authUser?.uuid,
+        })
       });
 
       if (!res.ok) throw new Error('Failed to delete');
-      setUnlockables(unlockables.filter(u => u.id !== id));
+      setUnlockables(unlockables.filter((c) => c.id !== id));
     } catch (err) {
       console.error(err);
       setError('Failed to delete unlockable. Please try again.');
@@ -54,10 +66,10 @@ const UnlockableTab = () => {
   );
 
   return (
-    <div className={`citem-container ${theme}`}>
-      <div className="citem-header">
+    <div className={`page-container ${theme}`}>
+      <div className="page-header">
         <h2>Unlockables</h2>
-        <div className="citem-search">
+        <div className="page-search">
           <input
             type="text"
             placeholder="Search unlockables..."
@@ -79,8 +91,8 @@ const UnlockableTab = () => {
           <p>Loading unlockables...</p>
         </div>
       ) : (
-        <div className="citem-table-container">
-          <table className="citem-table">
+        <div className="page-table-container">
+          <table className="page-table">
             <thead>
               <tr>
                 <th>ID</th>
@@ -95,14 +107,16 @@ const UnlockableTab = () => {
                   <td>{unlockable.temp ? 'Temporary' : 'Permanent'}</td>
                   <td>
                     <button
-                      className="edit-btn"
+                      className="action-btn"
                       onClick={() => navigate(`/view/unlockable/${unlockable.id}`)}
+                      title="Edit"
                     >
-                      Edit
+                      ✏️
                     </button>
                     <button
-                      className="delete-btn"
+                      className="action-btn"
                       onClick={() => deleteUnlockable(unlockable.id)}
+                      title="Delete"
                     >
                       🗑️
                     </button>

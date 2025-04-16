@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db'); // Assuming you're using SQLite database connection
+const logActivity = require('../utils/LogActivity');
+
+
 
 // 1. Get all currencies
 router.get('/', (req, res) => {
@@ -29,9 +32,9 @@ router.get('/:id', (req, res) => {
 
 // 3. Create a new currency
 router.post('/', (req, res) => {
-  const { id, name, shortName, icon, color, hiddenIfZero } = req.body;
-
-  if (!id || !name || !shortName || !color) {
+  const { id, name, short_name, icon, color, hidden_if_zero } = req.body;
+  const {uuid} = req.body;
+  if (!id || !name || !short_name || !color) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -39,8 +42,14 @@ router.post('/', (req, res) => {
     db.prepare(`
       INSERT INTO currencies (id, name, short_name, icon, color, hidden_if_zero)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(id, name, shortName, icon || null, color, hiddenIfZero ? 1 : 0);
-
+    `).run(id, name, short_name, icon || null, color, hidden_if_zero ? 1 : 0);
+    
+    logActivity({
+      type: 'Currency',
+      target_id: id,
+      user: uuid,
+      action: 'Created',
+    });
     res.status(201).json({ message: 'Currency created successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -50,10 +59,11 @@ router.post('/', (req, res) => {
 // 4. Update an existing currency by ID
 router.put('/:id', (req, res) => {
     const { id } = req.params; // Extract currency id from the URL
-    const { name, shortName, icon, color, hiddenIfZero } = req.body;
+    const { name, short_name, icon, color, hidden_if_zero } = req.body;
+    const { uuid } = req.body;
   
     // Basic validation: check that all required fields are provided
-    if (!name || !shortName || !color) {
+    if (!name || !short_name || !color) {
       return res.status(400).json({ error: 'Name, short name, and color are required.' });
     }
   
@@ -72,7 +82,7 @@ router.put('/:id', (req, res) => {
         WHERE id = ?
       `);
   
-      const result = update.run(name, shortName, icon || null, color, hiddenIfZero ? 1 : 0, id);
+      const result = update.run(name, short_name, icon || null, color, hidden_if_zero ? 1 : 0, id);
   
       // Check if the update affected any rows (i.e., was there a real update)
       if (result.changes === 0) {
@@ -81,6 +91,12 @@ router.put('/:id', (req, res) => {
   
       // Send success response
       res.status(200).json({ message: 'Currency updated successfully' });
+      logActivity({
+        type: 'Currency',
+        target_id: id,
+        user: uuid,
+        action: 'Edited',
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -90,6 +106,7 @@ router.put('/:id', (req, res) => {
 // 5. Delete a currency by ID
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
+  const { uuid } = req.body;
 
   try {
     const result = db.prepare('DELETE FROM currencies WHERE id = ?').run(id);
@@ -99,6 +116,12 @@ router.delete('/:id', (req, res) => {
     }
 
     res.status(200).json({ message: 'Currency deleted successfully' });
+    logActivity({
+      type: 'Currency',
+      target_id: id,
+      user: uuid,
+      action: 'Deleted',
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

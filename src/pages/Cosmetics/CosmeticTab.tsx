@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 import { parseMinecraftColorCodes } from '../../utils/parser';
 
 const api = 'http://localhost:3001/api';
@@ -24,9 +25,11 @@ type Badge = CosmeticBase & {
 type Cosmetic = Title | Badge;
 
 const CosmeticTab = () => {
+  const { theme } = useTheme();
   const [cosmetics, setCosmetics] = useState<Cosmetic[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,8 +37,14 @@ const CosmeticTab = () => {
       setLoading(true);
       try {
         const [titlesRes, badgesRes] = await Promise.all([
-          fetch(api + api_sub1),
-          fetch(api + api_sub2),
+          fetch(api + api_sub1, {
+            method: 'GET',
+            credentials: 'include',
+          }),
+          fetch(api + api_sub2, {
+            method: 'GET',
+            credentials: 'include',
+          }),
         ]);
 
         const [titlesData, badgesData] = await Promise.all([
@@ -58,7 +67,7 @@ const CosmeticTab = () => {
         setCosmetics([...formattedTitles, ...formattedBadges]);
       } catch (err) {
         console.error(err);
-        alert('Failed to load cosmetics.');
+        setError('Failed to load cosmetics. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -77,43 +86,50 @@ const CosmeticTab = () => {
 
       if (res.ok) {
         setCosmetics((prev) => prev.filter((u) => u.id !== item.id));
-        alert(`${item.type} deleted!`);
       } else {
-        alert(`Error deleting ${item.type}`);
+        setError(`Error deleting ${item.type}.`);
       }
     } catch (err) {
       console.error(err);
-      alert(`Failed to delete ${item.type}`);
+      setError(`Failed to delete ${item.type}.`);
     }
   };
 
   const filteredCosmetics = cosmetics.filter((c) =>
-    [c.id.toLowerCase(), c.type.toLowerCase()].some((field) => field.includes(search.toLowerCase()))
+    [c.id.toLowerCase(), c.type.toLowerCase()].some((field) =>
+      field.includes(search.toLowerCase())
+    )
   );
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>Cosmetics</h3>
-        <Link to="/create/cosmetic" className="btn btn-primary">
+    <div className={`page-container ${theme}`}>
+      <div className="page-header">
+        <h2>Cosmetics</h2>
+        <div className="page-search">
+          <input
+            type="text"
+            placeholder="Search by ID or Type..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="search-icon">🔍</span>
+        </div>
+        <Link to="/create/cosmetic" className="primary-action">
           + Create Cosmetic
         </Link>
       </div>
 
-      <input
-        type="text"
-        className="form-control mb-3"
-        placeholder="Search by ID or Type"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {error && <div className="error-message">{error}</div>}
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading cosmetics...</p>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <table className="table table-striped table-hover align-middle">
-            <thead className="table-dark">
+        <div className="page-table-container">
+          <table className="page-table">
+            <thead>
               <tr>
                 <th>Type</th>
                 <th>ID</th>
@@ -127,30 +143,36 @@ const CosmeticTab = () => {
                 <tr key={cosmetic.id}>
                   <td>{cosmetic.type}</td>
                   <td>{cosmetic.id}</td>
-                  <td>{cosmetic.type === 'Title' ? parseMinecraftColorCodes(cosmetic.title) : parseMinecraftColorCodes(cosmetic.badge)}</td>
+                  <td>
+                    {cosmetic.type === 'Title'
+                      ? parseMinecraftColorCodes(cosmetic.title)
+                      : parseMinecraftColorCodes(cosmetic.badge)}
+                  </td>
                   <td>{cosmetic.description}</td>
                   <td>
                     <button
-                      className="btn btn-warning btn-sm me-2"
+                      className="action-btn"
                       onClick={() =>
                         navigate(`/view/${cosmetic.type.toLowerCase()}/${cosmetic.id}`)
                       }
+                      title="Edit"
                     >
-                      Edit
+                      ✏️
                     </button>
                     <button
-                      className="btn btn-danger btn-sm"
+                      className="action-btn"
                       onClick={() => deleteCosmetic(cosmetic)}
+                      title="Delete"
                     >
-                      Delete
+                      🗑️
                     </button>
                   </td>
                 </tr>
               ))}
               {filteredCosmetics.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="text-center text-muted">
-                    No Cosmetics found.
+                  <td colSpan={5} className="no-results">
+                    {search ? 'No matching cosmetics found' : 'No cosmetics available'}
                   </td>
                 </tr>
               )}

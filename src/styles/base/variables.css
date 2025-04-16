@@ -43,7 +43,12 @@
     --input-bg: #252525;
     --table-header-bg: #252525;
   }
-
+  [data-theme="dark"] input:disabled {
+    background-color: #3a3a3a;
+    color: #ccc;
+    border: 1px solid var(--border-color);
+  }
+  
   :root[data-theme="light"] {
     --bg-color: #f8f9fa;
     --text-color: #212529;

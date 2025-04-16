@@ -1,30 +1,40 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 type Currency = {
   id: string;
   name: string;
-  shortName: string;
-  icon: string ;
+  short_name: string;
+  icon: string;
   color: string;
-  hiddenIfZero: number;
+  hidden_if_zero: number;
 };
 
 const CurrencyTab = () => {
+  const { theme } = useTheme();
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { authUser } = useAuth(); 
+
 
   useEffect(() => {
     const fetchCurrencies = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/currencies');
+        const res = await fetch('http://localhost:3001/api/currencies', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (!res.ok) throw new Error('Failed to load currencies');
         const data = await res.json();
         setCurrencies(data);
       } catch (err) {
         console.error(err);
-        alert('Failed to load currencies.');
+        setError('Failed to load currencies. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -34,56 +44,60 @@ const CurrencyTab = () => {
   }, []);
 
   const deleteCurrency = async (id: string) => {
-    const confirmed = window.confirm('Are you sure you want to delete this currency?');
-    if (confirmed) {
-      try {
-        const res = await fetch(`http://localhost:3001/api/currencies/${id}`, {
-          method: 'DELETE',
-        });
+    if (!window.confirm('Are you sure you want to delete this currency?')) return;
 
-        if (res.ok) {
-          setCurrencies(currencies.filter((currency) => currency.id !== id));
-          alert('Currency deleted!');
-        } else {
-          alert('Error deleting currency');
+    try {
+      const res = await fetch(`http://localhost:3001/api/currencies/${id}?uuid=${authUser?.uuid}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
         }
-      } catch (err) {
-        console.error(err);
-        alert('Failed to delete currency');
-      }
+      });
+
+      if (!res.ok) throw new Error('Failed to delete');
+      setCurrencies(currencies.filter((c) => c.id !== id));
+    } catch (err) {
+      console.error(err);
+      setError('Failed to delete currency. Please try again.');
     }
   };
 
   const filteredCurrencies = currencies.filter((c) =>
-    [c.id, c.name, c.shortName].some((field) =>
+    [c.id, c.name, c.short_name].some((field) =>
       String(field || '').toLowerCase().includes(search.toLowerCase())
     )
   );
-  
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>Currencies</h3>
-        <Link to="/create/currency" className="btn btn-primary">
+    <div className={`page-container ${theme}`}>
+      <div className="page-header">
+        <h2>Currencies</h2>
+        <div className="page-search">
+          <input
+            type="text"
+            placeholder="Search by ID, name, short name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="search-icon">🔍</span>
+        </div>
+        <Link to="/create/currency" className="primary-action">
           + Create Currency
         </Link>
       </div>
 
-      <input
-        type="text"
-        className="form-control mb-3"
-        placeholder="Search by ID, name, short name..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {error && <div className="error-message">{error}</div>}
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading currencies...</p>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <table className="table table-striped table-hover align-middle">
-            <thead className="table-dark">
+        <div className="page-table-container">
+          <table className="page-table">
+            <thead>
               <tr>
                 <th>Icon</th>
                 <th>ID</th>
@@ -100,31 +114,33 @@ const CurrencyTab = () => {
                   <td>{currency.icon}</td>
                   <td>{currency.id}</td>
                   <td>{currency.name}</td>
-                  <td>{currency.shortName}</td>
+                  <td>{currency.short_name}</td>
                   <td>{currency.color}</td>
-                  <td>{currency.hiddenIfZero ? 'Yes' : 'No'}</td>
+                  <td>{currency.hidden_if_zero ? '✅' : '❌'}</td>
                   <td>
                     <button
-                      className="btn btn-warning btn-sm me-2"
+                      className="action-btn"
                       onClick={() => navigate(`/view/currency/${currency.id}`)}
+                      title="Edit"
                     >
-                      Edit
+                      ✏️
                     </button>
                     <button
-                      className="btn btn-danger btn-sm"
+                      className="action-btn"
                       onClick={() => deleteCurrency(currency.id)}
-                    >
-                      Delete
+                      title="Delete"
+                    > 
+                      🗑️
                     </button>
                   </td>
                 </tr>
               ))}
               {filteredCurrencies.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center text-muted">
-                    No currencies found.
+                  <td colSpan={7} className="no-results">
+                    {search ? 'No matching currencies found' : 'No currencies available'}
                   </td>
-                </tr>//
+                </tr>
               )}
             </tbody>
           </table>
