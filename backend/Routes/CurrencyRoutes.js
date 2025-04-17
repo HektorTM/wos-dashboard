@@ -106,7 +106,7 @@ router.put('/:id', (req, res) => {
 // 5. Delete a currency by ID
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  const { uuid } = req.body;
+  const { uuid } = req.query;
 
   try {
     const result = db.prepare('DELETE FROM currencies WHERE id = ?').run(id);

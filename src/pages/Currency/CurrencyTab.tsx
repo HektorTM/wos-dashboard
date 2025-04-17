@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import { usePermission } from '../../utils/usePermission';
 
 type Currency = {
   id: string;
@@ -20,6 +21,7 @@ const CurrencyTab = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { authUser } = useAuth(); 
+  const { hasPermission } = usePermission();
 
 
   useEffect(() => {
@@ -129,6 +131,7 @@ const CurrencyTab = () => {
                       className="action-btn"
                       onClick={() => deleteCurrency(currency.id)}
                       title="Delete"
+                      disabled={!hasPermission('CURRENCY_DELETE')}
                     > 
                       🗑️
                     </button>

@@ -46,8 +46,8 @@ const Sidebar = () => {
   return (
     <div className={`sidebar ${theme}`}>
       <div className="sidebar-header">
-        <h4>Admin Dashboard</h4>
-        <h5>Welcome {authUser?.username}</h5>
+        <h4>Admin Portal</h4>
+
       </div>
 
       <div className="sidebar-search">

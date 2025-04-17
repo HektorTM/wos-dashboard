@@ -16,7 +16,10 @@ const ViewUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/users/${id}`);
+        const res = await fetch(`http://localhost:3001/api/users/${id}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
         if (!res.ok) throw new Error('Failed to fetch user');
         const data = await res.json();
 
@@ -72,6 +75,7 @@ const ViewUser = () => {
     try {
       const res = await fetch(`http://localhost:3001/api/users/${id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -95,6 +99,7 @@ const ViewUser = () => {
     try {
       const res = await fetch(`http://localhost:3001/api/users/${id}/reactivate`, {
         method: 'POST',
+        credentials: 'include',
       });
       if (res.ok) {
         alert('User reactivated!');

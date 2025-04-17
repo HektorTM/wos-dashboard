@@ -16,16 +16,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return savedTheme || (systemPrefersDark ? 'dark' : 'light');
   });
 
+  // Apply theme to <html> tag on load and when it changes
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  // Listen for system preference changes if no saved theme
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
     const handleChange = () => {
       if (!localStorage.getItem('theme')) {
         const newTheme = mediaQuery.matches ? 'dark' : 'light';
         setTheme(newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme);
       }
     };
-  
+
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
@@ -34,7 +40,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
   };
 
   return (
