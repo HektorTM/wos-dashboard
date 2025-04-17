@@ -17,7 +17,6 @@ const CreateUnlockable = () => {
 
     const payload = {
       id,
-      name,
       temp,
       uuid: authUser?.uuid,
     };

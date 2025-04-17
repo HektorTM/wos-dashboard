@@ -82,6 +82,7 @@
     background-color: var(--danger-bg);
     color: var(--danger-text);
     padding: 1rem;
+    border: 1px solid var(--danger-bg);
     border-radius: 6px;
     margin-bottom: 1rem;
   }

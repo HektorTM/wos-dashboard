@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import EditButton from '../../components/EditButton';
+import DeleteButton from '../../components/DeleteButton';
 
 type Unlockable = {
   id: string;
@@ -15,7 +17,6 @@ const UnlockableTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUnlockables = async () => {
@@ -106,20 +107,8 @@ const UnlockableTab = () => {
                   <td>{unlockable.id}</td>
                   <td>{unlockable.temp ? 'Temporary' : 'Permanent'}</td>
                   <td>
-                    <button
-                      className="action-btn"
-                      onClick={() => navigate(`/view/unlockable/${unlockable.id}`)}
-                      title="Edit"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="action-btn"
-                      onClick={() => deleteUnlockable(unlockable.id)}
-                      title="Delete"
-                    >
-                      🗑️
-                    </button>
+                    <EditButton perm='UNLOCKABLE_EDIT' nav={`/view/unlockable/${unlockable.id}`}></EditButton>
+                    <DeleteButton perm='UNLOCKABLE_DELETE' onClick={() => deleteUnlockable(unlockable.id)}></DeleteButton>
                   </td>
                 </tr>
               ))}

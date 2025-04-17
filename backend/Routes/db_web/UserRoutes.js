@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../webmeta.js');
+const db = require('../../webmeta.js');
 const bcrypt = require('bcrypt');
 const fetch = require('node-fetch');
-const logActivity = require('../utils/LogActivity');
-const requireAuth = require('../middleware/auth');
+const logActivity = require('../../utils/LogActivity.js');
+const requireAuth = require('../../middleware/auth.js');
 
 // Fetch current username from Mojang API
 async function fetchUsername(uuid) {

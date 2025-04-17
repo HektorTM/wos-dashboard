@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import { usePermission } from '../../utils/usePermission';
+import DeleteButton from '../../components/DeleteButton';
+import EditButton from '../../components/EditButton';
+import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 
 type Currency = {
   id: string;
@@ -19,20 +21,13 @@ const CurrencyTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
   const { authUser } = useAuth(); 
-  const { hasPermission } = usePermission();
 
 
   useEffect(() => {
     const fetchCurrencies = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/currencies', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!res.ok) throw new Error('Failed to load currencies');
-        const data = await res.json();
+        const data = await fetchType('currencies');
         setCurrencies(data);
       } catch (err) {
         console.error(err);
@@ -49,15 +44,8 @@ const CurrencyTab = () => {
     if (!window.confirm('Are you sure you want to delete this currency?')) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/currencies/${id}?uuid=${authUser?.uuid}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!res.ok) throw new Error('Failed to delete');
+      deletePageItem('currencies', `${id}`, `${authUser?.uuid}`)
+      
       setCurrencies(currencies.filter((c) => c.id !== id));
     } catch (err) {
       console.error(err);
@@ -120,21 +108,8 @@ const CurrencyTab = () => {
                   <td>{currency.color}</td>
                   <td>{currency.hidden_if_zero ? '✅' : '❌'}</td>
                   <td>
-                    <button
-                      className="action-btn"
-                      onClick={() => navigate(`/view/currency/${currency.id}`)}
-                      title="Edit"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="action-btn"
-                      onClick={() => deleteCurrency(currency.id)}
-                      title="Delete"
-                      disabled={!hasPermission('CURRENCY_DELETE')}
-                    > 
-                      🗑️
-                    </button>
+                    <EditButton perm='CURRENCY_EDIT' nav={`/view/currency/${currency.id}`} ></EditButton>
+                    <DeleteButton perm='CURRENCY_DELETE' onClick={() => deleteCurrency(currency.id)}></DeleteButton>
                   </td>
                 </tr>
               ))}

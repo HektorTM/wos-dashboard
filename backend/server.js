@@ -5,16 +5,16 @@ const cors = require('cors');
 const cron = require('node-cron');
 const requireAuth = require('./middleware/auth');
 const SQLiteStore = require('connect-sqlite3')(session);
-const currencyRoutes = require('./Routes/CurrencyRoutes');
-const AdminRoutes = require('./Routes/AdminRoutes');
-const UnlockableRoutes = require('./Routes/UnlockableRoutes');
-const CitemRoutes = require('./Routes/CitemRoutes');
-const TitleRoutes = require('./Routes/TitleRoutes');
-const BadgeRoutes = require('./Routes/BadgeRoutes');
-const SearchRoutes = require('./Routes/SearchRoutes');
-const LogRoutes = require('./Routes/LogRoutes');
-const UserRoutes = require('./Routes/UserRoutes');
-const ActivityRoutes = require('./Routes/ActivityRoutes');
+const currencyRoutes = require('./Routes/db_server/CurrencyRoutes');
+const UnlockableRoutes = require('./Routes/db_server/UnlockableRoutes');
+const CitemRoutes = require('./Routes/db_server/CitemRoutes');
+const TitleRoutes = require('./Routes/db_server/TitleRoutes');
+const BadgeRoutes = require('./Routes/db_server/BadgeRoutes');
+const SearchRoutes = require('./Routes/db_server/SearchRoutes');
+const LogRoutes = require('./Routes/db_web/LogRoutes');
+const UserRoutes = require('./Routes/db_web/UserRoutes');
+const ActivityRoutes = require('./Routes/db_web/ActivityRoutes');
+const DataRoutes = require('./Routes/db_web/DataRoutes')
 
 const app = express();
 const PORT = 3001;
@@ -50,12 +50,12 @@ app.use('/api', requireAuth);
 
 app.use('/api/currencies', currencyRoutes);
 app.use('/api/unlockables', UnlockableRoutes);
-app.use('/api/admin', AdminRoutes);
 app.use('/api/citems', CitemRoutes);
 app.use('/api/titles', TitleRoutes);
 app.use('/api/badges', BadgeRoutes);
 app.use('/api/search', SearchRoutes);
 app.use('/api/logs', LogRoutes);
+app.use('/api/page-data', DataRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 

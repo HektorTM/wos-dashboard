@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // Assuming you're using SQLite database connection
+const db = require('../../db'); // Assuming you're using SQLite database connection
 
 // 1. Get all currencies
 router.get('/', (req, res) => {

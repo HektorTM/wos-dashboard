@@ -8,6 +8,16 @@
     transition: var(--transition);
   }
   
+  .page-container .error-message {
+    color: var(--dark);
+    font-weight: bold;
+    background-color: var(--danger-bg);
+    border: 1px solid var(--danger-bg);
+    width: 30%;
+    text-align: center;
+    padding: 7px;
+  }
+
   .page-header {
     display: flex;
     justify-content: space-between;
@@ -129,5 +139,67 @@
   .badge.inactive {
     background-color: #f8d7da;
     color: #721c24;
+  }
+  
+
+
+  .info-box {
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    max-width: 350px;
+  }
+  
+  .info-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .info-box li {
+    margin-bottom: 0.5rem;
+  }
+  @media (max-width: 768px) {
+    .form-meta-container {
+      flex-direction: column;
+    }
+
+    .form-meta-container > div {
+      flex: unset; /* Remove flex property */
+      width: 100%; /* Make both sections take full width on small screens */
+    }
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+    width: 50%;
+  }
+  .form-group input:focus {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+  }
+
+  
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #3498db;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
   

@@ -5,6 +5,7 @@
     --secondary: #3f37c9;
     --success: #4cc9f0;
     --danger: #f72525;
+    --danger-bg: #ff7070;
     --warning: #f8961e;
     --info: #4895ef;
     --light: #f8f9fa;
@@ -30,7 +31,7 @@
   }
 
   .activity-icon {
-    background-color: var(--primary-opaque); /* Add this to your vars */
+    background-color: var(--primary-opaque);
   }
   
   :root[data-theme="dark"] {

@@ -1,8 +1,8 @@
 //UnlockableRoutes.js
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // Assuming you're using SQLite database connection
-const logActivity = require('../utils/LogActivity');
+const db = require('../../db'); // Assuming you're using SQLite database connection
+const logActivity = require('../../utils/LogActivity');
 
 // 1. Get all currencies
 router.get('/', (req, res) => {

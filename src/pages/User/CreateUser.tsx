@@ -80,7 +80,10 @@ const CreateUser = () => {
               <div key={group.group}>
                 <h4>{group.group}</h4> {/* Group Title */}
                 {group.permissions.map((perm) => (
-                  <label key={perm.key} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <label
+                    key={perm.key}
+                    className={`permission-label ${permissions.includes(perm.key) ? 'checked' : 'unchecked'}`}
+                  >
                     <input
                       type="checkbox"
                       checked={permissions.includes(perm.key)}

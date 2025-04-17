@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // Assuming you're using SQLite database connection
-const logActivity = require('../utils/LogActivity');
+const db = require('../../db'); // Assuming you're using SQLite database connection
+const logActivity = require('../../utils/LogActivity');
 
 
+
+function getCurrencyByID(id) {
+  return db.prepare('SELECT * FROM currencies WHERE id = ?').get(id);
+}
 
 // 1. Get all currencies
 router.get('/', (req, res) => {
@@ -36,6 +40,11 @@ router.post('/', (req, res) => {
   const {uuid} = req.body;
   if (!id || !name || !short_name || !color) {
     return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const existing = getCurrencyByID(id);
+  if (existing) {
+    return res.status(409).json({ error: 'Currency already exists' });
   }
 
   try {

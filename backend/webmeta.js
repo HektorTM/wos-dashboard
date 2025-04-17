@@ -23,5 +23,16 @@ webMetaDB.exec(`
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+webMetaDB.exec(`
+    CREATE TABLE IF NOT EXISTS page_data (
+      type TEXT NOT NULL,
+      id TEXT NOT NULL,
+      created_by TEXT,
+      edited_by TEXT,
+      locked BOOLEAN,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      edited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+  `)
 
 module.exports = webMetaDB;

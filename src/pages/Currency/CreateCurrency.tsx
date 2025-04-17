@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { createPageMeta } from '../../helpers/PageMeta';
 
 const CreateCurrency = () => {
   const { authUser } = useAuth();
@@ -37,9 +38,12 @@ const CreateCurrency = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      
 
       const result = await res.json();
       if (res.ok) {
+        createPageMeta('currency', `${id}`, `${authUser?.username}`)
+
         alert('Currency created!');
         // Optional: clear form
         setId('');
@@ -58,6 +62,9 @@ const CreateCurrency = () => {
     } finally {
       setLoading(false);
     }
+
+
+
   };
 
   return (

@@ -1,0 +1,21 @@
+.permission-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    margin-top: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .permission-label.checked {
+    background-color: #d4edda; /* light green */
+    color: #155724;
+  }
+  
+  .permission-label.unchecked {
+    background-color: #f8d7da; /* light red */
+    color: #721c24;
+  }
+  
+  

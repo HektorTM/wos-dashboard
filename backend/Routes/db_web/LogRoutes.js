@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../webmeta');
+const db = require('../../webmeta');
 
 router.get('/', (req, res) => {
   try {
