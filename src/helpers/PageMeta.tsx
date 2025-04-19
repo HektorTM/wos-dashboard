@@ -1,6 +1,6 @@
-export const touchPageMeta = async (type: string, id: string, username: string) => {
+export const touchPageMeta = async (type: string, id: string, uuid: string) => {
     try {
-      await fetch(`http://localhost:3001/api/page-data/${type}/${id}/touch?username=${username}`, {
+      await fetch(`http://localhost:3001/api/page-data/${type}/${id}/touch?uuid=${uuid}`, {
         method: 'PATCH',
         credentials: 'include',
       });
@@ -9,9 +9,9 @@ export const touchPageMeta = async (type: string, id: string, username: string) 
     }
   };
 
-export const createPageMeta = async (type: string, id: string, username: string) => {
+export const createPageMeta = async (type: string, id: string, uuid: string) => {
   try {
-    await fetch(`http://localhost:3001/api/page-data/${type}/${id}?username=${username}`, {
+    await fetch(`http://localhost:3001/api/page-data/${type}/${id}?uuid=${uuid}`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -20,3 +20,14 @@ export const createPageMeta = async (type: string, id: string, username: string)
     console.error('Failed to create Page Data:', err);
   }
 };
+
+export const deletePageMeta = async (type: string, id: string, uuid: string) => {
+  try {
+    await fetch(`http://localhost:3001/api/page-data/${type}/${id}?uuid=${uuid}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+  } catch (err) {
+    console.error('Failed to delete Page Data:', err);
+  }
+}

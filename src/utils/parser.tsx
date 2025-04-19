@@ -57,3 +57,28 @@ export const parseMinecraftColorCodes = (input: string): JSX.Element[] => {
 
   return result;
 };
+
+
+export const parseUUIDToUsername = async (uuid: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/api/mc-user/uuid/${uuid}`, {
+      method: 'GET',
+    });
+    const data = await res.json();
+    return data.name;
+  } catch {
+    return null;
+  }
+};
+
+export const parseUsernameToUUID = async (username: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/api/mc-user/username/${username}`, {
+      method: 'GET',
+    });
+    const data = await res.json();
+    return data.id as string;
+  } catch {
+    return null;
+  }
+}

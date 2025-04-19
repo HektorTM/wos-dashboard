@@ -26,10 +26,22 @@ function getUserByUsername(username) {
   return db.prepare('SELECT * FROM users WHERE username = ?').get(username);
 }
 
+function getUsernameByUUID(uuid) {
+  return db.prepare('SELECT username FROM users WHERE uuid = ?').get(uuid);
+}
+
+async function updateUsername(uuid) {
+  const newUsername = await fetchUsername(uuid);
+  if (!newUsername) return null; // fail safely if Mojang API fails
+  return db.prepare('UPDATE users SET username = ? WHERE uuid = ?').run(newUsername, uuid);
+}
+
+
 // --- Register ---
 router.post('/register', async (req, res) => {
     const { uuid, password, editorUUID } = req.body;
-  
+    
+
     if (!uuid || !password) {
       return res.status(400).json({ error: 'UUID and password are required' });
     }
@@ -68,13 +80,15 @@ router.post('/register', async (req, res) => {
   
   // --- Login ---
   router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-  
-    if (!username || !password) {
+    const { resolvedUUID, password } = req.body;
+    
+    console.log(resolvedUUID);
+
+    if (!resolvedUUID || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
   
-    const user = getUserByUsername(username);
+    const user = getUserByUUID(resolvedUUID);
     if (!user) return res.status(404).json({ error: 'User not found' });
   
     if (!user.is_active) {
@@ -83,14 +97,19 @@ router.post('/register', async (req, res) => {
   
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) return res.status(401).json({ error: 'Invalid password' });
-  
+    
+
     req.session.user = {
       uuid: user.uuid,
       username: user.username
     };
   
     db.prepare(`UPDATE users SET last_login = ? WHERE uuid = ?`).run(new Date().toISOString(), user.uuid);
-  
+    
+    if (getUsernameByUUID(resolvedUUID) != fetchUsername(resolvedUUID)) {
+      updateUsername(resolvedUUID);
+    }
+
     res.status(200).json({
       message: 'Login successful',
       user: {

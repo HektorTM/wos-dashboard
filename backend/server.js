@@ -14,7 +14,8 @@ const SearchRoutes = require('./Routes/db_server/SearchRoutes');
 const LogRoutes = require('./Routes/db_web/LogRoutes');
 const UserRoutes = require('./Routes/db_web/UserRoutes');
 const ActivityRoutes = require('./Routes/db_web/ActivityRoutes');
-const DataRoutes = require('./Routes/db_web/DataRoutes')
+const DataRoutes = require('./Routes/db_web/DataRoutes');
+const MinecraftRoutes = require('./Routes/util/MinecraftRoutes');
 
 const app = express();
 const PORT = 3001;
@@ -45,6 +46,7 @@ app.use(cors({
 }));
 
 app.use('/api/users', UserRoutes);
+app.use('/api/mc-user', MinecraftRoutes);
 
 app.use('/api', requireAuth);
 
@@ -58,6 +60,7 @@ app.use('/api/logs', LogRoutes);
 app.use('/api/page-data', DataRoutes);
 
 app.use('/api/activity', ActivityRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`);

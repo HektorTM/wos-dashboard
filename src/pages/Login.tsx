@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { parseUsernameToUUID } from '../utils/parser';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -14,10 +15,16 @@ const Login = () => {
   setError('');
 
   try {
+    const resolvedUUID = await parseUsernameToUUID(username) as string;
+
+    if (!resolvedUUID) {
+      throw new Error('Failed to resolve Minecraft username to UUID');
+    }
+
     const res = await fetch('http://localhost:3001/api/users/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ resolvedUUID, password }),
       credentials: 'include',
     });
   

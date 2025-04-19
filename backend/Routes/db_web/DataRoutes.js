@@ -31,16 +31,16 @@ router.get('/:type/:id', (req, res) => {
 // 3. Create a new page_data entry
 router.post('/:type/:id', (req, res) => {
   const { type, id } = req.params;
-  const { username } = req.query;  
+  const { uuid } = req.query;  
   if (!type || !id) {
     return res.status(400).json({ error: 'Missing required fields: type or id' });
   }
 
   try {
     db.prepare(`
-      INSERT INTO page_data (type, id, created_by)
-      VALUES (?, ?, ?)
-    `).run(type, id, username || null);
+      INSERT INTO page_data (type, id, created_by, edited_by)
+      VALUES (?, ?, ?, ?)
+    `).run(type, id, uuid || null, uuid || null);
 
     res.status(201).json({ message: 'Page data created or already exists' });
   } catch (err) {
@@ -51,7 +51,7 @@ router.post('/:type/:id', (req, res) => {
 // 4. Update fields like edited_by, locked, etc.
 router.patch('/:type/:id/touch', (req, res) => {
     const { type, id } = req.params;
-    const { username } = req.query;
+    const { uuid } = req.query;
   
     try {
       const stmt = db.prepare(`
@@ -61,7 +61,7 @@ router.patch('/:type/:id/touch', (req, res) => {
         WHERE type = ? AND id = ?
       `);
   
-      const result = stmt.run(username, type, id);
+      const result = stmt.run(uuid, type, id);
   
       if (result.changes === 0) {
         return res.status(404).json({ error: 'Page not found' });
@@ -96,7 +96,7 @@ router.put('/:type/:id/lock', (req, res) => {
       }
   
       logActivity({
-        type: `PageData:${type}`,
+        type: type,
         target_id: id,
         user: uuid,
         action: locked ? 'Locked' : 'Unlocked',
@@ -122,12 +122,6 @@ router.delete('/:type/:id', (req, res) => {
     }
 
     res.status(200).json({ message: 'Page data deleted' });
-    logActivity({
-      type: 'PageData',
-      target_id: `${type}:${id}`,
-      user: uuid,
-      action: 'Deleted',
-    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -53,7 +53,7 @@ const ViewCurrency = () => {
       });
   
       if (res.ok) {
-        touchPageMeta('currency', `${id}`, `${authUser?.username}`);
+        touchPageMeta('currency', `${id}`, `${authUser?.uuid}`);
         alert('Currency updated!');
       } else {
         const errorData = await res.json();

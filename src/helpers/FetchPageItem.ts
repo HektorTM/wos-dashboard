@@ -41,7 +41,7 @@ export const fetchPageItem = async (type: string, id: string) => {
   export const deletePageItem = async (type: string, id: string, uuid: string) => {
     try {
       const res = await fetch(`http://localhost:3001/api/${type}/${id}?uuid=${uuid}`, {
-        method: 'GET',
+        method: 'DELETE',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json'

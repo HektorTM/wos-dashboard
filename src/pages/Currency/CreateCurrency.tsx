@@ -42,7 +42,7 @@ const CreateCurrency = () => {
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('currency', `${id}`, `${authUser?.username}`)
+        createPageMeta('currency', `${id}`, `${authUser?.uuid}`)
 
         alert('Currency created!');
         // Optional: clear form

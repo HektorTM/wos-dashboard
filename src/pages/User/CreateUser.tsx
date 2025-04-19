@@ -55,7 +55,7 @@ const CreateUser = () => {
             type="text"
             className="form-control"
             value={uuid}
-            onChange={(e) => setUUID(e.target.value)}
+            onChange={(e) => setUUID(e.target.value.replace('-', ''))}
             placeholder="Enter UUID"
             required
           />

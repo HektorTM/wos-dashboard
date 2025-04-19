@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import DeleteButton from '../../components/DeleteButton';
 import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
+import { deletePageMeta } from '../../helpers/PageMeta';
 
 type Currency = {
   id: string;
@@ -44,8 +45,8 @@ const CurrencyTab = () => {
     if (!window.confirm('Are you sure you want to delete this currency?')) return;
 
     try {
-      deletePageItem('currencies', `${id}`, `${authUser?.uuid}`)
-      
+      deletePageItem('currencies', `${id}`, `${authUser?.uuid}`);
+      deletePageMeta('currency', `${id}`, `${authUser?.uuid}`);
       setCurrencies(currencies.filter((c) => c.id !== id));
     } catch (err) {
       console.error(err);
