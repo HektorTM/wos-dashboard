@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import DeleteButton from '../../components/DeleteButton';
 import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
+import { deletePageMeta, fetchLocked } from '../../helpers/PageMeta';
 
 type Currency = {
   id: string;
@@ -22,7 +22,8 @@ const CurrencyTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { authUser } = useAuth(); 
+  const { authUser } = useAuth();
+  const [locked, setLocked] = useState(false);
 
 
   useEffect(() => {
@@ -40,6 +41,22 @@ const CurrencyTab = () => {
 
     fetchCurrencies();
   }, []);
+
+  const fetchLockedValue = async () => {
+      try {
+        
+        const result = await fetchLocked('currency', id);
+        if (result == 1) {
+          setLocked(true);
+        } else {
+          setLocked(false);
+        }
+  
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchLockedValue();
 
   const deleteCurrency = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this currency?')) return;

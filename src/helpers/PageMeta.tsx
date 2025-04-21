@@ -21,6 +21,24 @@ export const createPageMeta = async (type: string, id: string, uuid: string) => 
   }
 };
 
+export const fetchLocked = async (type: string, id: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/api/page-data/${type}/${id}`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch page data');
+
+    const data = await res.json();
+    return data.locked;
+
+  } catch (err) {
+    console.error('Failed to get Page Data:', err);
+    throw err;
+  }
+}
+
 export const deletePageMeta = async (type: string, id: string, uuid: string) => {
   try {
     await fetch(`http://localhost:3001/api/page-data/${type}/${id}?uuid=${uuid}`, {

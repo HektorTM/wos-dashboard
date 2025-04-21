@@ -42,6 +42,10 @@
     font-size: 0.9rem;
   }
   
+  .login-input input {
+    width: 100% !important
+  }
+
   .form-group {
     margin-bottom: 1.5rem;
   }

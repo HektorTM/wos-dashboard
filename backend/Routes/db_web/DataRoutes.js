@@ -78,10 +78,7 @@ router.put('/:type/:id/lock', (req, res) => {
     const { type, id } = req.params;
     const { locked } = req.body;
     const { uuid } = req.query;
-  
-    if (typeof locked !== 'boolean') {
-      return res.status(400).json({ error: '`locked` must be a boolean' });
-    }
+
   
     try {
       const stmt = db.prepare(`

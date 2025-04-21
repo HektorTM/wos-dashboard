@@ -42,6 +42,7 @@ const Login = () => {
   
     localStorage.setItem('authUser', JSON.stringify(user));
     navigate('/dashboard');
+    window.location.reload();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     setError(err.message || 'Something went wrong');
@@ -66,6 +67,7 @@ const Login = () => {
             <div className="form-group">
               <label>Username</label>
               <input
+                className="login-input"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -77,6 +79,7 @@ const Login = () => {
             <div className="form-group">
               <label>Password</label>
               <input
+                className="login-input"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

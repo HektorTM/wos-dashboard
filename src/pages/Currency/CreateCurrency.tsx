@@ -73,7 +73,7 @@ const CreateCurrency = () => {
       {error && <div className='error-message'>{error}</div>}
 
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className="form-group page-input">
           <label>ID</label>
           <input
             type="text"
@@ -84,7 +84,7 @@ const CreateCurrency = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group page-input">
           <label>Name</label>
           <input
             type="text"
@@ -95,7 +95,7 @@ const CreateCurrency = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group page-input">
           <label>Short Name</label>
           <input
             type="text"
@@ -106,7 +106,7 @@ const CreateCurrency = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group page-input">
           <label>Icon (optional)</label>
           <input
             type="text"
@@ -115,7 +115,7 @@ const CreateCurrency = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group page-input">
           <label>Color</label>
           <input
             type="text"

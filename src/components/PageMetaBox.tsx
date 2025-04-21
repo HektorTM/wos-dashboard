@@ -69,6 +69,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
       if (!res.ok) throw new Error('Failed to update lock status');
 
       await fetchMeta(); // Refresh metadata after lock change
+      window.location.reload();
     } catch (err) {
       console.error(err);
       alert('Could not toggle lock status');
