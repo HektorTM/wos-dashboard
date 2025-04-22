@@ -8,8 +8,6 @@ const SQLiteStore = require('connect-sqlite3')(session);
 const currencyRoutes = require('./Routes/db_server/CurrencyRoutes');
 const UnlockableRoutes = require('./Routes/db_server/UnlockableRoutes');
 const CitemRoutes = require('./Routes/db_server/CitemRoutes');
-const TitleRoutes = require('./Routes/db_server/TitleRoutes');
-const BadgeRoutes = require('./Routes/db_server/BadgeRoutes');
 const CosmeticRoutes = require('./Routes/db_server/CosmeticRoutes');
 const SearchRoutes = require('./Routes/db_server/SearchRoutes');
 const LogRoutes = require('./Routes/db_web/LogRoutes');
@@ -17,6 +15,7 @@ const UserRoutes = require('./Routes/db_web/UserRoutes');
 const ActivityRoutes = require('./Routes/db_web/ActivityRoutes');
 const DataRoutes = require('./Routes/db_web/DataRoutes');
 const MinecraftRoutes = require('./Routes/util/MinecraftRoutes');
+const ChannelRoutes = require('./Routes/db_server/ChannelRoutes');
 
 const app = express();
 const PORT = 3001;
@@ -55,11 +54,10 @@ app.use('/api/currencies', currencyRoutes);
 app.use('/api/unlockables', UnlockableRoutes);
 app.use('/api/citems', CitemRoutes);
 app.use('/api/cosmetics', CosmeticRoutes);
-//app.use('/api/cosmetics/titles', TitleRoutes);
-//app.use('/api/cosmetics/badges', BadgeRoutes);
 app.use('/api/search', SearchRoutes);
 app.use('/api/logs', LogRoutes);
 app.use('/api/page-data', DataRoutes);
+app.use('/api/channels', ChannelRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 
