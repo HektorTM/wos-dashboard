@@ -16,11 +16,13 @@ import UnlockableTab from './pages/Unlockables/UnlockableTab';
 import CreateUnlockable from './pages/Unlockables/CreateUnlockable';
 import ViewUnlockable from './pages/Unlockables/ViewUnlockable';
 import CosmeticTab from './pages/Cosmetics/CosmeticTab';
+import CreateCosmetic from './pages/Cosmetics/CreateCosmetic';
 import CitemTab from './pages/Citems/CitemTab';
 import SearchResults from './pages/Search';
 import Login from './pages/Login';
 import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ViewCosmetic from './pages/Cosmetics/ViewCosmetic';
 
 
 
@@ -50,9 +52,11 @@ const App = () => {
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
                 <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
                 <Route path="/create/unlockable" element={<ProtectedRoute requiredPermission='UNLOCKABLE_CREATE'><CreateUnlockable /></ProtectedRoute>} />
+                <Route path="/create/cosmetic" element={<ProtectedRoute requiredPermission='COSMETIC_CREATE'><CreateCosmetic /></ProtectedRoute>} />
                 
                 <Route path="/view/user/:id" element={<ProtectedRoute requiredPermission='ADMIN'><EditUser /></ProtectedRoute>} />
                 <Route path="/view/currency/:id" element={<ProtectedRoute requiredPermission='CURRENCY_EDIT'><EditCurrency /></ProtectedRoute>} />
+                <Route path="/view/cosmetic/:id" element={<ProtectedRoute requiredPermission='COSMETIC_EDIT'><ViewCosmetic/></ProtectedRoute>} />
                 <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='UNLOCKABLE_EDIT'><ViewUnlockable /></ProtectedRoute>} />  
             </Route>
           </Routes>
