@@ -42,21 +42,19 @@ const CurrencyTab = () => {
     fetchCurrencies();
   }, []);
 
-  const fetchLockedValue = async () => {
+  const fetchLockedValue = async (id: string) => {
       try {
-        
         const result = await fetchLocked('currency', id);
-        if (result == 1) {
-          setLocked(true);
+        if (result === 1) {
+          return true;
         } else {
-          setLocked(false);
+          return false;
         }
   
       } catch (err) {
         console.error(err);
       }
     }
-    fetchLockedValue();
 
   const deleteCurrency = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this currency?')) return;
@@ -119,6 +117,7 @@ const CurrencyTab = () => {
             <tbody>
               {filteredCurrencies.map((currency) => (
                 <tr key={currency.id}>
+                  {/*{ await fetchLockedValue(currency.id) && '🔒' } LATER */}
                   <td>{currency.icon}</td>
                   <td>{currency.id}</td>
                   <td>{currency.name}</td>

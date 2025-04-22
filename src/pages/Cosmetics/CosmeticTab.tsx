@@ -1,70 +1,34 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import { parseMinecraftColorCodes } from '../../utils/parser';
+import { useAuth } from '../../context/AuthContext';
+import DeleteButton from '../../components/DeleteButton';
+import EditButton from '../../components/EditButton';
+import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
+import { deletePageMeta, fetchLocked } from '../../helpers/PageMeta';
 
-const api = 'http://localhost:3001/api';
-const api_sub1 = '/titles';
-const api_sub2 = '/badges';
-
-type CosmeticBase = {
+type Cosmetic = {
+  type: string;
   id: string;
+  display: string;
   description: string;
 };
 
-type Title = CosmeticBase & {
-  title: string;
-  type: 'Title';
-};
-
-type Badge = CosmeticBase & {
-  badge: string;
-  type: 'Badge';
-};
-
-type Cosmetic = Title | Badge;
-
-const CosmeticTab = () => {
+const CurrencyTab = () => {
   const { theme } = useTheme();
   const [cosmetics, setCosmetics] = useState<Cosmetic[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const { authUser } = useAuth();
+  const [locked, setLocked] = useState(false);
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    const fetchCosmetics = async () => {
       try {
-        const [titlesRes, badgesRes] = await Promise.all([
-          fetch(api + api_sub1, {
-            method: 'GET',
-            credentials: 'include',
-          }),
-          fetch(api + api_sub2, {
-            method: 'GET',
-            credentials: 'include',
-          }),
-        ]);
-
-        const [titlesData, badgesData] = await Promise.all([
-          titlesRes.json(),
-          badgesRes.json(),
-        ]);
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const formattedTitles: Title[] = titlesData.map((t: any) => ({
-          ...t,
-          type: 'Title',
-        }));
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const formattedBadges: Badge[] = badgesData.map((b: any) => ({
-          ...b,
-          type: 'Badge',
-        }));
-
-        setCosmetics([...formattedTitles, ...formattedBadges]);
+        const data = await fetchType('cosmetics');
+        setCosmetics(data);
       } catch (err) {
         console.error(err);
         setError('Failed to load cosmetics. Please try again.');
@@ -73,31 +37,40 @@ const CosmeticTab = () => {
       }
     };
 
-    fetchData();
+    fetchCosmetics();
   }, []);
 
-  const deleteCosmetic = async (item: Cosmetic) => {
-    const confirmed = window.confirm(`Are you sure you want to delete this ${item.type}?`);
-    if (!confirmed) return;
-
+  const fetchLockedValue = async () => {
     try {
-      const endpoint = item.type === 'Title' ? api_sub1 : api_sub2;
-      const res = await fetch(`${api}${endpoint}/${item.id}`, { method: 'DELETE' });
 
-      if (res.ok) {
-        setCosmetics((prev) => prev.filter((u) => u.id !== item.id));
+      const result = await fetchLocked('cosmetic', 'test');
+      if (result == 1) {
+        setLocked(true);
       } else {
-        setError(`Error deleting ${item.type}.`);
+        setLocked(false);
       }
+
     } catch (err) {
       console.error(err);
-      setError(`Failed to delete ${item.type}.`);
+    }
+  }
+
+  const deleteCosmetic = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this Cosmetic?')) return;
+
+    try {
+      deletePageItem('cosmetics', `${id}`, `${authUser?.uuid}`);
+      deletePageMeta('cosmetic', `${id}`, `${authUser?.uuid}`);
+      setCosmetics(cosmetics.filter((c) => c.id !== id));
+    } catch (err) {
+      console.error(err);
+      setError('Failed to delete cosmetic. Please try again.');
     }
   };
 
   const filteredCosmetics = cosmetics.filter((c) =>
-    [c.id.toLowerCase(), c.type.toLowerCase()].some((field) =>
-      field.includes(search.toLowerCase())
+    [c.type, c.id, c.display, c.description].some((field) =>
+      String(field || '').toLowerCase().includes(search.toLowerCase())
     )
   );
 
@@ -108,7 +81,7 @@ const CosmeticTab = () => {
         <div className="page-search">
           <input
             type="text"
-            placeholder="Search by ID or Type..."
+            placeholder="Search by ID, name, short name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -143,35 +116,17 @@ const CosmeticTab = () => {
                 <tr key={cosmetic.id}>
                   <td>{cosmetic.type}</td>
                   <td>{cosmetic.id}</td>
-                  <td>
-                    {cosmetic.type === 'Title'
-                      ? parseMinecraftColorCodes(cosmetic.title)
-                      : parseMinecraftColorCodes(cosmetic.badge)}
-                  </td>
+                  <td>{cosmetic.display}</td>
                   <td>{cosmetic.description}</td>
                   <td>
-                    <button
-                      className="action-btn"
-                      onClick={() =>
-                        navigate(`/view/${cosmetic.type.toLowerCase()}/${cosmetic.id}`)
-                      }
-                      title="Edit"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="action-btn"
-                      onClick={() => deleteCosmetic(cosmetic)}
-                      title="Delete"
-                    >
-                      🗑️
-                    </button>
+                    <EditButton perm='COSMETIC_EDIT' nav={`/view/cosmetic/${cosmetic.id}`} ></EditButton>
+                    <DeleteButton perm='COSMETIC_DELETE' onClick={() => deleteCosmetic(cosmetic.id)}></DeleteButton>
                   </td>
                 </tr>
               ))}
               {filteredCosmetics.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="no-results">
+                  <td colSpan={7} className="no-results">
                     {search ? 'No matching cosmetics found' : 'No cosmetics available'}
                   </td>
                 </tr>
@@ -184,4 +139,4 @@ const CosmeticTab = () => {
   );
 };
 
-export default CosmeticTab;
+export default CurrencyTab;
