@@ -109,6 +109,7 @@ const Sidebar = () => {
           </button>
           {techOpen && (
             <ul className="submenu">
+              <PermissionLink to="/channels" label="Channels" perm="CHANNEL_VIEW" hasPermission={hasPermission} loading={loading} />
               <PermissionLink to="/citems" label="Citems" perm="CITEM_VIEW" hasPermission={hasPermission} loading={loading} />
               <PermissionLink to="/cooldowns" label="Cooldowns" perm="COOLDOWN_VIEW" hasPermission={hasPermission} loading={loading} />
               <PermissionLink to="/cosmetics" label="Cosmetics" perm="COSMETIC_VIEW" hasPermission={hasPermission} loading={loading} />

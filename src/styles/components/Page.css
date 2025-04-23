@@ -207,3 +207,19 @@
     100% { transform: rotate(360deg); }
   }
   
+  .create-button {
+    border: 2px solid var(--primary);
+    background-color: var(--primary);
+    font-size: medium;
+    border-radius: 25px;
+    padding: 0.75%;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: var(--transition);
+  }
+
+  .create-button:hover {
+    border-color: var(--primary-dark);
+    background-color: var(--primary-dark);
+
+  }

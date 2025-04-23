@@ -87,7 +87,7 @@ const CurrencyTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        <Link to="/create/cosmetic" className="primary-action">
+        <Link to="/create/cosmetic" className="create-button">
           + Create Cosmetic
         </Link>
       </div>

@@ -40,6 +40,10 @@ export type PermissionKey =
     | 'UNLOCKABLE_CREATE'
     | 'UNLOCKABLE_EDIT'
     | 'UNLOCKABLE_DELETE'
+    | 'CHANNEL_VIEW'
+    | 'CHANNEL_CREATE'
+    | 'CHANNEL_EDIT'
+    | 'CHANNEL_DELETE'
 
 
 
@@ -221,6 +225,22 @@ export const PERMISSIONS: Permission[] = [
         key: 'UNLOCKABLE_DELETE',
         label: 'Delete Unlockables',
     },
+    {
+        key: 'CHANNEL_VIEW',
+        label: 'View Channel',
+    },
+    {
+        key: 'CHANNEL_CREATE',
+        label: 'Create Channel',
+    },
+    {
+        key: 'CHANNEL_EDIT',
+        label: 'Edit Channel',
+    },
+    {
+        key: 'CHANNEL_DELETE',
+        label: 'Delete Channel',
+    },
 
 ];
 
@@ -315,11 +335,20 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
         ],
     },
     {
-        group: "Items",
+        group: "Citems",
         permissions: [
             { key: "CITEM_VIEW", label: "View Items" },
             { key: "CITEM_EDIT", label: "Edit Items" },
             { key: "CITEM_DELETE", label: "Delete Items" },
+        ],
+    },
+    {
+        group: "Channels",
+        permissions: [
+            { key: "CHANNEL_VIEW", label: "View Channels" },
+            { key: "CHANNEL_CREATE", label: "Create Channels"},
+            { key: "CHANNEL_EDIT", label: "Edit Channels" },
+            { key: "CHANNEL_DELETE", label: "Delete Channels" },
         ],
     },
 ];

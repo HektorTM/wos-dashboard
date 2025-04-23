@@ -79,7 +79,7 @@ const UnlockableTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        <Link to="/create/unlockable" className="primary-action">
+        <Link to="/create/unlockable" className="create-button">
           + Create Unlockable
         </Link>
       </div>

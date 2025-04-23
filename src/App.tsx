@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import MainLayout from './components/MainLayout';
 import AuthLayout from './components/AuthLayout';
 import './styles/App.css';
+import ChannelTab from './pages/Channels/ChannelTab';
 import Dashboard from './pages/Dashboard';
 import UserList from './pages/User/UserList';
 import EditUser from './pages/User/ViewUser';
@@ -48,6 +49,7 @@ const App = () => {
                 <Route path="/currencies" element={<ProtectedRoute requiredPermission='CURRENCY_VIEW'><CurrencyTab /></ProtectedRoute>} />
                 <Route path="/unlockables" element={<ProtectedRoute requiredPermission='UNLOCKABLE_VIEW'><UnlockableTab /></ProtectedRoute>} />
                 <Route path="/cosmetics" element={<ProtectedRoute requiredPermission='COSMETIC_VIEW'><CosmeticTab /></ProtectedRoute>} />
+                <Route path="/channels" element={<ProtectedRoute requiredPermission='CHANNEL_VIEW'><ChannelTab /></ProtectedRoute>} />
 
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
                 <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
