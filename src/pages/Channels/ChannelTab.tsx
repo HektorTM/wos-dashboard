@@ -8,13 +8,12 @@ type Channel = {
   short_name: string;
   color: string;
   format: string;
-  default_channel: number;
-  custom_model_data: number;
-  autojoin: number;
-  forcejoin: number;
-  hidden: number;
-  broadcastable: number;
-  permission: string;
+  default_channel: boolean;
+  autojoin: boolean;
+  forcejoin: boolean;
+  hidden: boolean;
+  broadcastable: boolean;
+  permission: string | null;
   radius: number;
 };
 
@@ -31,12 +30,27 @@ const ChannelTab = () => {
           method: 'GET',
           credentials: 'include',
         });
-        if (!res.ok) throw new Error('Failed to fetch Channels');
+        
+        if (!res.ok) throw new Error('Failed to fetch channels');
+        
         const data = await res.json();
-        setChannels(data);
+        
+        // Convert MySQL tinyint(1) to boolean
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const formattedChannels = data.map((channel: any) => ({
+          ...channel,
+          default_channel: Boolean(channel.default_channel),
+          autojoin: Boolean(channel.autojoin),
+          forcejoin: Boolean(channel.forcejoin),
+          hidden: Boolean(channel.hidden),
+          broadcastable: Boolean(channel.broadcastable),
+          permission: channel.permission || null
+        }));
+        
+        setChannels(formattedChannels);
       } catch (err) {
-        console.error(err);
-        setError('Failed to load Channels. Please try again later.');
+        console.error('Fetch channels error:', err);
+        setError('Failed to load channels. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -46,7 +60,7 @@ const ChannelTab = () => {
   }, []);
 
   const deleteChannel = async (name: string) => {
-    if (!window.confirm('Are you sure you want to delete this Channel?')) return;
+    if (!window.confirm(`Are you sure you want to delete channel "${name}"?`)) return;
     
     try {
       const res = await fetch(`http://localhost:3001/api/channels/${name}`, {
@@ -54,22 +68,25 @@ const ChannelTab = () => {
         credentials: 'include',
       });
 
-      if (!res.ok) throw new Error('Failed to delete');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to delete channel');
+      }
       
       setChannels(channels.filter((channel) => channel.name !== name));
     } catch (err) {
-      console.error(err);
-      setError('Failed to delete Channel. Please try again.');
+      console.error('Delete channel error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to delete channel');
     }
   };
 
-  const filteredChannels = channels.filter((c) =>
-    [c.name, c.short_name, c.format, c.color, c.permission]
+  const filteredChannels = channels.filter((channel) =>
+    [channel.name, channel.short_name, channel.format, channel.color, channel.permission]
       .some((field) => String(field || '').toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
-    <div className={'page-container §{theme}'}>
+    <div className="page-container">
       <div className="page-header">
         <h2>Channel Management</h2>
         <div className="page-search">
@@ -78,17 +95,25 @@ const ChannelTab = () => {
             placeholder="Search channels..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            disabled={loading}
           />
           <span className="search-icon">🔍</span>
         </div>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="error-message">
+          {error}
+          <button onClick={() => setError('')} className="error-close">
+            ×
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <p>Loading citems...</p>
+          <p>Loading channels...</p>
         </div>
       ) : (
         <div className="page-table-container">
@@ -99,11 +124,11 @@ const ChannelTab = () => {
                 <th>Short Name</th>
                 <th>Color</th>
                 <th>Format</th>
-                <th>Default Channel</th>
+                <th>Default</th>
                 <th>Autojoin</th>
                 <th>Forcejoin</th>
                 <th>Hidden</th>
-                <th>Broadcastable</th>
+                <th>Broadcast</th>
                 <th>Permission</th>
                 <th>Radius</th>
                 <th>Actions</th>
@@ -113,25 +138,33 @@ const ChannelTab = () => {
               {filteredChannels.map((channel) => (
                 <tr key={channel.name}>
                   <td>{channel.name}</td>
-                  <td className="text-cell">{channel.short_name}</td>
-                  <td className="text-cell">{parseMinecraftColorCodes(channel.color)+channel.color}</td>
-                  <td className="text-cell">{parseMinecraftColorCodes(channel.format)}</td>
-                  <td className="boolean-cell">{channel.default_channel ? '✅' : '❌'}</td>
-                  <td className='boolean-cell'>{channel.autojoin ? '✅' : '❌'}</td>
-                  <td className="boolean-cell">{channel.forcejoin ? '✅' : '❌'}</td>
-                  <td className="boolean-cell">{channel.hidden ? '✅' : '❌'}</td>
-                  <td className="boolean-cell">{channel.broadcastable ? '✅' : '❌'}</td>
-                  <td className="text-cell">{channel.permission}</td>
-                  <td className="text-cell">{channel.radius}</td>
-                  <td>
-                    <EditButton perm='CHANNEL_EDIT' nav={`/view/channel/${channel.name}`} ></EditButton>
-                    <DeleteButton perm='CHANNEL_DELETE' onClick={() => deleteChannel(channel.name)}></DeleteButton>
+                  <td>{channel.short_name}</td>
+                  <td style={{ color: channel.color }}>
+                    {parseMinecraftColorCodes(channel.color)}
+                  </td>
+                  <td>{parseMinecraftColorCodes(channel.format)}</td>
+                  <td>{channel.default_channel ? '✅' : '❌'}</td>
+                  <td>{channel.autojoin ? '✅' : '❌'}</td>
+                  <td>{channel.forcejoin ? '✅' : '❌'}</td>
+                  <td>{channel.hidden ? '✅' : '❌'}</td>
+                  <td>{channel.broadcastable ? '✅' : '❌'}</td>
+                  <td>{channel.permission || '-'}</td>
+                  <td>{channel.radius}</td>
+                  <td className="actions-cell">
+                    <EditButton 
+                      perm="CHANNEL_EDIT" 
+                      nav={`/view/channel/${channel.name}`} 
+                    />
+                    <DeleteButton 
+                      perm="CHANNEL_DELETE" 
+                      onClick={() => deleteChannel(channel.name)}
+                    />
                   </td>
                 </tr>
               ))}
               {filteredChannels.length === 0 && (
                 <tr>
-                  <td colSpan={14} className="no-results">
+                  <td colSpan={12} className="no-results">
                     {search ? 'No matching channels found' : 'No channels available'}
                   </td>
                 </tr>

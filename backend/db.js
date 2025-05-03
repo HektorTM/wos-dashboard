@@ -1,9 +1,15 @@
-{/*db.js*/}
-const Database = require('better-sqlite3');
-const path = require('path');
+// db.js
+const mysql = require('mysql2/promise');
 
-// Go up 4 directories from backend to reach 'I:', then down to the server folder
-const dbPath = path.join(__dirname, '../../../..', '1.20.1 Server', 'plugins', 'WoSCore', 'WoS.db');
-const db = new Database(dbPath);
+// Create the  pool
+const db = mysql.createPool({
+  host: 'localhost',      // Or your server IP
+  user: 'root',      // e.g. 'root'
+  password: 'HektorTM',  // your MySQL password
+  database: 'WoS',   // your MySQL DB name
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
 
 module.exports = db;
