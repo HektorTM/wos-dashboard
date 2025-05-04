@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 type SearchResultItem = {
   id: string;
-  display_name: string;
+  label: string;
   type: string;
 };
 
@@ -21,9 +21,11 @@ const useQuery = () => new URLSearchParams(useLocation().search);
 const typeLabels: Record<string, string> = {
   user: 'Users',
   citem: 'Citems',
-  title: 'Titles',
-  badge: 'Badges',
-  unlockable: 'Unlockables'
+  cosmetic: 'Cosmetics',
+  channel: 'Channels',
+  player: 'Players',
+  unlockable: 'Unlockables',
+  currency: 'Currencies'
 };
 
 const SearchResults = () => {
@@ -117,7 +119,7 @@ const SearchResults = () => {
                       >
                         <div className="item-content">
                           <span className="item-name">{item.id}</span>
-                          <span className="item-type">{typeLabels[type] || type}</span>
+                          <span className="item-type">{item.label === '0' ? 'Permanent' : item.label === '1' ? 'Temporary' : item.label}</span>
                         </div>
                       </div>
                     ))}

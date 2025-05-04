@@ -1,51 +1,50 @@
-//UnlockableRoutes.js
 const express = require('express');
 const router = express.Router();
-const db = require('../../db'); // Assuming you're using SQLite database connection
+const db = require('../../db'); // MySQL db connection (pool or promise-based)
 const logActivity = require('../../utils/LogActivity');
 
-// 1. Get all currencies
-router.get('/', (req, res) => {
+// 1. Get all unlockables
+router.get('/', async (req, res) => {
   try {
-    const unlockables = db.prepare('SELECT * FROM unlockables').all();
+    const [unlockables] = await db.query('SELECT * FROM unlockables');
     res.status(200).json(unlockables);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// 2. Get a single currency by ID
-router.get('/:id', (req, res) => {
+// 2. Get a single unlockable by ID
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   try {
-    const unlockable = db.prepare('SELECT * FROM unlockables WHERE id = ?').get(id);
+    const [rows] = await db.query('SELECT * FROM unlockables WHERE id = ?', [id]);
+    const unlockable = rows[0];
+
     if (!unlockable) {
       return res.status(404).json({ error: 'Unlockable not found' });
     }
+
     res.status(200).json(unlockable);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// 3. Create a new currency
-router.post('/', (req, res) => {
-  const { id, temp } = req.body;
-  const { uuid } = req.query;
+// 3. Create a new unlockable
+router.post('/', async (req, res) => {
+  const { id, temp, uuid } = req.body;
 
   if (!id) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
-    db.prepare(`
-      INSERT INTO unlockables (id, temp)
-      VALUES (?, ?)
-    `).run(id, temp ? 1 : 0);
+    await db.query('INSERT INTO unlockables (id, temp) VALUES (?, ?)', [id, temp ? 1 : 0]);
 
-    res.status(201).json({ message: 'Currency created successfully' });
-    logActivity({
+    res.status(201).json({ message: 'Unlockable created successfully' });
+
+    await logActivity({
       type: 'Unlockable',
       target_id: id,
       user: uuid,
@@ -56,37 +55,26 @@ router.post('/', (req, res) => {
   }
 });
 
-// 4. Update an existing currency by ID
-router.put('/:id', (req, res) => {
-  const { id } = req.params; // Extract currency id from the URL
-  const { temp } = req.body;
-  const { uuid } = req.query;
+// 4. Update an existing unlockable
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { temp, uuid } = req.body;
 
   try {
-    // Check if the currency with the provided ID exists
-    const existingUnlockable = db.prepare('SELECT * FROM unlockables WHERE id = ?').get(id);
-    
-    if (!existingUnlockable) {
+    const [existingRows] = await db.query('SELECT * FROM unlockables WHERE id = ?', [id]);
+    if (existingRows.length === 0) {
       return res.status(404).json({ error: 'Unlockable not found' });
     }
 
-    // Update the currency if it exists
-    const update = db.prepare(`
-      UPDATE unlockables
-      SET temp = ?
-      WHERE id = ?
-    `);
+    const [result] = await db.query('UPDATE unlockables SET temp = ? WHERE id = ?', [temp ? 1 : 0, id]);
 
-    const result = update.run(temp ? 1 : 0, id);
-
-    // Check if the update affected any rows (i.e., was there a real update)
-    if (result.changes === 0) {
+    if (result.affectedRows === 0) {
       return res.status(400).json({ error: 'No changes were made to the Unlockable.' });
     }
 
-    // Send success response
     res.status(200).json({ message: 'Unlockable updated successfully' });
-    logActivity({
+
+    await logActivity({
       type: 'Unlockable',
       target_id: id,
       user: uuid,
@@ -96,24 +84,23 @@ router.put('/:id', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-  
 
-// 5. Delete a Unlockable by ID
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  const { uuid } = req.query;
+// 5. Delete unlockable
+router.delete('/:id', async (req, res) => {
+  const { id, uuid } = req.params;
 
   try {
-    db.prepare('DELETE FROM player_unlockables WHERE unlockable_id = ?').run(id);
-    const result = db.prepare('DELETE FROM unlockables WHERE id = ?').run(id);
+    await db.query('DELETE FROM player_unlockables WHERE unlockable_id = ?', [id]);
+    const [result] = await db.query('DELETE FROM unlockables WHERE id = ?', [id]);
 
-    if (result.changes === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Unlockable not found' });
     }
 
     res.status(200).json({ message: 'Unlockable deleted successfully' });
+
     try {
-      logActivity({
+      await logActivity({
         type: 'Unlockable',
         target_id: id,
         user: uuid,
@@ -122,8 +109,6 @@ router.delete('/:id', (req, res) => {
     } catch (logErr) {
       console.error('Logging failed:', logErr);
     }
-    
-
   } catch (err) {
     console.error('DELETE unlockable error:', err);
     res.status(500).json({ error: err.message });

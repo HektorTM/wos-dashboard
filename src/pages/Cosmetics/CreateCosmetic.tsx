@@ -14,7 +14,6 @@ const CreateCosmetic = () => {
     const [loading, setLoading] = useState(false);
     const Navigate = useNavigate();
     const { theme } = useTheme();
-    const [pureType, setPureType] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
