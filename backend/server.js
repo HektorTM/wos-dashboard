@@ -17,8 +17,12 @@ const DataRoutes = require('./Routes/db_web/DataRoutes');
 const MinecraftRoutes = require('./Routes/util/MinecraftRoutes');
 const ChannelRoutes = require('./Routes/db_server/ChannelRoutes');
 
+require('./utils/initTables');
+
 const app = express();
 const PORT = 3001;
+
+
 
 console.log('Serverfile started')
 

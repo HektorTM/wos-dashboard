@@ -49,6 +49,7 @@ const CitemTab = () => {
     try {
       const res = await fetch(`http://localhost:3001/api/citems/${id}`, {
         method: 'DELETE',
+        credentials: 'include'
       });
 
       if (!res.ok) throw new Error('Failed to delete');

@@ -1,44 +1,51 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../db'); // Assuming you're using SQLite database connection
+const db = require('../../db'); // MySQL connection pool
+const logActivity = require('../../utils/LogActivity');
 
 // 1. Get all currencies
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const citems = db.prepare('SELECT * FROM citems').all();
-    res.status(200).json(citems);
+    const [rows] = await db.query('SELECT * FROM citems');
+    res.status(200).json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // 2. Get a single currency by ID
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   try {
-    const citem = db.prepare('SELECT * FROM citems WHERE id = ?').get(id);
-    if (!citem) {
-      return res.status(404).json({ error: 'Citems not found' });
+    const [rows] = await db.query('SELECT * FROM citems WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Citem not found' });
     }
-    res.status(200).json(citem);
+    res.status(200).json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// 5. Delete a currency by ID
-router.delete('/:id', (req, res) => {
+// 3. Delete a currency by ID
+router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = db.prepare('DELETE FROM citems WHERE id = ?').run(id);
+    const [result] = await db.query('DELETE FROM citems WHERE id = ?', [id]);
 
-    if (result.changes === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Citem not found' });
     }
 
     res.status(200).json({ message: 'Citem deleted successfully' });
+    await logActivity({
+      type: 'Citem',
+      target_id: id,
+      user: uuid,
+      action: 'Deleted',
+  });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

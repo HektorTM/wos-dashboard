@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../webmeta');
+const db = require('../../webmeta'); // mysql2 pool
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const logs = db.prepare('SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT 100').all();
+    const [logs] = await db.query('SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT 100');
     res.json(logs);
   } catch (err) {
     res.status(500).json({ error: err.message });
