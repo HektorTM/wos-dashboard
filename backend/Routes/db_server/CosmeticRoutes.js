@@ -8,6 +8,11 @@ async function getCosmeticByID(id) {
     return rows[0];
 }
 
+async function getTypeByID(id) {
+    const [rows] = await db.query('SELECT type FROM cosmetics WHERE id = ?', [id]);
+    return rows[0]?.type;
+}
+
 // 1. Get all cosmetics
 router.get('/', async (req, res) => {
     try {
@@ -113,9 +118,10 @@ router.put('/:id', async (req, res) => {
 // 5. Delete a cosmetic by ID
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
-    const { type, uuid } = req.query;
-
+    const { uuid } = req.query;
+    
     try {
+        const type = await getTypeByID(id);
         await db.query('DELETE FROM player_cosmetics WHERE cosmetic_id = ?', [id]);
         const [result] = await db.query('DELETE FROM cosmetics WHERE id = ?', [id]);
 

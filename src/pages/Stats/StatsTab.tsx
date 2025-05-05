@@ -5,62 +5,62 @@ import DeleteButton from '../../components/DeleteButton';
 import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
-import CreateCurrencyPopup from './CreateCurrencyPopUp';
+import CreateStatPopup from './CreateStatPopUp'; // Adjust the import path as needed
 
-type Currency = {
+type Stat = {
   id: string;
-  name: string;
-  short_name: string;
-  icon: string;
-  color: string;
-  hidden_if_zero: number;
+  max: string;
+  capped: number;
 };
 
-const CurrencyTab = () => {
+const StatsTab = () => {
   const { theme } = useTheme();
-  const [currencies, setCurrencies] = useState<Currency[]>([]);
+  const [stats, setStats] = useState<Stat[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { authUser } = useAuth();
-
+  
+  // State for the popup
   const [showCreatePopup, setShowCreatePopup] = useState(false);
 
   useEffect(() => {
-    const fetchCurrencies = async () => {
+    const fetchStats = async () => {
       try {
-        const data = await fetchType('currencies');
-        setCurrencies(data);
+        const data = await fetchType('stats');
+        setStats(data);
       } catch (err) {
         console.error(err);
-        setError('Failed to load currencies. Please try again.');
+        setError('Failed to load stats. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCurrencies();
+    fetchStats();
   }, []);
 
-  const handleCurrencyCreated = (newCurrency: Currency) => {
-    setCurrencies([...currencies, newCurrency]);
+  const handleStatCreated = (newStat: Stat) => {
+    setStats([...stats, newStat]);
   }
 
-  const deleteCurrency = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this currency?')) return;
+  const deleteStat = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this Stat?')) return;
 
     try {
-      deletePageItem('currencies', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('currency', `${id}`, `${authUser?.uuid}`);
-      setCurrencies(currencies.filter((c) => c.id !== id));
+      deletePageItem('stats', `${id}`, `${authUser?.uuid}`);
+      deletePageMeta('stat', `${id}`, `${authUser?.uuid}`);
+      setStats(stats.filter((c) => c.id !== id));
     } catch (err) {
       console.error(err);
-      setError('Failed to delete currency. Please try again.');
+      setError('Failed to delete stat. Please try again.');
     }
   };
 
-  const filteredCurrencies = currencies.filter((c) =>
-    [c.id, c.name, c.short_name].some((field) =>
+
+
+  const filteredStats = stats.filter((c) =>
+    [c.id].some((field) =>
       String(field || '').toLowerCase().includes(search.toLowerCase())
     )
   );
@@ -68,11 +68,11 @@ const CurrencyTab = () => {
   return (
     <div className={`page-container ${theme}`}>
       <div className="page-header">
-        <h2>Currencies</h2>
+        <h2>Stats</h2>
         <div className="page-search">
           <input
             type="text"
-            placeholder="Search by ID, name, short name..."
+            placeholder="Search by ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -82,7 +82,7 @@ const CurrencyTab = () => {
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
-          + Create Currency
+          + Create Stat
         </button>
       </div>
 
@@ -91,42 +91,35 @@ const CurrencyTab = () => {
       {loading ? (
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <p>Loading currencies...</p>
+          <p>Loading stats...</p>
         </div>
       ) : (
         <div className="page-table-container">
           <table className="page-table">
             <thead>
               <tr>
-                <th>Icon</th>
                 <th>ID</th>
-                <th>Name</th>
-                <th>Short Name</th>
-                <th>Color</th>
-                <th>Hidden if Zero</th>
+                <th>Maximum</th>
+                <th>Capped?</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredCurrencies.map((currency) => (
-                <tr key={currency.id}>
-                  {/*{ await fetchLockedValue(currency.id) && '🔒' } LATER */}
-                  <td>{currency.icon}</td>
-                  <td>{currency.id}</td>
-                  <td>{currency.name}</td>
-                  <td>{currency.short_name}</td>
-                  <td>{currency.color}</td>
-                  <td>{currency.hidden_if_zero ? '✅' : '❌'}</td>
+              {filteredStats.map((stat) => (
+                <tr key={stat.id}>
+                  <td>{stat.id}</td>
+                  <td>{stat.max}</td>
+                  <td>{stat.capped ? '✅' : '❌'}</td>
                   <td>
-                    <EditButton perm='CURRENCY_EDIT' nav={`/view/currency/${currency.id}`} ></EditButton>
-                    <DeleteButton perm='CURRENCY_DELETE' onClick={() => deleteCurrency(currency.id)}></DeleteButton>
+                    <EditButton perm='STATS_EDIT' nav={`/view/stat/${stat.id}`} />
+                    <DeleteButton perm='STATS_DELETE' onClick={() => deleteStat(stat.id)} />
                   </td>
                 </tr>
               ))}
-              {filteredCurrencies.length === 0 && (
+              {filteredStats.length === 0 && (
                 <tr>
                   <td colSpan={7} className="no-results">
-                    {search ? 'No matching currencies found' : 'No currencies available'}
+                    {search ? 'No matching stats found' : 'No stats available'}
                   </td>
                 </tr>
               )}
@@ -136,14 +129,13 @@ const CurrencyTab = () => {
       )}
 
       {showCreatePopup && (
-        <CreateCurrencyPopup 
+        <CreateStatPopup 
           onClose={() => setShowCreatePopup(false)}
-          onCreate={handleCurrencyCreated}
+          onCreate={handleStatCreated}
         />
       )}
-
     </div>
   );
 };
 
-export default CurrencyTab;
+export default StatsTab;

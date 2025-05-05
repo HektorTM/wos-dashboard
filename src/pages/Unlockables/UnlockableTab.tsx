@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import EditButton from '../../components/EditButton';
 import DeleteButton from '../../components/DeleteButton';
+import { deletePageItem } from '../../helpers/FetchPageItem';
+import { deletePageMeta } from '../../helpers/PageMeta';
+import CreateUnlockablePopUp from './CreateUnlockablePopUp';
 
 type Unlockable = {
   id: string;
@@ -17,6 +19,8 @@ const UnlockableTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [showCreatePopup, setShowCreatePopup] = useState(false);
 
   useEffect(() => {
     const fetchUnlockables = async () => {
@@ -39,22 +43,16 @@ const UnlockableTab = () => {
     fetchUnlockables();
   }, []);
 
+  const handleUnlockableCreated = (newUnlockable: Unlockable) => {
+    setUnlockables([...unlockables, newUnlockable]);
+  }
+
   const deleteUnlockable = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this Unlockable?')) return;
     
     try {
-      const res = await fetch(`http://localhost:3001/api/unlockables/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          uuid: authUser?.uuid,
-        })
-      });
-
-      if (!res.ok) throw new Error('Failed to delete');
+      deletePageItem('unlockables', `${id}`, `${authUser?.uuid}`);
+      deletePageMeta('unlockable', `${id}`, `${authUser?.uuid}`);
       setUnlockables(unlockables.filter((c) => c.id !== id));
     } catch (err) {
       console.error(err);
@@ -79,9 +77,12 @@ const UnlockableTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        <Link to="/create/unlockable" className="create-button">
+        <button 
+          onClick={() => setShowCreatePopup(true)} 
+          className="create-button"
+        >
           + Create Unlockable
-        </Link>
+        </button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -123,6 +124,14 @@ const UnlockableTab = () => {
           </table>
         </div>
       )}
+
+      {showCreatePopup && (
+        <CreateUnlockablePopUp 
+          onClose={() => setShowCreatePopup(false)}
+          onCreate={handleUnlockableCreated}
+        />
+      )}
+
     </div>
   );
 };

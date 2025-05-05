@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({ message: 'Unlockable created successfully' });
 
-    await logActivity({
+    logActivity({
       type: 'Unlockable',
       target_id: id,
       user: uuid,
@@ -74,7 +74,7 @@ router.put('/:id', async (req, res) => {
 
     res.status(200).json({ message: 'Unlockable updated successfully' });
 
-    await logActivity({
+    logActivity({
       type: 'Unlockable',
       target_id: id,
       user: uuid,
@@ -87,10 +87,10 @@ router.put('/:id', async (req, res) => {
 
 // 5. Delete unlockable
 router.delete('/:id', async (req, res) => {
-  const { id, uuid } = req.params;
-
+  const { id } = req.params;
+  const {uuid} = req.query;
   try {
-    await db.query('DELETE FROM player_unlockables WHERE unlockable_id = ?', [id]);
+    await db.query('DELETE FROM playerdata_unlockables WHERE id = ?', [id]);
     const [result] = await db.query('DELETE FROM unlockables WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
@@ -99,16 +99,12 @@ router.delete('/:id', async (req, res) => {
 
     res.status(200).json({ message: 'Unlockable deleted successfully' });
 
-    try {
-      await logActivity({
-        type: 'Unlockable',
-        target_id: id,
-        user: uuid,
-        action: 'Deleted',
-      });
-    } catch (logErr) {
-      console.error('Logging failed:', logErr);
-    }
+    logActivity({
+      type: 'Unlockable',
+      target_id: id,
+      user: uuid,
+      action: 'Deleted',
+    });
   } catch (err) {
     console.error('DELETE unlockable error:', err);
     res.status(500).json({ error: err.message });

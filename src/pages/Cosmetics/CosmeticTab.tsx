@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import DeleteButton from '../../components/DeleteButton';
 import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
-import { deletePageMeta, fetchLocked } from '../../helpers/PageMeta';
+import { deletePageMeta } from '../../helpers/PageMeta';
+import CreateCosmeticPopup from './CreateCosmeticPopUp';
 
 type Cosmetic = {
   type: string;
@@ -21,8 +21,8 @@ const CurrencyTab = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { authUser } = useAuth();
-  const [locked, setLocked] = useState(false);
 
+  const [showCreatePopup, setShowCreatePopup] = useState(false);
 
   useEffect(() => {
     const fetchCosmetics = async () => {
@@ -40,19 +40,8 @@ const CurrencyTab = () => {
     fetchCosmetics();
   }, []);
 
-  const fetchLockedValue = async () => {
-    try {
-
-      const result = await fetchLocked('cosmetic', 'test');
-      if (result == 1) {
-        setLocked(true);
-      } else {
-        setLocked(false);
-      }
-
-    } catch (err) {
-      console.error(err);
-    }
+  const handleCosmeticCreated = (newCosmetic: Cosmetic) => {
+    setCosmetics([...cosmetics, newCosmetic]);
   }
 
   const deleteCosmetic = async (id: string) => {
@@ -87,9 +76,12 @@ const CurrencyTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        <Link to="/create/cosmetic" className="create-button">
-          + Create Cosmetic
-        </Link>
+        <button 
+          onClick={() => setShowCreatePopup(true)} 
+          className="create-button"
+        >
+          + Create Unlockable
+        </button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -135,6 +127,14 @@ const CurrencyTab = () => {
           </table>
         </div>
       )}
+
+      {showCreatePopup && (
+        <CreateCosmeticPopup 
+          onClose={() => setShowCreatePopup(false)}
+          onCreate={handleCosmeticCreated}
+        />
+      )}
+
     </div>
   );
 };
