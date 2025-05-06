@@ -4,6 +4,9 @@ export type PermissionKey =
     | 'CITEM_VIEW'
     | 'CITEM_EDIT'
     | 'CITEM_DELETE'
+    | 'RECIPE_VIEW'
+    | 'RECIPE_EDIT'
+    | 'RECIPE_DELETE'
     | 'COOLDOWN_VIEW'
     | 'COOLDOWN_CREATE'
     | 'COOLDOWN_EDIT'
@@ -78,6 +81,19 @@ export const PERMISSIONS: Permission[] = [
     {
         key: 'CITEM_DELETE',
         label: 'Delete Citems',
+    },
+
+    {
+        key: 'RECIPE_VIEW',
+        label: 'View Recipes',
+    },
+    {
+        key: 'RECIPE_EDIT',
+        label: 'Edit Recipes',
+    },
+    {
+        key: 'RECIPE_DELETE',
+        label: 'Delete Recipes',
     },
 
     {
@@ -262,6 +278,9 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             { key: "COSMETIC_DELETE", label: "Delete Cosmetics" },
         ],
     },
+
+    
+
     {
         group: "Currencies",
         permissions: [
@@ -337,9 +356,17 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     {
         group: "Citems",
         permissions: [
-            { key: "CITEM_VIEW", label: "View Items" },
-            { key: "CITEM_EDIT", label: "Edit Items" },
-            { key: "CITEM_DELETE", label: "Delete Items" },
+            { key: "CITEM_VIEW", label: "View Citems" },
+            { key: "CITEM_EDIT", label: "Edit Citems" },
+            { key: "CITEM_DELETE", label: "Delete Citems" },
+        ],
+    },
+    {
+        group: "Recipes",
+        permissions: [
+            { key: "RECIPE_VIEW", label: "View Recipes" },
+            { key: "RECIPE_EDIT", label: "Edit Recipes" },
+            { key: "RECIPE_DELETE", label: "Delete Recipes" },
         ],
     },
     {

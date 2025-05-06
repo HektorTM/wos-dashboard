@@ -25,6 +25,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ViewCosmetic from './pages/Cosmetics/ViewCosmetic';
 import StatsTab from './pages/Stats/StatsTab';
 import ViewStat from './pages/Stats/ViewStat';
+import RecipeTab from './pages/Crecipes/CrecipecTab';
 
 
 
@@ -52,6 +53,7 @@ const App = () => {
                 <Route path="/cosmetics" element={<ProtectedRoute requiredPermission='COSMETIC_VIEW'><CosmeticTab /></ProtectedRoute>} />
                 <Route path="/channels" element={<ProtectedRoute requiredPermission='CHANNEL_VIEW'><ChannelTab /></ProtectedRoute>} />
                 <Route path="/stats" element={<ProtectedRoute requiredPermission='STATS_VIEW'><StatsTab /></ProtectedRoute>} />
+                <Route path="/recipes" element={<ProtectedRoute requiredPermission='RECIPE_VIEW'><RecipeTab /></ProtectedRoute>} />
 
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
                 <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
