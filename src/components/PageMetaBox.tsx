@@ -1,6 +1,8 @@
+
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { parseUUIDToUsername } from '../utils/parser';
+import { parseTime, parseUUIDToUsername, toUpperCase } from '../utils/parser';
+import { useNavigate } from 'react-router-dom';
 
 interface PageMetaBoxProps {
   type: string;
@@ -19,10 +21,19 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
   const [data, setData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
   const [toggling, setToggling] = useState(false);
   const [creatorName, setCreatorName] = useState<string | null>(null);
   const [editorName, setEditorName] = useState<string | null>(null);
   const { authUser } = useAuth();
+
+  const backToList = async () => {
+    let destination = type;
+    if (destination === "currency") {
+      destination = "currencie";
+    } 
+    navigate(`/${destination}s`)
+  }
 
   const fetchMeta = async () => {
     try {
@@ -78,27 +89,38 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
     }
   };
 
+
   return (
     <div style={{ flex: 1 }}>
       <div className="info-box">
-        <h4>Page Info</h4>
+        <h4>{toUpperCase(type?.toString())}</h4>
         {loading && <p>Loading...</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {data && (
           <>
             <ul style={{ listStyle: 'none', padding: 0 }}>
-              <li><strong>ID:</strong> {id}</li>
-              <li><strong>Created By:</strong> {creatorName || '—'}</li>
-              <li><strong>Last Edited By:</strong> {editorName || '—'}</li>
-              <li><strong>Locked:</strong> {data.locked ? 'Yes' : 'No'}</li>
+              <li><strong>Identifier</strong> <br /> {id}</li>
+              <li><strong>Created By</strong> <br /> {creatorName || '—'}</li>
+              <li><strong>Last Edited By</strong> <br /> {editorName || '—'} ( {parseTime(`${data?.edited_at}`)} )</li>
             </ul>
-            <button onClick={toggleLock} disabled={toggling}>
+          </>
+        )}
+      </div>
+      <div className="info-box">
+        <h4>Actions</h4>
+        {data && (
+          <>
+            <button onClick={toggleLock} disabled={toggling} className="meta-page-button">
               {data.locked ? 'Unlock Page' : 'Lock Page'}
+            </button>
+            <button onClick={backToList} disabled={toggling} className="meta-page-button">
+              Back to List 
             </button>
           </>
         )}
       </div>
     </div>
+    
   );
 };
 

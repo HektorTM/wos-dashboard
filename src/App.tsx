@@ -26,7 +26,8 @@ import ViewCosmetic from './pages/Cosmetics/ViewCosmetic';
 import StatsTab from './pages/Stats/StatsTab';
 import ViewStat from './pages/Stats/ViewStat';
 import RecipeTab from './pages/Crecipes/CrecipecTab';
-
+import InteractionTab from './pages/Interactions/InteractionTab';
+import ViewInteraction from './pages/Interactions/ViewInteraction';
 
 
 
@@ -54,6 +55,7 @@ const App = () => {
                 <Route path="/channels" element={<ProtectedRoute requiredPermission='CHANNEL_VIEW'><ChannelTab /></ProtectedRoute>} />
                 <Route path="/stats" element={<ProtectedRoute requiredPermission='STATS_VIEW'><StatsTab /></ProtectedRoute>} />
                 <Route path="/recipes" element={<ProtectedRoute requiredPermission='RECIPE_VIEW'><RecipeTab /></ProtectedRoute>} />
+                <Route path="/interactions" element={<ProtectedRoute requiredPermission='INTERACTION_VIEW'><InteractionTab /></ProtectedRoute>} />
 
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
                 <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
@@ -63,6 +65,8 @@ const App = () => {
                 <Route path="/view/currency/:id" element={<ProtectedRoute requiredPermission='CURRENCY_EDIT'><EditCurrency /></ProtectedRoute>} />
                 <Route path="/view/cosmetic/:id" element={<ProtectedRoute requiredPermission='COSMETIC_EDIT'><ViewCosmetic/></ProtectedRoute>} />
                 <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='UNLOCKABLE_EDIT'><ViewUnlockable /></ProtectedRoute>} />  
+                <Route path="/view/interaction/:id" element={<ProtectedRoute requiredPermission='INTERACTION_EDIT'><ViewInteraction /></ProtectedRoute>} /> 
+
 
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />
             </Route>

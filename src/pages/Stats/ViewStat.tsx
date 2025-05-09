@@ -85,7 +85,7 @@ const ViewStat = () => {
 
     return (
         <div className={`page-container ${theme}`}>
-            <h2>Edit Stat</h2>
+
             <div
                 className="form-meta-container"
                 style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}

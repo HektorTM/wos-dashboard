@@ -111,7 +111,7 @@ const Sidebar = () => {
             <ul className="submenu">
               <PermissionLink to="/channels" label="Channels" perm="CHANNEL_VIEW" hasPermission={hasPermission} loading={loading} />
               <PermissionLink to="/citems" label="Citems" perm="CITEM_VIEW" hasPermission={hasPermission} loading={loading} />
-              <PermissionLink to="/crecipes" label="Recipes" perm="RECIPE_VIEW" hasPermission={hasPermission} loading={loading} />
+              <PermissionLink to="/recipes" label="Recipes" perm="RECIPE_VIEW" hasPermission={hasPermission} loading={loading} />
               <PermissionLink to="/cooldowns" label="Cooldowns" perm="COOLDOWN_VIEW" hasPermission={hasPermission} loading={loading} />
               <PermissionLink to="/cosmetics" label="Cosmetics" perm="COSMETIC_VIEW" hasPermission={hasPermission} loading={loading} />
               <PermissionLink to="/currencies" label="Currencies" perm="CURRENCY_VIEW" hasPermission={hasPermission} loading={loading} />

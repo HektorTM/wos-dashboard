@@ -1,0 +1,166 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../../db'); // MySQL connection
+const logActivity = require('../../utils/LogActivity');
+
+// ✅ Get all interactions
+router.get('/', async (req, res) => {
+  try {
+    const [interactions] = await db.query('SELECT * FROM interactions');
+    res.json(interactions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Get interaction by ID (with actions + holograms + blocks + npcs)
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [interactionRows] = await db.query('SELECT * FROM interactions WHERE id = ?', [id]);
+    if (interactionRows.length === 0) {
+      return res.status(404).json({ error: 'Interaction not found' });
+    }
+
+    const [actions] = await db.query('SELECT * FROM inter_actions WHERE id = ? ORDER BY action_id ASC', [id]);
+    const [holograms] = await db.query('SELECT * FROM inter_holograms WHERE interaction_id = ?', [id]);
+    const [blocks] = await db.query('SELECT location FROM inter_blocks WHERE interaction_id = ?', [id]);
+    const [npcs] = await db.query('SELECT npc_id FROM inter_npcs WHERE interaction_id = ?', [id]);
+
+    res.json({
+      id,
+      actions,
+      holograms,
+      blocks,
+      npcs
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Get only actions for interaction
+router.get('/:id/actions', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [actions] = await db.query('SELECT * FROM inter_actions WHERE id = ? ORDER BY action_id ASC', [id]);
+    res.json(actions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Get only holograms for interaction
+router.get('/:id/holograms', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [holograms] = await db.query('SELECT * FROM inter_holograms WHERE interaction_id = ?', [id]);
+    res.json(holograms);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Get only NPCs for interaction
+router.get('/:id/npcs', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [npcs] = await db.query('SELECT npc_id FROM inter_npcs WHERE interaction_id = ?', [id]);
+    res.json(npcs.map(row => row.npc_id));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Get only blocks for interaction
+router.get('/:id/blocks', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [blocks] = await db.query('SELECT location FROM inter_blocks WHERE interaction_id = ?', [id]);
+    res.json(blocks.map(row => row.location));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/interactions/:id/actions/:actionId
+router.put('/:id/actions/:actionId', async (req, res) => {
+    const { id, actionId } = req.params;
+    const { behaviour, matchtype, actions } = req.body;
+  
+    try {
+      const [result] = await db.query(
+        'UPDATE inter_actions SET behaviour = ?, matchtype = ?, actions = ? WHERE id = ? AND action_id = ?',
+        [behaviour, matchtype, JSON.stringify(actions), id, actionId]
+      );
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Action not found' });
+      }
+      res.json({ message: 'Action updated successfully' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+// PUT /api/interactions/:id/holograms/:hologramId
+router.put('/:id/holograms/:hologramId', async (req, res) => {
+    const { id, hologramId } = req.params;
+    const { behaviour, matchtype, hologram } = req.body;
+  
+    try {
+      const [result] = await db.query(
+        'UPDATE inter_holograms SET behaviour = ?, matchtype = ?, hologram = ? WHERE interaction_id = ? AND hologram_id = ?',
+        [behaviour, matchtype, JSON.stringify(hologram), id, hologramId]
+      );
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Hologram not found' });
+      }
+      res.json({ message: 'Hologram updated successfully' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+router.put('/:id/particles/:particleId', async (req, res) => {
+    const { id, particleId } = req.params;
+    const { behaviour, matchtype, particle } = req.body;
+
+    try {
+        const [result] = await db.query(
+            'UPDATE inter_particles SET behaviour = ?, matchtype = ?, particle = ? WHERE interaciton_id = ? and particle_id = ?',
+            [behaviour, matchtype, particle, id, particleId]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Particle not found'});
+        }
+        res.json({ message: 'Particle updated successfully'});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.post('/', async (req, res) => {
+    const { id, uuid } = req.body;
+  
+    if (!id) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+  
+    try {
+      await db.query('INSERT INTO interactions (id) VALUES (?)', [id]);
+  
+      res.status(201).json({ message: 'Interaction created successfully' });
+  
+      logActivity({
+        type: 'Interaction',
+        target_id: id,
+        user: uuid,
+        action: 'Created',
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+module.exports = router;

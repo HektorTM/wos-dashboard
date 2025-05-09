@@ -17,6 +17,7 @@ const DataRoutes = require('./Routes/db_web/DataRoutes');
 const MinecraftRoutes = require('./Routes/util/MinecraftRoutes');
 const ChannelRoutes = require('./Routes/db_server/ChannelRoutes');
 const StatsRoutes = require('./Routes/db_server/StatsRoutes');
+const InteractionRoutes = require('./Routes/db_server/InteractionRoutes');
 
 require('./utils/initTables');
 
@@ -64,6 +65,7 @@ app.use('/api/logs', LogRoutes);
 app.use('/api/page-data', DataRoutes);
 app.use('/api/channels', ChannelRoutes);
 app.use('/api/stats', StatsRoutes);
+app.use('/api/interactions', InteractionRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 

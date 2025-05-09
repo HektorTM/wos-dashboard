@@ -82,3 +82,13 @@ export const parseUsernameToUUID = async (username: string) => {
     return null;
   }
 }
+
+export const parseTime = (isoString?: string) => {
+  if (!isoString) return 'Invalid date';
+  const date = new Date(isoString);
+  return date.toLocaleString(); // Or toLocaleDateString / toLocaleTimeString
+};
+
+export const toUpperCase = (value: string) => {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
