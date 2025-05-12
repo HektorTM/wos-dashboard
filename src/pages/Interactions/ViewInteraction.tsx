@@ -1,11 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useParams } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import PageMetaBox from '../../components/PageMetaBox';
 import Modal from '../../components/Modal';
+import { ActionForm } from './ActionForm';
 
 type InteractionTab = 'actions' | 'holograms' | 'particles' | 'blocks' | 'npcs';
+
+interface Condition {
+  type: string;
+  id: string;
+  condition_key: string;
+  value: string;
+  parameter: string;
+}
 
 interface Interaction {
   id: string;
@@ -22,10 +31,11 @@ interface Action {
   behaviour: string;
   matchtype: string;
   actions: string;
+  conditions?: Condition[];
 }
 
 interface Hologram {
-  interaction_id: string;
+  id: string;
   hologram_id: number;
   behaviour: string;
   matchtype: string;
@@ -41,20 +51,21 @@ interface Particle {
 }
 
 const ViewInteraction = () => {
-  const { authUser } = useAuth();
   const { id } = useParams();
   const [interaction, setInteraction] = useState<Interaction | null>(null);
   const [activeTab, setActiveTab] = useState<InteractionTab>('actions');
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   // Modal state
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [currentTab, setCurrentTab] = useState<InteractionTab>('actions');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [currentItem, setCurrentItem] = useState<any>(null);
   const [newItem, setNewItem] = useState<any>({});
+
+  
 
   useEffect(() => {
     const fetchInteraction = async () => {
@@ -80,28 +91,245 @@ const ViewInteraction = () => {
     fetchInteraction();
   }, [id]);
 
+  useEffect(() => {
+    const fetchConditions = async () => {
+      try {
+        if (!interaction?.actions) return;
+        
+        // Fetch conditions for each action in the interaction
+        const conditionsPromises = interaction.actions.map(async (action) => {
+          const res = await fetch(
+            `http://localhost:3001/api/conditions/interaction/${id}:${action.action_id}`, 
+            {
+              method: 'GET',
+              credentials: 'include'
+            }
+          );
+          return res.json();
+        });
+  
+        const conditionsResults = await Promise.all(conditionsPromises);
+        
+        // Update state with proper typing
+        setInteraction(prev => {
+          if (!prev) return null;
+          
+          return {
+            ...prev,
+            actions: prev.actions?.map((action, index) => ({
+              ...action,
+              conditions: conditionsResults[index] || []
+            }))
+          };
+        });
+      } catch (err) {
+        console.error('Failed to fetch conditions:', err);
+      }
+    };
+  
+    fetchConditions();
+  }, [id, interaction?.actions]);
+
   const handleAddClick = (tab: InteractionTab) => {
     setCurrentTab(tab);
-    setShowAddModal(true);
-    setNewItem({});
+    setModalMode('create');
+    setNewItem({ 
+      commands: [],
+      currentCommand: '',
+      actions: '[]',
+      behaviour: 'break',
+      matchtype: 'all'
+    });
+    setShowModal(true);
+  };
+
+  const handleEditClick = (tab: InteractionTab, item: any) => {
+    setCurrentTab(tab);
+    setModalMode('edit');
+    setCurrentItem(item);
+    
+    // Parse the actions JSON string into commands
+    let commands = [];
+    try {
+      commands = item.actions ? JSON.parse(item.actions) : [];
+    } catch (e) {
+      commands = [];
+      console.error(e);
+    }
+  
+    setNewItem({ 
+      ...item,
+      commands, // Add the parsed commands
+      currentCommand: '' // Initialize currentCommand
+    });
+    setShowModal(true);
+  };
+
+  const handleAddCommand = () => {
+    if (!newItem.currentCommand) return;
+    
+    setNewItem((prev: any) => ({
+      ...prev,
+      commands: [...(prev.commands || []), prev.currentCommand],
+      currentCommand: '',
+      actions: JSON.stringify([...(prev.commands || []), prev.currentCommand])
+    }));
+  };
+  
+  const handleRemoveCommand = (index: number) => {
+    const updatedCommands = [...(newItem.commands || [])];
+    updatedCommands.splice(index, 1);
+    
+    setNewItem((prev: any) => ({
+      ...prev,
+      commands: updatedCommands,
+      actions: JSON.stringify(updatedCommands)
+    }));
+  };
+
+  const handleDelete = async (tab: InteractionTab, itemId: string | number) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+
+    try {
+      let endpoint = '';
+      const interactionId = id;
+      
+      switch (tab) {
+        case 'actions':
+          endpoint = `http://localhost:3001/api/interactions/${interactionId}/actions/${itemId}`;
+          break;
+        case 'holograms':
+          endpoint = `http://localhost:3001/api/interactions/${id}/holograms/${itemId}`;
+          break;
+        case 'particles':
+          endpoint = `http://localhost:3001/api/interactions/${id}/particles/${itemId}`;
+          break;
+        case 'blocks':
+          endpoint = `http://localhost:3001/api/interactions/${id}/blocks/${encodeURIComponent(itemId as string)}`;
+          break;
+        case 'npcs':
+          endpoint = `http://localhost:3001/api/interactions/${id}/npcs/${encodeURIComponent(itemId as string)}`;
+          break;
+      }
+
+      const res = await fetch(endpoint, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        // Refresh the data
+        const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const updatedInteraction = await updatedData.json();
+        setInteraction({
+          ...updatedInteraction,
+          blocks: updatedInteraction.blocks || [],
+          npcs: updatedInteraction.npcs || []
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to delete item');
+    }
+  };
+
+  const handleModalSubmit = async () => {
+    try {
+      if (modalMode === 'create') {
+        await handleAddSubmit();
+      } else {
+        await handleEditSubmit();
+      }
+    } catch (err) {
+      console.error(err);
+      setError(`Failed to ${modalMode} item`);
+    }
   };
 
   const handleAddSubmit = async () => {
+    let endpoint = '';
+    let body = {};
+
+    switch (currentTab) {
+      case 'actions':
+        endpoint = `http://localhost:3001/api/interactions/${id}/actions`;
+        body = {
+          behaviour: newItem.behaviour || 'default',
+          matchtype: newItem.matchtype || 'default',
+          actions: JSON.parse(newItem.actions || []) 
+        };
+        break;
+      case 'holograms':
+        endpoint = `http://localhost:3001/api/interactions/${id}/holograms`;
+        body = {
+          behaviour: newItem.behaviour || 'default',
+          matchtype: newItem.matchtype || 'default',
+          hologram: JSON.stringify(newItem.hologram || {})
+        };
+        break;
+      case 'particles':
+        endpoint = `http://localhost:3001/api/interactions/${id}/particles`;
+        body = {
+          behaviour: newItem.behaviour || 'default',
+          matchtype: newItem.matchtype || 'default',
+          particle: newItem.particle || 'default'
+        };
+        break;
+      case 'blocks':
+        endpoint = `http://localhost:3001/api/interactions/${id}/blocks`;
+        body = {
+          location: newItem.location || '0,0,0,world'
+        };
+        break;
+      case 'npcs':
+        endpoint = `http://localhost:3001/api/interactions/${id}/npcs`;
+        body = {
+          npc_id: newItem.npc_id || 'default_npc'
+        };
+        break;
+    }
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (res.ok) {
+      const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const updatedInteraction = await updatedData.json();
+      setInteraction({
+        ...updatedInteraction,
+        blocks: updatedInteraction.blocks || [],
+        npcs: updatedInteraction.npcs || []
+      });
+      setShowModal(false);
+    }
+  };
+
+  const handleEditSubmit = async () => {
     try {
       let endpoint = '';
       let body = {};
 
       switch (currentTab) {
         case 'actions':
-          endpoint = `http://localhost:3001/api/interactions/${id}/actions`;
+          endpoint = `http://localhost:3001/api/interactions/${id}/actions/${currentItem.action_id}`;
           body = {
-            behaviour: newItem.behaviour || 'default',
-            matchtype: newItem.matchtype || 'default',
-            actions: JSON.stringify(newItem.actions || [])
+            behaviour: newItem.behaviour,
+            matchtype: newItem.matchtype,
+            actions: JSON.parse(newItem.actions || [])
           };
           break;
         case 'holograms':
-          endpoint = `http://localhost:3001/api/interactions/${id}/holograms`;
+          endpoint = `http://localhost:3001/api/interactions/${id}/holograms/${currentItem.hologram_id}`;
           body = {
             behaviour: newItem.behaviour || 'default',
             matchtype: newItem.matchtype || 'default',
@@ -109,7 +337,7 @@ const ViewInteraction = () => {
           };
           break;
         case 'particles':
-          endpoint = `http://localhost:3001/api/interactions/${id}/particles`;
+          endpoint = `http://localhost:3001/api/interactions/${id}/particles/${currentItem.particle_id}`;
           body = {
             behaviour: newItem.behaviour || 'default',
             matchtype: newItem.matchtype || 'default',
@@ -117,13 +345,13 @@ const ViewInteraction = () => {
           };
           break;
         case 'blocks':
-          endpoint = `http://localhost:3001/api/interactions/${id}/blocks`;
+          endpoint = `http://localhost:3001/api/interactions/${id}/blocks/${encodeURIComponent(currentItem)}`;
           body = {
             location: newItem.location || '0,0,0,world'
           };
           break;
         case 'npcs':
-          endpoint = `http://localhost:3001/api/interactions/${id}/npcs`;
+          endpoint = `http://localhost:3001/api/interactions/${id}/npcs/${encodeURIComponent(currentItem)}`;
           body = {
             npc_id: newItem.npc_id || 'default_npc'
           };
@@ -131,7 +359,7 @@ const ViewInteraction = () => {
       }
 
       const res = await fetch(endpoint, {
-        method: 'POST',
+        method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -148,41 +376,24 @@ const ViewInteraction = () => {
           blocks: updatedInteraction.blocks || [],
           npcs: updatedInteraction.npcs || []
         });
-        setShowAddModal(false);
+        setShowModal(false);
       }
     } catch (err) {
       console.error(err);
-      setError('Failed to add new item');
+      setError('Failed to update item');
     }
   };
 
-  const renderAddForm = () => {
+  const renderModalForm = () => {
     switch (currentTab) {
       case 'actions':
         return (
-          <div className="form-group">
-            <label>Behaviour</label>
-            <input
-              type="text"
-              value={newItem.behaviour || ''}
-              onChange={(e) => setNewItem({...newItem, behaviour: e.target.value})}
-              className="form-control"
-            />
-            <label>Match Type</label>
-            <input
-              type="text"
-              value={newItem.matchtype || ''}
-              onChange={(e) => setNewItem({...newItem, matchtype: e.target.value})}
-              className="form-control"
-            />
-            <label>Actions (JSON)</label>
-            <textarea
-              value={newItem.actions || ''}
-              onChange={(e) => setNewItem({...newItem, actions: e.target.value})}
-              className="form-control"
-              rows={3}
-            />
-          </div>
+          <ActionForm 
+            item={newItem}
+            onChange={setNewItem}
+            onAddCommand={handleAddCommand}
+            onRemoveCommand={handleRemoveCommand}
+          />
         );
       case 'holograms':
         return (
@@ -279,6 +490,46 @@ const ViewInteraction = () => {
     </div>
   );
 
+
+  const renderActionButtons = (tab: InteractionTab, item: any) => {
+    let itemId: string | number = '';
+    
+    switch (tab) {
+      case 'actions':
+        itemId = item.action_id;
+        break;
+      case 'holograms':
+        itemId = item.hologram_id;
+        break;
+      case 'particles':
+        itemId = item.particle_id;
+        break;
+      case 'blocks':
+        itemId = item;
+        break;
+      case 'npcs':
+        itemId = item;
+        break;
+    }
+
+    return (
+      <div style={{gap: '0.5rem' }}>
+        <button 
+          className="btn btn-sm btn-primary"
+          onClick={() => handleEditClick(tab, item)}
+        >
+          Edit
+        </button>
+        <button 
+          className="btn btn-sm btn-danger"
+          onClick={() => handleDelete(tab, itemId)}
+        >
+          Delete
+        </button>
+      </div>
+    );
+  };
+
   const renderTabContent = () => {
     if (!interaction) return null;
 
@@ -295,6 +546,7 @@ const ViewInteraction = () => {
                       <th>ID</th>
                       <th>Behaviour</th>
                       <th>Match Type</th>
+                      <th>Conditions</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -304,7 +556,60 @@ const ViewInteraction = () => {
                         <td>{action.action_id}</td>
                         <td>{action.behaviour}</td>
                         <td>{action.matchtype}</td>
-                        <td>{action.actions}</td>
+                        <td>
+                          <div className="condition-container">
+                            <table className="condition-table">
+                              <thead>
+                                <tr>
+                                  <th>Key</th>
+                                  <th>Value</th>
+                                  <th>Parameter</th>
+                                  <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {action.conditions?.length ? (
+                                  action.conditions.map((condition, index) => (
+                                    <tr key={`${action.action_id}-${index}`}>
+                                      <td>{condition.condition_key}</td>
+                                      <td>{condition.value}</td>
+                                      <td>{condition.parameter}</td>
+                                      <td>
+                                        <div style={{gap: '0.5rem'}}>
+                                          <button
+                                            className='btn btn-sm btn-primary'
+                                          >
+                                          ✏️
+                                          </button>
+                                          <button 
+                                            className="btn btn-sm btn-danger"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              // Add delete handler
+                                            }}
+                                          >
+                                          🗑️
+                                          </button>
+                                         </div>
+                                      </td>
+                                      
+                                    </tr>
+                                    
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan={4} className="no-conditions">No conditions</td>
+                                  </tr>
+                                )}
+                                <button
+                                  className='btn btn-sm btn-success'>
+                                    Add Condition
+                                </button>
+                              </tbody>
+                            </table>
+                          </div>
+                        </td>
+                        <td>{renderActionButtons('actions', action)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -329,6 +634,7 @@ const ViewInteraction = () => {
                       <th>Behaviour</th>
                       <th>Match Type</th>
                       <th>Hologram</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -338,6 +644,7 @@ const ViewInteraction = () => {
                         <td>{hologram.behaviour}</td>
                         <td>{hologram.matchtype}</td>
                         <td>{hologram.hologram}</td>
+                        <td>{renderActionButtons('holograms', hologram)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -362,6 +669,7 @@ const ViewInteraction = () => {
                       <th>Behaviour</th>
                       <th>Match Type</th>
                       <th>Particle</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -371,6 +679,7 @@ const ViewInteraction = () => {
                         <td>{particle.behaviour}</td>
                         <td>{particle.matchtype}</td>
                         <td>{particle.particle}</td>
+                        <td>{renderActionButtons('particles', particle)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -392,12 +701,14 @@ const ViewInteraction = () => {
                   <thead>
                     <tr>
                       <th>Location</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {interaction.blocks.map((block, index) => (
                       <tr key={index}>
                         <td>{block}</td>
+                        <td>{renderActionButtons('blocks', block)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -419,12 +730,14 @@ const ViewInteraction = () => {
                   <thead>
                     <tr>
                       <th>NPC ID</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {interaction.npcs.map((npc, index) => (
                       <tr key={index}>
                         <td>{npc}</td>
+                        <td>{renderActionButtons('npcs', npc)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -462,8 +775,6 @@ const ViewInteraction = () => {
 
   return (
     <div className={`page-container ${theme}`}>
-
-
       <div className="content-wrapper" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
         <div className="meta-box-wrapper" style={{ width: '350px' }}>
           <PageMetaBox type="interaction" id={id!} />
@@ -507,33 +818,24 @@ const ViewInteraction = () => {
         </div>
       </div>
 
-      <div className="form-actions">
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate('/interactions')}
-        >
-          Back to List
-        </button>
-      </div>
-
       <Modal 
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title={`Add New ${currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}`}
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={`${modalMode === 'create' ? 'Add New' : 'Edit'} ${currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}`}
       >
-        {renderAddForm()}
+        {renderModalForm()}
         <div className="modal-actions">
           <button 
             className="btn btn-secondary"
-            onClick={() => setShowAddModal(false)}
+            onClick={() => setShowModal(false)}
           >
             Cancel
           </button>
           <button 
             className="btn btn-primary"
-            onClick={handleAddSubmit}
+            onClick={handleModalSubmit}
           >
-            Add
+            {modalMode === 'create' ? 'Add' : 'Save'}
           </button>
         </div>
       </Modal>

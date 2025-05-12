@@ -84,24 +84,86 @@ router.get('/:id/blocks', async (req, res) => {
   }
 });
 
+// ✅ Get single action for interaction
+router.get('/:id/actions/:actionId', async (req, res) => {
+  const { id, actionId } = req.params;
+  try {
+    const [actions] = await db.query(
+      'SELECT * FROM inter_actions WHERE id = ? AND action_id = ?', 
+      [id, actionId]
+    );
+    
+    if (actions.length === 0) {
+      return res.status(404).json({ error: 'Action not found' });
+    }
+    
+    res.json(actions[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/interactions/:id/actions
+router.post('/:id/actions', async (req, res) => {
+  const { id } = req.params;
+  const { behaviour, matchtype, actions } = req.body;
+
+  try {
+    // Get the next available action_id
+    const [maxIdResult] = await db.query(
+      'SELECT MAX(action_id) as maxId FROM inter_actions WHERE id = ?',
+      [id]
+    );
+    const nextActionId = (maxIdResult[0].maxId || 0) + 1;
+
+    // Insert the new action
+    await db.query(
+      'INSERT INTO inter_actions (id, action_id, behaviour, matchtype, actions) VALUES (?, ?, ?, ?, ?)',
+      [id, nextActionId, behaviour, matchtype, JSON.stringify(actions)]
+    );
+
+    res.status(201).json({
+      message: 'Action created successfully',
+      action_id: nextActionId
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // PUT /api/interactions/:id/actions/:actionId
 router.put('/:id/actions/:actionId', async (req, res) => {
-    const { id, actionId } = req.params;
-    const { behaviour, matchtype, actions } = req.body;
-  
-    try {
-      const [result] = await db.query(
-        'UPDATE inter_actions SET behaviour = ?, matchtype = ?, actions = ? WHERE id = ? AND action_id = ?',
-        [behaviour, matchtype, JSON.stringify(actions), id, actionId]
+  const { id, actionId } = req.params;
+  const { behaviour, matchtype, actions } = req.body;
+
+  try {
+    // First check if the action exists
+    const [existing] = await db.query(
+      'SELECT * FROM inter_actions WHERE id = ? AND action_id = ?',
+      [id, actionId]
+    );
+
+    if (existing.length === 0) {
+      // If not exists, create it
+      await db.query(
+        'INSERT INTO inter_actions (id, action_id, behaviour, matchtype, actions) VALUES (?, ?, ?, ?, ?)',
+        [id, actionId, behaviour, matchtype, JSON.stringify(actions)]
       );
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ error: 'Action not found' });
-      }
-      res.json({ message: 'Action updated successfully' });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.status(201).json({ message: 'Action created successfully' });
     }
-  });
+
+    // If exists, update it
+    const [result] = await db.query(
+      'UPDATE inter_actions SET behaviour = ?, matchtype = ?, actions = ? WHERE id = ? AND action_id = ?',
+      [behaviour, matchtype, JSON.stringify(actions), id, actionId]
+    );
+    
+    res.json({ message: 'Action updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
   
 // PUT /api/interactions/:id/holograms/:hologramId
 router.put('/:id/holograms/:hologramId', async (req, res) => {
@@ -162,5 +224,18 @@ router.post('/', async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   });
+
+router.delete('/:id/actions/:itemId', async (req, res) => {
+    const {id, itemId} = req.params;
+
+    try {
+      await db.query('DELETE FROM inter_actions WHERE id = ? AND action_id = ?', [id, itemId]);
+      res.status(200).json({ message: 'Action deleted successfully'});
+
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+      console.error(err);
+    }
+});
 
 module.exports = router;

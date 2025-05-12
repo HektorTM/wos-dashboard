@@ -9,6 +9,7 @@
 @import './components/Page.css';
 @import './components/SearchResults.css';
 @import './components/Modal.css';
+@import './components/Tables.css';
 
 [data-theme="light"] {
   @import './themes/light.css';
