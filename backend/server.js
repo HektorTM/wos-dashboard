@@ -19,6 +19,7 @@ const ChannelRoutes = require('./Routes/db_server/ChannelRoutes');
 const StatsRoutes = require('./Routes/db_server/StatsRoutes');
 const InteractionRoutes = require('./Routes/db_server/InteractionRoutes');
 const ConditionRoutes = require('./Routes/db_server/ConditionRoutes');
+const PlayerDataRoutes = require('./Routes/db_server/PlayerDataRoutes');
 
 require('./utils/initTables');
 
@@ -68,6 +69,7 @@ app.use('/api/channels', ChannelRoutes);
 app.use('/api/stats', StatsRoutes);
 app.use('/api/interactions', InteractionRoutes);
 app.use('/api/conditions', ConditionRoutes);
+app.use('/api/playerdata', )
 
 app.use('/api/activity', ActivityRoutes);
 

@@ -47,6 +47,7 @@ export type PermissionKey =
     | 'CHANNEL_CREATE'
     | 'CHANNEL_EDIT'
     | 'CHANNEL_DELETE'
+    | 'PLAYER_VIEW'
 
 
 
@@ -257,6 +258,10 @@ export const PERMISSIONS: Permission[] = [
         key: 'CHANNEL_DELETE',
         label: 'Delete Channel',
     },
+    {
+        key: 'PLAYER_VIEW',
+        label: 'View Players'
+    }
 
 ];
 
@@ -377,5 +382,12 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             { key: "CHANNEL_EDIT", label: "Edit Channels" },
             { key: "CHANNEL_DELETE", label: "Delete Channels" },
         ],
+    },
+
+    {
+        group: "Players",
+        permissions: [
+            {key: "PLAYER_VIEW", label: "View Players"},
+        ]
     },
 ];

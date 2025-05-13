@@ -28,6 +28,7 @@ import ViewStat from './pages/Stats/ViewStat';
 import RecipeTab from './pages/Crecipes/CrecipecTab';
 import InteractionTab from './pages/Interactions/InteractionTab';
 import ViewInteraction from './pages/Interactions/ViewInteraction';
+import PlayerTab from './pages/Players/PlayersTab';
 
 
 
@@ -56,6 +57,7 @@ const App = () => {
                 <Route path="/stats" element={<ProtectedRoute requiredPermission='STATS_VIEW'><StatsTab /></ProtectedRoute>} />
                 <Route path="/recipes" element={<ProtectedRoute requiredPermission='RECIPE_VIEW'><RecipeTab /></ProtectedRoute>} />
                 <Route path="/interactions" element={<ProtectedRoute requiredPermission='INTERACTION_VIEW'><InteractionTab /></ProtectedRoute>} />
+                <Route path="/players" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><PlayerTab></PlayerTab></ProtectedRoute>} />
 
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
                 <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
