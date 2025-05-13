@@ -90,7 +90,7 @@ const ViewPlayer = () => {
         return (
           <div className="tab-content">
             {renderTabHeader('general', 'General')}
-            {playerdata.actions?.length ? (
+            {playerdata.unlockables?.length ? (
               <div className="page-table-container">
                 <table className="page-table">
                   <thead>
@@ -103,65 +103,14 @@ const ViewPlayer = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {interaction.actions.map((action) => (
-                      <tr key={action.action_id}>
-                        <td>{action.action_id}</td>
-                        <td>{action.behaviour}</td>
-                        <td>{action.matchtype}</td>
+                    {playerdata.unlockables?.map((action) => (
+                      <tr key={action.id}>
+                        <td>{action.id}</td>
+                        <td>{action.id}</td>
+                        <td>{action.id}</td>
                         <td>
-                          <div className="condition-container">
-                            <table className="condition-table">
-                              <thead>
-                                <tr>
-                                  <th>Key</th>
-                                  <th>Value</th>
-                                  <th>Parameter</th>
-                                  <th></th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {action.conditions?.length ? (
-                                  action.conditions.map((condition, index) => (
-                                    <tr key={`${action.action_id}-${index}`}>
-                                      <td>{condition.condition_key}</td>
-                                      <td>{condition.value}</td>
-                                      <td>{condition.parameter}</td>
-                                      <td>
-                                        <div style={{gap: '0.5rem'}}>
-                                          <button
-                                            className='btn btn-sm btn-primary'
-                                          >
-                                          ✏️
-                                          </button>
-                                          <button 
-                                            className="btn btn-sm btn-danger"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              // Add delete handler
-                                            }}
-                                          >
-                                          🗑️
-                                          </button>
-                                         </div>
-                                      </td>
-                                      
-                                    </tr>
-                                    
-                                  ))
-                                ) : (
-                                  <tr>
-                                    <td colSpan={4} className="no-conditions">No conditions</td>
-                                  </tr>
-                                )}
-                                <button
-                                  className='btn btn-sm btn-success'>
-                                    Add Condition
-                                </button>
-                              </tbody>
-                            </table>
-                          </div>
                         </td>
-                        <td>{renderActionButtons('actions', action)}</td>
+                        <td>nothing</td>
                       </tr>
                     ))}
                   </tbody>
@@ -223,7 +172,7 @@ const ViewPlayer = () => {
                     {playerdata.unlockables.map((unlockable) => (
                       <tr key={unlockable.id}>
                         <td>{unlockable.id}</td>
-                        <td>{renderActionButtons('unlockable', unlockable)}</td>
+                        <td>Remove</td>
                       </tr>
                     ))}
                   </tbody>
@@ -254,7 +203,7 @@ const ViewPlayer = () => {
                       <tr key={stat.id}>
                         <td>{stat.id}</td>
                         <td>{stat.value}</td>
-                        <td>{renderActionButtons('blocks', block)}</td>
+                        <td></td>
                       </tr>
                     ))}
                   </tbody>
@@ -287,7 +236,7 @@ const ViewPlayer = () => {
                         <td>{cosmetic.cosmetic_type}</td>
                         <td>{cosmetic.cosmetic_id}</td>
                         <td>{cosmetic.equipped ? "Yes" : "No"}</td>
-                        <td>{renderActionButtons('npcs', npc)}</td>
+                        <td></td>
                       </tr>
                     ))}
                   </tbody>
