@@ -69,7 +69,7 @@ app.use('/api/channels', ChannelRoutes);
 app.use('/api/stats', StatsRoutes);
 app.use('/api/interactions', InteractionRoutes);
 app.use('/api/conditions', ConditionRoutes);
-app.use('/api/playerdata', )
+app.use('/api/playerdata', PlayerDataRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 

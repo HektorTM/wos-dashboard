@@ -29,6 +29,7 @@ import RecipeTab from './pages/Crecipes/CrecipecTab';
 import InteractionTab from './pages/Interactions/InteractionTab';
 import ViewInteraction from './pages/Interactions/ViewInteraction';
 import PlayerTab from './pages/Players/PlayersTab';
+import ViewPlayer from './pages/Players/ViewPlayer';
 
 
 
@@ -68,6 +69,7 @@ const App = () => {
                 <Route path="/view/cosmetic/:id" element={<ProtectedRoute requiredPermission='COSMETIC_EDIT'><ViewCosmetic/></ProtectedRoute>} />
                 <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='UNLOCKABLE_EDIT'><ViewUnlockable /></ProtectedRoute>} />  
                 <Route path="/view/interaction/:id" element={<ProtectedRoute requiredPermission='INTERACTION_EDIT'><ViewInteraction /></ProtectedRoute>} /> 
+                <Route path="/view/player/:uuid" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><ViewPlayer></ViewPlayer></ProtectedRoute>} />
 
 
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />

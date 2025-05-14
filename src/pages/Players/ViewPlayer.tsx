@@ -81,6 +81,18 @@ const ViewPlayer = () => {
       <h3>{title}</h3>
     </div>
   );
+  const getUsername = async (uuid: string) => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/mc-user/uuid/${uuid}`, {
+          method: 'GET',
+        });
+
+        const data = await res.json();
+        return data.id as string;
+      } catch (err) {
+        console.error(err);
+      }
+  };
 
   const renderTabContent = () => {
     if (!playerdata) return null;
@@ -140,9 +152,9 @@ const ViewPlayer = () => {
                   <tbody>
                     {playerdata.friends.map((friend) => (
                       <tr key={friend.friend_uuid}>
-                        <td>SKIN PNG</td>
-                        <td>{parseUUIDToUsername(friend.friend_uuid)}</td>
-                        <td><Link to={`/view/${friend.friend_uuid}`}>{friend.friend_uuid}</Link></td>
+                        <td><img style={{width: "50px", height:"50px"}} src={`https://minotar.net/helm/${friend.friend_uuid}/100.png`}></img></td>
+                        <td>Username Placeholder</td>
+                        <td><Link to={`/view/player/${friend.friend_uuid}`}>{friend.friend_uuid}</Link></td>
                         <td>{friend.favorite ? "Yes" : "No"}</td>
                       </tr>
                     ))}

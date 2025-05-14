@@ -62,13 +62,18 @@
     margin-bottom: 5px;
   }
   
-  .form-group input[type="text"] {
+  .form-group input {
     width: 100%;
     padding: 8px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 4px;
     color: white;
+  }
+
+  .form-group input::placeholder {
+    color: var(--text-color);
+    font-size: small;
   }
   
   .checkbox-group {

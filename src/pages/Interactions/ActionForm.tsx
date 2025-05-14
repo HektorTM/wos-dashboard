@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 interface ActionFormProps {
     item: any;
     onChange: (item: any) => void;
@@ -9,54 +9,55 @@ interface ActionFormProps {
 }
 
 export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: ActionFormProps) => {
-    // Safely initialize commands as an array
+    // Initialize commands state safely
     const [commands, setCommands] = useState<string[]>(() => {
-        // First try to use item.commands if it exists
         if (Array.isArray(item.commands)) {
-          return [...item.commands];
+            return [...item.commands];
         }
-        // Then try to parse item.actions if it exists
-        if (item.actions) {
-          try {
-            const parsed = JSON.parse(item.actions);
-            return Array.isArray(parsed) ? parsed : [];
-          } catch (e) {
-            return [];
-          }
+        if (typeof item.actions === 'string') {
+            try {
+                const parsed = JSON.parse(item.actions);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                console.error("Failed to parse actions:", e);
+                return [];
+            }
         }
-        // Default to empty array
         return [];
-      });
-    
-      // Update parent when commands change
-      useEffect(() => {
+    });
+
+    const [currentCommand, setCurrentCommand] = useState(item.currentCommand || '');
+
+    // Update parent only when necessary
+    useEffect(() => {
         onChange({
-          ...item,
-          commands,
-          actions: JSON.stringify(commands)
+            ...item,
+            commands,
+            actions: JSON.stringify(commands),
+            currentCommand
         });
-      }, [commands]);
-    
-      // Rest of your component remains the same...
-      const handleCommandChange = (index: number, newValue: string) => {
+    }, [commands, currentCommand]);
+
+    const handleCommandChange = (index: number, newValue: string) => {
         const updatedCommands = [...commands];
         updatedCommands[index] = newValue;
         setCommands(updatedCommands);
-      };
-    
-      const handleAddCommand = () => {
-        if (item.currentCommand?.trim()) {
-          setCommands([...commands, item.currentCommand]);
-          onChange({ ...item, currentCommand: '' });
+    };
+
+    const handleAddCommand = () => {
+        const trimmedCommand = currentCommand.trim();
+        if (trimmedCommand) {
+            setCommands([...commands, trimmedCommand]);
+            setCurrentCommand('');
+            onAddCommand();
         }
-      };
-    
-      const handleRemoveCommand = (index: number) => {
-        const updatedCommands = [...commands];
-        updatedCommands.splice(index, 1);
+    };
+
+    const handleRemoveCommand = (index: number) => {
+        const updatedCommands = commands.filter((_, i) => i !== index);
         setCommands(updatedCommands);
         onRemoveCommand(index);
-      };
+    };
 
     return (
         <div className="form-group">
@@ -84,19 +85,17 @@ export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: Ac
             <div style={{ display: 'flex', marginBottom: '1rem' }}>
                 <input
                     type="text"
-                    value={item.currentCommand || ''}
-                    onChange={(e) => onChange({...item, currentCommand: e.target.value})}
+                    value={currentCommand}
+                    onChange={(e) => setCurrentCommand(e.target.value)}
                     className="form-control"
                     style={{ flex: 1, marginRight: '0.5rem' }}
                     placeholder="Enter command"
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddCommand()}
                 />
                 <button 
                     className="btn btn-primary"
-                    onClick={() => {
-                        handleAddCommand();
-                        onAddCommand();
-                    }}
-                    disabled={!item.currentCommand}
+                    onClick={handleAddCommand}
+                    disabled={!currentCommand.trim()}
                 >
                     Add
                 </button>
@@ -126,10 +125,7 @@ export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: Ac
                             />
                             <button 
                                 className="action-btn"
-                                onClick={() => {
-                                    handleRemoveCommand(index);
-                                    onRemoveCommand(index);
-                                }}
+                                onClick={() => handleRemoveCommand(index)}
                                 style={{
                                     background: 'none',
                                     border: 'none',

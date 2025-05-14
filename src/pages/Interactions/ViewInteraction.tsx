@@ -10,7 +10,8 @@ type InteractionTab = 'actions' | 'holograms' | 'particles' | 'blocks' | 'npcs';
 
 interface Condition {
   type: string;
-  id: string;
+  type_id: string;
+  condition_id: number;
   condition_key: string;
   value: string;
   parameter: string;
@@ -65,6 +66,19 @@ const ViewInteraction = () => {
   const [currentItem, setCurrentItem] = useState<any>(null);
   const [newItem, setNewItem] = useState<any>({});
 
+  // Condition Modal State
+  const [showConditionModal, setShowConditionModal] = useState(false);
+  const [currentCondition, setCurrentCondition] = useState<Condition | null>(null);
+  const [currentActionId, setCurrentActionId] = useState<number | null>(null);
+  const [newCondition, setNewCondition] = useState<Omit<Condition, 'id'>>({
+    type: 'interaction',
+    type_id: `${id}`,
+    condition_id: 0,
+    condition_key: '',
+    value: '',
+    parameter: ''
+  });
+
   
 
   useEffect(() => {
@@ -92,28 +106,25 @@ const ViewInteraction = () => {
   }, [id]);
 
   useEffect(() => {
+    if(!interaction) return;
+    if(interaction.actions?.length == 0) return;
+
     const fetchConditions = async () => {
       try {
-        if (!interaction?.actions) return;
+        if (!interaction.actions) return;
         
-        // Fetch conditions for each action in the interaction
         const conditionsPromises = interaction.actions.map(async (action) => {
           const res = await fetch(
             `http://localhost:3001/api/conditions/interaction/${id}:${action.action_id}`, 
-            {
-              method: 'GET',
-              credentials: 'include'
-            }
+            { method: 'GET', credentials: 'include' }
           );
           return res.json();
         });
-  
+    
         const conditionsResults = await Promise.all(conditionsPromises);
         
-        // Update state with proper typing
         setInteraction(prev => {
           if (!prev) return null;
-          
           return {
             ...prev,
             actions: prev.actions?.map((action, index) => ({
@@ -126,9 +137,9 @@ const ViewInteraction = () => {
         console.error('Failed to fetch conditions:', err);
       }
     };
-  
+    
     fetchConditions();
-  }, [id, interaction?.actions]);
+  }, [id, interaction, interaction?.actions]); // Added interaction to dependencies
 
   const handleAddClick = (tab: InteractionTab) => {
     setCurrentTab(tab);
@@ -136,11 +147,109 @@ const ViewInteraction = () => {
     setNewItem({ 
       commands: [],
       currentCommand: '',
-      actions: '[]',
+      actions: [],
       behaviour: 'break',
       matchtype: 'all'
     });
     setShowModal(true);
+  };
+
+  const handleAddConditionClick = (actionId: number) => {
+    setCurrentActionId(actionId);
+    setCurrentCondition(null);
+    setNewCondition({
+      type: 'interaction',
+      type_id: `${id}:${actionId}`,
+      condition_id: currentCondition?.condition_id ?? 0,
+      condition_key: '',
+      value: '',
+      parameter: ''
+    });
+    setShowConditionModal(true);
+  };
+
+  const handleEditConditionClick = (actionId: number, condition: Condition) => {
+    setCurrentActionId(actionId);
+    setCurrentCondition(condition);
+    setNewCondition({
+      type: 'interaction',
+      type_id: condition.type_id,
+      condition_id: condition.condition_id,
+      condition_key: condition.condition_key,
+      value: condition.value,
+      parameter: condition.parameter
+    });
+    setShowConditionModal(true);
+  };
+
+  const handleConditionSubmit = async () => {
+    try {
+      if (!currentActionId) return;
+
+      const endpoint = currentCondition 
+        ? `http://localhost:3001/api/conditions/interaction/${id}:${currentActionId}/${currentCondition.condition_id}`
+        : `http://localhost:3001/api/conditions/interaction/${id}:${currentActionId}`;
+
+      const method = currentCondition ? 'PUT' : 'POST';
+      
+      const res = await fetch(endpoint, {
+        method,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCondition)
+      });
+
+      if (res.ok) {
+        // Refresh the conditions data
+        const fetchConditions = async () => {
+          const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+            method: 'GET',
+            credentials: 'include',
+          });
+          const updatedInteraction = await updatedData.json();
+          setInteraction({
+            ...updatedInteraction,
+            blocks: updatedInteraction.blocks || [],
+            npcs: updatedInteraction.npcs || []
+          });
+        };
+        
+        fetchConditions();
+        setShowConditionModal(false);
+      }
+    } catch (err) {
+      console.error('Failed to save condition:', err);
+    }
+  };
+
+  const handleDeleteCondition = async (actionId: number, conditionId: number) => {
+    if (!window.confirm('Are you sure you want to delete this condition?')) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:3001/api/conditions/interaction/${id}:${actionId}/${conditionId}`,
+        {
+          method: 'DELETE',
+          credentials: 'include'
+        }
+      );
+
+      if (res.ok) {
+        // Refresh the conditions data
+        const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const updatedInteraction = await updatedData.json();
+        setInteraction({
+          ...updatedInteraction,
+          blocks: updatedInteraction.blocks || [],
+          npcs: updatedInteraction.npcs || []
+        });
+      }
+    } catch (err) {
+      console.error('Failed to delete condition:', err);
+    }
   };
 
   const handleEditClick = (tab: InteractionTab, item: any) => {
@@ -514,18 +623,18 @@ const ViewInteraction = () => {
 
     return (
       <div style={{gap: '0.5rem' }}>
-        <button 
+        <p 
           className="btn btn-sm btn-primary"
           onClick={() => handleEditClick(tab, item)}
         >
           Edit
-        </button>
-        <button 
+        </p>
+        <p 
           className="btn btn-sm btn-danger"
           onClick={() => handleDelete(tab, itemId)}
         >
           Delete
-        </button>
+        </p>
       </div>
     );
   };
@@ -576,35 +685,42 @@ const ViewInteraction = () => {
                                       <td>{condition.parameter}</td>
                                       <td>
                                         <div style={{gap: '0.5rem'}}>
-                                          <button
+                                          <p
                                             className='btn btn-sm btn-primary'
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleEditConditionClick(action.action_id, condition);
+                                            }}
                                           >
                                           ✏️
-                                          </button>
-                                          <button 
+                                          </p>
+                                          <p 
                                             className="btn btn-sm btn-danger"
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              // Add delete handler
+                                              handleDeleteCondition(action.action_id, condition.condition_id);
                                             }}
                                           >
                                           🗑️
-                                          </button>
+                                          </p>
                                          </div>
                                       </td>
-                                      
                                     </tr>
-                                    
                                   ))
                                 ) : (
                                   <tr>
                                     <td colSpan={4} className="no-conditions">No conditions</td>
                                   </tr>
                                 )}
-                                <button
-                                  className='btn btn-sm btn-success'>
+                                <p
+                                  className='btn btn-sm btn-success'
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAddConditionClick(action.action_id);
+                                  }}
+                                  >
                                     Add Condition
-                                </button>
+                                </p>
                               </tbody>
                             </table>
                           </div>
@@ -707,7 +823,7 @@ const ViewInteraction = () => {
                   <tbody>
                     {interaction.blocks.map((block, index) => (
                       <tr key={index}>
-                        <td>{block}</td>
+                        <td>{`${block}`}</td>
                         <td>{renderActionButtons('blocks', block)}</td>
                       </tr>
                     ))}
@@ -836,6 +952,65 @@ const ViewInteraction = () => {
             onClick={handleModalSubmit}
           >
             {modalMode === 'create' ? 'Add' : 'Save'}
+          </button>
+        </div>
+      </Modal>
+
+      {/* Condition Modal */}
+      <Modal 
+        isOpen={showConditionModal}
+        onClose={() => setShowConditionModal(false)}
+        title={`${currentCondition ? 'Edit' : 'Add'} Condition`}
+      >
+        <div className="form-group">
+          <label>Key</label>
+          <input
+            placeholder='Select'
+            list='condition_keys'
+            value={newCondition.condition_key}
+            onChange={(e) => setNewCondition({...newCondition, condition_key: e.target.value})}
+            className="form-control"
+          />
+          <datalist id="condition_keys">
+            <option value="has_citem"></option>
+            <option value="has_not_citem"></option>
+            <option value="has_unlockable"></option>
+            <option value="has_not_unlockable"></option>
+            <option value="has_stats"></option>
+            <option value="has_not_stats"></option>
+          </datalist>
+          
+          <label>Value</label>
+          <input
+            type="text"
+            placeholder='Identifier'
+            value={newCondition.value}
+            onChange={(e) => setNewCondition({...newCondition, value: e.target.value})}
+            className="form-control"
+          />
+          
+          <label>Parameter</label>
+          <input
+            type="text"
+            placeholder='e.g. Amount'
+            value={newCondition.parameter}
+            onChange={(e) => setNewCondition({...newCondition, parameter: e.target.value})}
+            className="form-control"
+          />
+        </div>
+        
+        <div className="modal-actions">
+          <button 
+            className="btn btn-secondary"
+            onClick={() => setShowConditionModal(false)}
+          >
+            Cancel
+          </button>
+          <button 
+            className="btn btn-primary"
+            onClick={handleConditionSubmit}
+          >
+            {currentCondition ? 'Update' : 'Add'}
           </button>
         </div>
       </Modal>
