@@ -45,10 +45,12 @@ interface Hologram {
 
 interface Particle {
   id: string;
-  particle_id: string;
+  particle_id: number;
   behaviour: string;
   matchtype: string;
   particle: string;
+  particle_color: string;
+  conditions?: Condition[];
 }
 
 const ViewInteraction = () => {
@@ -68,6 +70,7 @@ const ViewInteraction = () => {
 
   // Condition Modal State
   const [showConditionModal, setShowConditionModal] = useState(false);
+  const [currentType, setCurrentType] = useState<string | null>(null);
   const [currentCondition, setCurrentCondition] = useState<Condition | null>(null);
   const [currentActionId, setCurrentActionId] = useState<number | null>(null);
   const [newCondition, setNewCondition] = useState<Omit<Condition, 'id'>>({
@@ -137,9 +140,44 @@ const ViewInteraction = () => {
         console.error('Failed to fetch conditions:', err);
       }
     };
-    
     fetchConditions();
-  }, [id, interaction, interaction?.actions]); // Added interaction to dependencies
+  }, [id, interaction]); // Added interaction to dependencies
+
+  useEffect(() => {
+    if (!interaction) return;
+    if (interaction.particles?.length === 0) return;
+
+    const fetchParticleConditions = async () => {
+      try {
+        if (!interaction.particles) return;
+        
+        const conditionsPromises = interaction.particles.map(async (particle) => {
+          const res = await fetch(
+            `http://localhost:3001/api/conditions/particle/${id}:${particle.particle_id}`, 
+            { method: 'GET', credentials: 'include' }
+          );
+          return res.json();
+        });
+    
+        const conditionsResults = await Promise.all(conditionsPromises);
+        
+        setInteraction(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            particles: prev.particles?.map((particle, index) => ({
+              ...particle,
+              conditions: conditionsResults[index] || []
+            }))
+          };
+        });
+      } catch (err) {
+        console.error('Failed to fetch particle conditions:', err);
+      }
+    };
+    
+    fetchParticleConditions();
+  }, [id, interaction]);
 
   const handleAddClick = (tab: InteractionTab) => {
     setCurrentTab(tab);
@@ -154,11 +192,12 @@ const ViewInteraction = () => {
     setShowModal(true);
   };
 
-  const handleAddConditionClick = (actionId: number) => {
+  const handleAddConditionClick = (type: string, actionId: number) => {
+    setCurrentType(type);
     setCurrentActionId(actionId);
     setCurrentCondition(null);
     setNewCondition({
-      type: 'interaction',
+      type: type,
       type_id: `${id}:${actionId}`,
       condition_id: currentCondition?.condition_id ?? 0,
       condition_key: '',
@@ -168,11 +207,12 @@ const ViewInteraction = () => {
     setShowConditionModal(true);
   };
 
-  const handleEditConditionClick = (actionId: number, condition: Condition) => {
+  const handleEditConditionClick = (type: string, actionId: number, condition: Condition) => {
+    setCurrentType(type);
     setCurrentActionId(actionId);
     setCurrentCondition(condition);
     setNewCondition({
-      type: 'interaction',
+      type: type,
       type_id: condition.type_id,
       condition_id: condition.condition_id,
       condition_key: condition.condition_key,
@@ -187,8 +227,8 @@ const ViewInteraction = () => {
       if (!currentActionId) return;
 
       const endpoint = currentCondition 
-        ? `http://localhost:3001/api/conditions/interaction/${id}:${currentActionId}/${currentCondition.condition_id}`
-        : `http://localhost:3001/api/conditions/interaction/${id}:${currentActionId}`;
+        ? `http://localhost:3001/api/conditions/${currentType}/${id}:${currentActionId}/${currentCondition.condition_id}`
+        : `http://localhost:3001/api/conditions/${currentType}/${id}:${currentActionId}`;
 
       const method = currentCondition ? 'PUT' : 'POST';
       
@@ -222,12 +262,12 @@ const ViewInteraction = () => {
     }
   };
 
-  const handleDeleteCondition = async (actionId: number, conditionId: number) => {
+  const handleDeleteCondition = async (type: string, actionId: number, conditionId: number) => {
     if (!window.confirm('Are you sure you want to delete this condition?')) return;
 
     try {
       const res = await fetch(
-        `http://localhost:3001/api/conditions/interaction/${id}:${actionId}/${conditionId}`,
+        `http://localhost:3001/api/conditions/${type}/${id}:${actionId}/${conditionId}`,
         {
           method: 'DELETE',
           credentials: 'include'
@@ -450,7 +490,8 @@ const ViewInteraction = () => {
           body = {
             behaviour: newItem.behaviour || 'default',
             matchtype: newItem.matchtype || 'default',
-            particle: newItem.particle || 'default'
+            particle: newItem.particle || 'default',
+            particle_color: newItem.particle_color || '',
           };
           break;
         case 'blocks':
@@ -554,6 +595,14 @@ const ViewInteraction = () => {
               onChange={(e) => setNewItem({...newItem, particle: e.target.value})}
               className="form-control"
             />
+
+            <label>Color</label>
+            <input
+              type="text"
+              value={newItem.particle_color || ''}
+              onChange={(e) => setNewItem({...newItem, particle_color: e.target.value})}
+              className='form-control'
+            ></input>
           </div>
         );
       case 'blocks':
@@ -689,7 +738,7 @@ const ViewInteraction = () => {
                                             className='btn btn-sm btn-primary'
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              handleEditConditionClick(action.action_id, condition);
+                                              handleEditConditionClick("interaction", action.action_id, condition);
                                             }}
                                           >
                                           ✏️
@@ -698,7 +747,7 @@ const ViewInteraction = () => {
                                             className="btn btn-sm btn-danger"
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              handleDeleteCondition(action.action_id, condition.condition_id);
+                                              handleDeleteCondition("interaction", action.action_id, condition.condition_id);
                                             }}
                                           >
                                           🗑️
@@ -716,7 +765,7 @@ const ViewInteraction = () => {
                                   className='btn btn-sm btn-success'
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    handleAddConditionClick(action.action_id);
+                                    handleAddConditionClick("interaction",action.action_id);
                                   }}
                                   >
                                     Add Condition
@@ -785,6 +834,7 @@ const ViewInteraction = () => {
                       <th>Behaviour</th>
                       <th>Match Type</th>
                       <th>Particle</th>
+                      <th>Conditions</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -795,6 +845,66 @@ const ViewInteraction = () => {
                         <td>{particle.behaviour}</td>
                         <td>{particle.matchtype}</td>
                         <td>{particle.particle}</td>
+                        <td>
+                          <div className="condition-container">
+                            <table className="condition-table">
+                              <thead>
+                                <tr>
+                                  <th>Key</th>
+                                  <th>Value</th>
+                                  <th>Parameter</th>
+                                  <th></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {particle.conditions?.length ? (
+                                  particle.conditions.map((condition, index) => (
+                                    <tr key={`${particle.particle_id}-${index}`}>
+                                      <td>{condition.condition_key}</td>
+                                      <td>{condition.value}</td>
+                                      <td>{condition.parameter}</td>
+                                      <td>
+                                        <div style={{gap: '0.5rem'}}>
+                                          <p
+                                            className='btn btn-sm btn-primary'
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleEditConditionClick("particle", particle.particle_id, condition);
+                                            }}
+                                          >
+                                          ✏️
+                                          </p>
+                                          <p 
+                                            className="btn btn-sm btn-danger"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleDeleteCondition("particle", particle.particle_id, condition.condition_id);
+                                            }}
+                                          >
+                                          🗑️
+                                          </p>
+                                         </div>
+                                      </td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan={4} className="no-conditions">No conditions</td>
+                                  </tr>
+                                )}
+                                <p
+                                  className='btn btn-sm btn-success'
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAddConditionClick("particle", particle.particle_id);
+                                  }}
+                                  >
+                                    Add Condition
+                                </p>
+                              </tbody>
+                            </table>
+                          </div>
+                        </td>
                         <td>{renderActionButtons('particles', particle)}</td>
                       </tr>
                     ))}
@@ -978,6 +1088,8 @@ const ViewInteraction = () => {
             <option value="has_not_unlockable"></option>
             <option value="has_stats"></option>
             <option value="has_not_stats"></option>
+            <option value="is_in_region"></option>
+            <option value="is_not_in_region"></option>
           </datalist>
           
           <label>Value</label>

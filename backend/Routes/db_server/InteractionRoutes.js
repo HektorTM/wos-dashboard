@@ -24,6 +24,7 @@ router.get('/:id', async (req, res) => {
     }
 
     const [actions] = await db.query('SELECT * FROM inter_actions WHERE id = ? ORDER BY action_id ASC', [id]);
+    const [particles] = await db.query('SELECT * FROM inter_particles WHERE id = ?', [id]);
     const [holograms] = await db.query('SELECT * FROM inter_holograms WHERE interaction_id = ?', [id]);
     const [blocks] = await db.query('SELECT location FROM inter_blocks WHERE interaction_id = ?', [id]);
     const [npcs] = await db.query('SELECT npc_id FROM inter_npcs WHERE interaction_id = ?', [id]);
@@ -31,6 +32,7 @@ router.get('/:id', async (req, res) => {
     res.json({
       id,
       actions,
+      particles,
       holograms,
       blocks,
       npcs
@@ -184,22 +186,85 @@ router.put('/:id/holograms/:hologramId', async (req, res) => {
     }
   });
   
-router.put('/:id/particles/:particleId', async (req, res) => {
-    const { id, particleId } = req.params;
-    const { behaviour, matchtype, particle } = req.body;
 
-    try {
-        const [result] = await db.query(
-            'UPDATE inter_particles SET behaviour = ?, matchtype = ?, particle = ? WHERE interaciton_id = ? and particle_id = ?',
-            [behaviour, matchtype, particle, id, particleId]
-        );
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Particle not found'});
-        }
-        res.json({ message: 'Particle updated successfully'});
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+  // PARTICLES
+
+// ✅ Get single particle for interaction
+router.get('/:id/particles/:particleId', async (req, res) => {
+  const { id, particleId } = req.params;
+  try {
+    const [actions] = await db.query(
+      'SELECT * FROM inter_particles WHERE id = ? AND particle_id = ?', 
+      [id, particleId]
+    );
+    
+    if (actions.length === 0) {
+      return res.status(404).json({ error: 'Particle not found' });
     }
+    
+    res.json(actions[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/:id/particles', async (req, res) => {
+  const { id } = req.params;
+  const { behaviour, matchtype, particle, particleColor } = req.body;
+
+  try {
+    const [maxIdResult] = await db.query(
+      'SELECT MAX(particle_id) as maxId FROM inter_particles WHERE id = ?',
+      [id]
+    );
+    const nextParticleId = (maxIdResult[0].maxId || 0) + 1;
+
+    await db.query(
+      'INSERT INTO inter_particles (id, particle_id, behaviour, matchtype, particle, particle_color) VALUES (?, ?, ?, ?, ?, ?)',
+      [id, nextParticleId, behaviour, matchtype, particle, particleColor]
+    );
+
+    res.status(201).json({
+      message: 'Particle created successfully',
+      particle_id: nextParticleId
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/interactions/:id/actions/:actionId
+router.put('/:id/particles/:particleId', async (req, res) => {
+  const { id, particleId } = req.params;
+  const { behaviour, matchtype, particle, particleColor } = req.body;
+
+  try {
+    // First check if the action exists
+    const [existing] = await db.query(
+      'SELECT * FROM inter_particles WHERE id = ? AND particle_id = ?',
+      [id, particleId]
+    );
+
+    if (existing.length === 0) {
+      // If not exists, create it
+      await db.query(
+        'INSERT INTO inter_particles (id, particle_id, behaviour, matchtype, particle, particle_color) VALUES (?, ?, ?, ?, ?, ?)',
+        [id, particleId, behaviour, matchtype, particle, particleColor]
+      );
+      return res.status(201).json({ message: 'Particle created successfully' });
+    }
+
+    // If exists, update it
+    const [result] = await db.query(
+      'UPDATE inter_particles SET behaviour = ?, matchtype = ?, particle = ?, particle_color = ? WHERE id = ? AND particle_id = ?',
+      [behaviour, matchtype, particle, particleColor, id, particleId]
+    );
+    
+    res.json({ message: 'Particle updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 router.post('/', async (req, res) => {
