@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -147,9 +148,9 @@ const ViewInteraction = () => {
     if (!interaction) return;
     if (interaction.particles?.length === 0) return;
 
-    const fetchParticleConditions = async () => {
+     const fetchParticleConditions = async () => {
       try {
-        if (!interaction.particles) return;
+        if (!interaction?.particles || interaction.particles.length === 0) return;
         
         const conditionsPromises = interaction.particles.map(async (particle) => {
           const res = await fetch(
@@ -161,23 +162,31 @@ const ViewInteraction = () => {
     
         const conditionsResults = await Promise.all(conditionsPromises);
         
-        setInteraction(prev => {
-          if (!prev) return null;
-          return {
-            ...prev,
-            particles: prev.particles?.map((particle, index) => ({
-              ...particle,
-              conditions: conditionsResults[index] || []
-            }))
-          };
+        // Only update if conditions have changed
+        const needsUpdate = interaction.particles.some((particle, index) => {
+          const newConditions = conditionsResults[index] || [];
+          return JSON.stringify(particle.conditions) !== JSON.stringify(newConditions);
         });
+        
+        if (needsUpdate) {
+          setInteraction(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              particles: prev.particles?.map((particle, index) => ({
+                ...particle,
+                conditions: conditionsResults[index] || []
+              }))
+            };
+          });
+        }
       } catch (err) {
         console.error('Failed to fetch particle conditions:', err);
       }
     };
     
     fetchParticleConditions();
-  }, [id, interaction]);
+  }, [id, interaction?.particles]);
 
   const handleAddClick = (tab: InteractionTab) => {
     setCurrentTab(tab);
@@ -424,7 +433,8 @@ const ViewInteraction = () => {
         body = {
           behaviour: newItem.behaviour || 'default',
           matchtype: newItem.matchtype || 'default',
-          particle: newItem.particle || 'default'
+          particle: newItem.particle || 'default',
+          particle_color: newItem.particle_color || ''
         };
         break;
       case 'blocks':

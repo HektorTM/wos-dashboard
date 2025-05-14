@@ -231,6 +231,7 @@ router.post('/:id/particles', async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ error: err.message });
+    console.error(err);
   }
 });
 
@@ -296,6 +297,19 @@ router.delete('/:id/actions/:itemId', async (req, res) => {
     try {
       await db.query('DELETE FROM inter_actions WHERE id = ? AND action_id = ?', [id, itemId]);
       res.status(200).json({ message: 'Action deleted successfully'});
+
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+      console.error(err);
+    }
+});
+
+router.delete('/:id/particles/:itemId', async (req, res) => {
+    const {id, itemId} = req.params;
+
+    try {
+      await db.query('DELETE FROM inter_particles WHERE id = ? AND particle_id = ?', [id, itemId]);
+      res.status(200).json({ message: 'Particle deleted successfully'});
 
     } catch (err) {
       res.status(500).json({ error: err.message });
