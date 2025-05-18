@@ -29,13 +29,15 @@ router.get('/:uuid', async (req, res) => {
         const [stats] = await db.query('SELECT * FROM playerdata_stats WHERE uuid = ?', [uuid]);
         const [friends] = await db.query('SELECT * FROM friends WHERE uuid = ?', [uuid]);
         const [cosmetics] = await db.query('SELECT * FROM player_cosmetics WHERE uuid = ?', [uuid]);
+        const [ecologs] = await db.query('SELECT * FROM eco_log WHERE uuid = ?', [uuid]);
 
         res.json({
             nicknames,
             unlockables,
             stats,
             friends,
-            cosmetics
+            cosmetics,
+            ecologs
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

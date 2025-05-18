@@ -4,9 +4,9 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import PageMetaBox from '../../components/PageMetaBox';
 import Modal from '../../components/Modal';
-import { parseUUIDToUsername } from '../../utils/parser';
+import { parseTime, parseUUIDToUsername } from '../../utils/parser';
 
-type PlayerTab = 'general' | 'friends' | 'unlockables' | 'stats' | 'cosmetics';
+type PlayerTab = 'general' | 'friends' | 'unlockables' | 'stats' | 'cosmetics' | 'ecologs';
 
 interface PlayerData {
   uuid: string;
@@ -16,11 +16,22 @@ interface PlayerData {
   unlockables?: Unlockables[];
   stats?: Stats[];
   cosmetics?: Cosmetics[];
+  ecologs?: EcoLogs[];
 }
 
 interface Nicknames {
   nickname: string;
   previous_nicks: string[];
+}
+
+interface EcoLogs {
+  timestamp: string;
+  currency: string;
+  previous_amount: bigint;
+  new_amount: bigint;
+  change_amount: bigint;
+  source_type: string;
+  source: string;
 }
 
 interface Friends {
@@ -42,6 +53,7 @@ interface Cosmetics {
   cosmetic_type: string;
   equipped: boolean;
 }
+
 
 const ViewPlayer = () => {
   const { uuid } = useParams();
@@ -260,6 +272,44 @@ const ViewPlayer = () => {
           </div>
         );
 
+      case 'ecologs':
+      return (
+        <div className="tab-content">
+          {renderTabHeader('ecologs', 'Eco Logs')}
+          {playerdata.ecologs?.length ? (
+            <div className="page-table-container">
+              <table className="page-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Currency</th>
+                    <th>Previous Amount</th>
+                    <th>New Amount</th>
+                    <th>Change Amount</th>
+                    <th>Source Type</th>
+                    <th>Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {playerdata.ecologs.map((log) => (
+                    <tr key={log.timestamp}>
+                      <td>{parseTime(log.timestamp)}</td>
+                      <td>{log.currency}</td>
+                      <td>{log.previous_amount}</td>
+                      <td>{log.new_amount}</td>
+                      <td>{log.change_amount}</td>
+                      <td>{log.source_type}</td>
+                      <td>{log.source}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>No Eco Logs found</p>
+          )}
+        </div>
+      );
       default:
         return null;
     }
@@ -322,6 +372,12 @@ const ViewPlayer = () => {
               onClick={() => setActiveTab('cosmetics')}
             >
               Cosmetics
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'ecologs' ? 'active' : ''}`}
+              onClick={() => setActiveTab('ecologs')}
+            >
+              Economy Logs
             </button>
           </div>
 

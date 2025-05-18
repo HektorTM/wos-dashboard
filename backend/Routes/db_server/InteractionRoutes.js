@@ -210,7 +210,7 @@ router.get('/:id/particles/:particleId', async (req, res) => {
 
 router.post('/:id/particles', async (req, res) => {
   const { id } = req.params;
-  const { behaviour, matchtype, particle, particleColor } = req.body;
+  const { behaviour, matchtype, particle, particle_color } = req.body;
 
   try {
     const [maxIdResult] = await db.query(
@@ -221,7 +221,7 @@ router.post('/:id/particles', async (req, res) => {
 
     await db.query(
       'INSERT INTO inter_particles (id, particle_id, behaviour, matchtype, particle, particle_color) VALUES (?, ?, ?, ?, ?, ?)',
-      [id, nextParticleId, behaviour, matchtype, particle, particleColor]
+      [id, nextParticleId, behaviour, matchtype, particle, particle_color]
     );
 
     res.status(201).json({
@@ -238,7 +238,7 @@ router.post('/:id/particles', async (req, res) => {
 // PUT /api/interactions/:id/actions/:actionId
 router.put('/:id/particles/:particleId', async (req, res) => {
   const { id, particleId } = req.params;
-  const { behaviour, matchtype, particle, particleColor } = req.body;
+  const { behaviour, matchtype, particle, particle_color } = req.body;
 
   try {
     // First check if the action exists
@@ -251,7 +251,7 @@ router.put('/:id/particles/:particleId', async (req, res) => {
       // If not exists, create it
       await db.query(
         'INSERT INTO inter_particles (id, particle_id, behaviour, matchtype, particle, particle_color) VALUES (?, ?, ?, ?, ?, ?)',
-        [id, particleId, behaviour, matchtype, particle, particleColor]
+        [id, particleId, behaviour, matchtype, particle, particle_color]
       );
       return res.status(201).json({ message: 'Particle created successfully' });
     }
@@ -259,7 +259,7 @@ router.put('/:id/particles/:particleId', async (req, res) => {
     // If exists, update it
     const [result] = await db.query(
       'UPDATE inter_particles SET behaviour = ?, matchtype = ?, particle = ?, particle_color = ? WHERE id = ? AND particle_id = ?',
-      [behaviour, matchtype, particle, particleColor, id, particleId]
+      [behaviour, matchtype, particle, particle_color, id, particleId]
     );
     
     res.json({ message: 'Particle updated successfully' });

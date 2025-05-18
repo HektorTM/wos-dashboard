@@ -350,17 +350,20 @@ const ViewInteraction = () => {
 
     try {
       let endpoint = '';
+      let deleteEndpoint = '';
       const interactionId = id;
       
       switch (tab) {
         case 'actions':
           endpoint = `http://localhost:3001/api/interactions/${interactionId}/actions/${itemId}`;
+          deleteEndpoint = `http://localhost:3001/api/conditions/interaction/${interactionId}:${itemId}`; 
           break;
         case 'holograms':
           endpoint = `http://localhost:3001/api/interactions/${id}/holograms/${itemId}`;
           break;
         case 'particles':
           endpoint = `http://localhost:3001/api/interactions/${id}/particles/${itemId}`;
+          deleteEndpoint = `http://localhost:3001/api/conditions/particles/${interactionId}:${itemId}`;
           break;
         case 'blocks':
           endpoint = `http://localhost:3001/api/interactions/${id}/blocks/${encodeURIComponent(itemId as string)}`;
@@ -375,7 +378,12 @@ const ViewInteraction = () => {
         credentials: 'include',
       });
 
-      if (res.ok) {
+      const res2 = await fetch(deleteEndpoint, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      if (res.ok && res2.ok) {
         // Refresh the data
         const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
           method: 'GET',
@@ -392,6 +400,8 @@ const ViewInteraction = () => {
       console.error(err);
       setError('Failed to delete item');
     }
+
+
   };
 
   const handleModalSubmit = async () => {
@@ -601,6 +611,7 @@ const ViewInteraction = () => {
             <label>Particle</label>
             <input
               type="text"
+              required
               value={newItem.particle || ''}
               onChange={(e) => setNewItem({...newItem, particle: e.target.value})}
               className="form-control"
@@ -608,7 +619,7 @@ const ViewInteraction = () => {
 
             <label>Color</label>
             <input
-              type="text"
+              type="color"
               value={newItem.particle_color || ''}
               onChange={(e) => setNewItem({...newItem, particle_color: e.target.value})}
               className='form-control'

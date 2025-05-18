@@ -110,7 +110,7 @@ router.delete('/:type/:id', async (req, res) => {
 
   try {
     const [result] = await db.query(
-      'DELETE FROM conditions WHERE type = ? AND id = ?',
+      'DELETE FROM conditions WHERE type = ? AND type_id = ?',
       [type, id]
     );
 
