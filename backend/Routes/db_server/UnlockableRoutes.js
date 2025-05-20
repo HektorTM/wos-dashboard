@@ -13,6 +13,22 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/exists/:id', async (req, res) => {
+  console.log('Request received for unlockable exists check:', req.params.id);
+  
+  try {
+    const [rows] = await db.query('SELECT 1 FROM unlockables WHERE id = ? LIMIT 1', [req.params.id]);
+    const exists = rows.length > 0;
+    console.log('Query result:', exists);
+    
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({ exists });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: err.message, exists: false });
+  }
+});
+
 // 2. Get a single unlockable by ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;

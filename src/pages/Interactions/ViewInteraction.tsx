@@ -6,6 +6,8 @@ import { useTheme } from '../../context/ThemeContext';
 import PageMetaBox from '../../components/PageMetaBox';
 import Modal from '../../components/Modal';
 import { ActionForm } from './ActionForm';
+import { createUnlockable, checkUnlockableExists } from '../../helpers/UnlockableFetcher';
+import { useAuth } from '../../context/AuthContext';
 
 type InteractionTab = 'actions' | 'holograms' | 'particles' | 'blocks' | 'npcs';
 
@@ -61,6 +63,7 @@ const ViewInteraction = () => {
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
   const [error, setError] = useState('');
+  const { authUser } = useAuth();
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -83,7 +86,7 @@ const ViewInteraction = () => {
     parameter: ''
   });
 
-  
+  const [unlockableExists, setUnlockableExists] = useState(true);
 
   useEffect(() => {
     const fetchInteraction = async () => {
@@ -143,6 +146,32 @@ const ViewInteraction = () => {
     };
     fetchConditions();
   }, [id, interaction]); // Added interaction to dependencies
+
+  useEffect(() => {
+    const checkUnlockableExistence = async () => {
+      if (['has_unlockable', 'has_not_unlockable'].includes(newCondition.condition_key) && newCondition.value) {
+        try {
+          // Call your API checking function (make sure this exists)
+          const { exists } = await checkUnlockableExists(newCondition.value);
+          setUnlockableExists(exists);
+        } catch (error) {
+          console.error('Error checking unlockable:', error);
+          setUnlockableExists(false);
+        }
+      }
+    };
+
+    const timeoutId = setTimeout(checkUnlockableExistence, 500);
+    return () => clearTimeout(timeoutId);
+  }, [newCondition.value, newCondition.condition_key]);
+
+
+  const handleCreateUnlockable = async () => {
+      await createUnlockable( newCondition.value, `${authUser?.uuid}` );
+      setUnlockableExists(true);
+    
+  }
+  
 
   useEffect(() => {
     if (!interaction) return;
@@ -1122,6 +1151,17 @@ const ViewInteraction = () => {
             className="form-control"
           />
           
+          {!unlockableExists && newCondition.value != "" && ['has_unlockable', 'has_not_unlockable'].includes(newCondition.condition_key) && (
+            <div className="mt-2">
+              <button
+              className="btn btn-sm btn-outline-primary"
+              onClick={() => handleCreateUnlockable()}
+              >
+                Create Unlockable: "{newCondition.value}"
+              </button>
+            </div>
+          )} 
+
           <label>Parameter</label>
           <input
             type="text"

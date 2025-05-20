@@ -30,9 +30,13 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
   const backToList = async () => {
     let destination = type;
     if (destination === "currency") {
-      destination = "currencie";
-    } 
-    navigate(`/${destination}s`)
+      destination = "currencies";
+    } else if (destination === "fish") {
+      destination = "fishing";
+    } else {
+      destination = destination+"s";
+    }
+    navigate(`/${destination}`)
   }
 
   const fetchMeta = async () => {

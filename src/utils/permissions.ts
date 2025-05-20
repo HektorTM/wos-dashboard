@@ -47,6 +47,10 @@ export type PermissionKey =
     | 'CHANNEL_CREATE'
     | 'CHANNEL_EDIT'
     | 'CHANNEL_DELETE'
+    | 'FISHING_VIEW'
+    | 'FISHING_CREATE'
+    | 'FISHING_EDIT'
+    | 'FISHING_DELETE'
     | 'PLAYER_VIEW'
 
 
@@ -259,6 +263,22 @@ export const PERMISSIONS: Permission[] = [
         label: 'Delete Channel',
     },
     {
+        key: 'FISHING_VIEW',
+        label: 'View FISHING',
+    },
+    {
+        key: 'FISHING_CREATE',
+        label: 'Create FISHING',
+    },
+    {
+        key: 'FISHING_EDIT',
+        label: 'Edit FISHING',
+    },
+    {
+        key: 'FISHING_DELETE',
+        label: 'Delete FISHING',
+    },
+    {
         key: 'PLAYER_VIEW',
         label: 'View Players'
     }
@@ -381,6 +401,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             { key: "CHANNEL_CREATE", label: "Create Channels"},
             { key: "CHANNEL_EDIT", label: "Edit Channels" },
             { key: "CHANNEL_DELETE", label: "Delete Channels" },
+        ],
+    },
+
+    {
+        group: "Fishing",
+        permissions: [
+            { key: "FISHING_VIEW", label: "View Fishing" },
+            { key: "FISHING_CREATE", label: "Create Fish"},
+            { key: "FISHING_EDIT", label: "Edit Fish" },
+            { key: "FISHING_DELETE", label: "Delete Fish" },
         ],
     },
 

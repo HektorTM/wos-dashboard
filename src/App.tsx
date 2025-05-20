@@ -30,6 +30,8 @@ import InteractionTab from './pages/Interactions/InteractionTab';
 import ViewInteraction from './pages/Interactions/ViewInteraction';
 import PlayerTab from './pages/Players/PlayersTab';
 import ViewPlayer from './pages/Players/ViewPlayer';
+import FishingTab from './pages/Fishing/FishingTab';
+import ViewFish from './pages/Fishing/ViewFish';
 
 
 
@@ -59,6 +61,7 @@ const App = () => {
                 <Route path="/recipes" element={<ProtectedRoute requiredPermission='RECIPE_VIEW'><RecipeTab /></ProtectedRoute>} />
                 <Route path="/interactions" element={<ProtectedRoute requiredPermission='INTERACTION_VIEW'><InteractionTab /></ProtectedRoute>} />
                 <Route path="/players" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><PlayerTab></PlayerTab></ProtectedRoute>} />
+                <Route path="/fishing" element={<ProtectedRoute requiredPermission='FISHING_VIEW'><FishingTab></FishingTab></ProtectedRoute>} />
 
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
                 <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
@@ -70,6 +73,7 @@ const App = () => {
                 <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='UNLOCKABLE_EDIT'><ViewUnlockable /></ProtectedRoute>} />  
                 <Route path="/view/interaction/:id" element={<ProtectedRoute requiredPermission='INTERACTION_EDIT'><ViewInteraction /></ProtectedRoute>} /> 
                 <Route path="/view/player/:uuid" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><ViewPlayer></ViewPlayer></ProtectedRoute>} />
+                <Route path="/view/fish/:id" element={<ProtectedRoute requiredPermission='FISHING_EDIT'><ViewFish></ViewFish></ProtectedRoute>} />
 
 
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />

@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import PageMetaBox from '../../components/PageMetaBox';
+import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
+import { fetchPageItem } from '../../helpers/FetchPageItem';
+import Spinner from '../../components/Spinner';
 
 const ViewUnlockable = () => {
   const { authUser } = useAuth();
@@ -11,20 +15,16 @@ const ViewUnlockable = () => {
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [locked, setLocked] = useState(false);
 
   useEffect(() => {
     const fetchUnlockable = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/unlockables/${id}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        const data = await res.json();
+        const data = await fetchPageItem('unlockables', `${id}`);
         setUnlockable(data);
       } catch (err) {
         console.error(err);
-        setError('Failed to fetch currency details.');
+        setError('Failed to fetch unlockable details.');
       } finally {
         setLoading(false);
       }
@@ -32,6 +32,22 @@ const ViewUnlockable = () => {
 
     fetchUnlockable();
   }, [id]);
+
+  const fetchLockedValue = async () => {
+      try {
+        
+        const result = await fetchLocked('unlockable', `${id}`);
+        if (result == 1) {
+          setLocked(true);
+        } else {
+          setLocked(false);
+        }
+  
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchLockedValue();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,8 +66,9 @@ const ViewUnlockable = () => {
       });
   
       if (res.ok) {
+        touchPageMeta('unlockable', `${id}`, `${authUser?.uuid}`);
         alert('Unlockable updated!');
-        navigate('/unlockables'); // Redirect after update
+
       } else {
         const errorData = await res.json();
         alert(errorData.error || 'Error updating Unlockable');
@@ -65,49 +82,59 @@ const ViewUnlockable = () => {
 
   return (
     <div className={`page-container ${theme}`}>
-      <h2>Edit Unlockable</h2>
-      {error && <div className='error-message'>{error}</div>}
-      {loading ? (
-        <div className='loading-spinner'>
-          <div className='spinner'></div>
-          <p>Loading Unlockable...</p>
+      <div
+        className="form-meta-container"
+        style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}
+      >
+        <PageMetaBox type="unlockable" id={id!} />
+        <div style={{ flex: 3 }}>
+          {error && <div className="error-message">{error}</div>}
+          {locked && (
+            <div className="alert alert-warning page-input">
+              This Unlockable is locked and cannot be edited.
+            </div>
+          )}
+          {loading ? (
+                <Spinner type="Unlockable" />
+          ) : unlockable ? (
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label>ID</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={unlockable.id}
+                  disabled
+                />
+              </div>
+
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={unlockable.temp === 1}
+                  disabled={locked}
+                  onChange={(e) =>
+                    setUnlockable({
+                      ...unlockable,
+                      temp: e.target.checked ? 1 : 0,
+                    })
+                  }
+                />
+                <label className="form-check-label">
+                  Temporary
+                </label>
+              </div>
+
+              <button type="submit" className="btn btn-success" disabled={locked}>
+                Save Changes
+              </button>
+            </form>
+          ) : (
+            <p>Unlockable not found</p>
+          )}
         </div>
-      ) : unlockable ? (
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>ID</label>
-            <input
-              type="text"
-              className="form-control"
-              value={unlockable.id}
-              disabled
-            />
-          </div>
-
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              checked={unlockable.temp === 1}
-              onChange={(e) =>
-                setUnlockable({
-                  ...unlockable,
-                  temp: e.target.checked ? 1 : 0,
-                })
-              }
-            />
-            <label className="form-check-label">
-              Temporary
-            </label>
-          </div>
-
-          <button type="submit" className="btn btn-success">
-            Save Changes
-          </button>
-        </form>
-      ) : (
-        <p>Unlockable not found</p>
-      )}
+      </div>
     </div>
   );
 };
