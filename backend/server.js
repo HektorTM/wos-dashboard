@@ -21,6 +21,7 @@ const InteractionRoutes = require('./Routes/db_server/InteractionRoutes');
 const ConditionRoutes = require('./Routes/db_server/ConditionRoutes');
 const PlayerDataRoutes = require('./Routes/db_server/PlayerDataRoutes');
 const FishingRoutes = require('./Routes/db_server/FishingRoutes');
+const RequestRoutes = require('./Routes/db_web/RequestRoutes');
 
 require('./utils/initTables');
 
@@ -72,6 +73,7 @@ app.use('/api/interactions', InteractionRoutes);
 app.use('/api/conditions', ConditionRoutes);
 app.use('/api/playerdata', PlayerDataRoutes);
 app.use('/api/fishies', FishingRoutes);
+app.use('/api/requests', RequestRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 

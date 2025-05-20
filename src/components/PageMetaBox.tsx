@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { parseTime, parseUUIDToUsername, toUpperCase } from '../utils/parser';
 import { useNavigate } from 'react-router-dom';
+import { usePermission } from '../utils/usePermission';
+import { fetchLocked } from '../helpers/PageMeta';
+import Modal from './Modal';
 
 interface PageMetaBoxProps {
   type: string;
@@ -26,6 +29,52 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
   const [creatorName, setCreatorName] = useState<string | null>(null);
   const [editorName, setEditorName] = useState<string | null>(null);
   const { authUser } = useAuth();
+  const { hasPermission } = usePermission();
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [requestDescription, setRequestDescription] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const openRequestModal = () => setShowRequestModal(true);
+  const closeRequestModal = () => {
+    setShowRequestModal(false);
+    setRequestDescription('');
+    setSubmitError('');
+  };
+
+  const handleRequestSubmit = async () => {
+    if (!requestDescription.trim()) {
+      setSubmitError('Please enter a description');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('http://localhost:3001/api/requests/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          request_type: 'UNLOCK',
+          type,
+          id,
+          uuid: authUser?.uuid,
+          description: requestDescription
+        })
+      });
+
+      if (!res.ok) throw new Error('Failed to submit request');
+
+      const result = await res.json();
+      alert('Unlock request submitted successfully!');
+      closeRequestModal();
+    } catch (err) {
+      console.error('Request submission error:', err);
+      setSubmitError( 'Failed to submit request');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const backToList = async () => {
     let destination = type;
@@ -69,6 +118,22 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
   useEffect(() => {
     fetchMeta();
   }, [type, id]);
+
+  
+
+  const handleLock = async () => {
+    if (data?.locked) {
+      if (hasPermission('UNLOCK')) {
+        toggleLock();
+      } else {
+        openRequestModal();
+      }
+    } else {
+      toggleLock();
+    }
+  };
+
+  
 
   const toggleLock = async () => {
     if (!data) return;
@@ -114,7 +179,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
         <h4>Actions</h4>
         {data && (
           <>
-            <button onClick={toggleLock} disabled={toggling} className="meta-page-button">
+            <button onClick={handleLock} disabled={toggling} className="meta-page-button">
               {data.locked ? 'Unlock Page' : 'Lock Page'}
             </button>
             <button onClick={backToList} disabled={toggling} className="meta-page-button">
@@ -123,7 +188,49 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
           </>
         )}
       </div>
+
+      <Modal
+        isOpen={showRequestModal}
+        onClose={closeRequestModal}
+        title="Request Page Unlock"
+      >
+        <div className="form-group">
+          <p>
+            <strong>Requesting unlock for:</strong> {type} / {id}
+          </p>
+          
+          <label>Reason for Unlock Request</label>
+          <textarea
+            className="form-control"
+            rows={4}
+            value={requestDescription}
+            onChange={(e) => setRequestDescription(e.target.value)}
+            placeholder="Explain why you need to unlock this page..."
+          />
+          
+          {submitError && <p className="text-danger">{submitError}</p>}
+        </div>
+        
+        <div className="modal-actions">
+          <button 
+            className="btn btn-secondary"
+            onClick={closeRequestModal}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </button>
+          <button 
+            className="btn btn-primary"
+            onClick={handleRequestSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Request'}
+          </button>
+        </div>
+      </Modal>
+
     </div>
+    
     
   );
 };

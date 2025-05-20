@@ -52,6 +52,7 @@ export type PermissionKey =
     | 'FISHING_EDIT'
     | 'FISHING_DELETE'
     | 'PLAYER_VIEW'
+    | 'UNLOCK'
 
 
 
@@ -281,6 +282,10 @@ export const PERMISSIONS: Permission[] = [
     {
         key: 'PLAYER_VIEW',
         label: 'View Players'
+    },
+    {
+        key: 'UNLOCK',
+        label: 'Unlock Items'
     }
 
 ];
@@ -293,7 +298,12 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             { key: "ALWAYS_ACTIVE", label: "Always Active" },
         ],
     },
-    
+    {
+        group: "Misc",
+        permissions: [
+            { key: "UNLOCK", label: "Unlock Items"},
+        ]
+    },
     {
         group: "Cosmetics",
         permissions: [

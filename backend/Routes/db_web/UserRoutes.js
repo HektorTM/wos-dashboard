@@ -240,6 +240,25 @@ router.get('/:uuid', async (req, res) => {
   }
 });
 
+// Make sure this route returns proper { username } format
+router.get('/:uuid/username', async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      'SELECT username FROM users WHERE uuid = ? LIMIT 1', 
+      [req.params.uuid]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ username: rows[0].username }); // Ensure proper format
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 // --- Delete user ---
 router.delete('/:uuid', async (req, res) => {
   const { uuid } = req.params;

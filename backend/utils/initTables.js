@@ -14,6 +14,22 @@ const db = require('../webmeta');
   `);
 
   await db.query(`
+    CREATE TABLE IF NOT EXISTS requests (
+      ind INT AUTO_INCREMENT,
+      request_type VARCHAR(255) NOT NULL,
+      type VARCHAR(255) NOT NULL,
+      id VARCHAR(255) NOT NULL,
+      description TEXT,
+      requester VARCHAR(255) NOT NULL,
+      request_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+      action VARCHAR(255),
+      action_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+      acceptor VARCHAR(255),
+      PRIMARY KEY (ind)
+    )
+  `);
+
+  await db.query(`
     CREATE TABLE IF NOT EXISTS users (
       uuid VARCHAR(255) PRIMARY KEY,
       username VARCHAR(255) NOT NULL,

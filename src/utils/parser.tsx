@@ -83,6 +83,18 @@ export const parseUsernameToUUID = async (username: string) => {
   }
 }
 
+export const getStaffUserByUUID = async (uuid: string) => {
+  try {
+    const res = await fetch(`http://localhost:3001/api/users/${uuid}/username`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 export const parseTime = (isoString?: string) => {
   if (!isoString) return 'Invalid date';
   const date = new Date(isoString);
