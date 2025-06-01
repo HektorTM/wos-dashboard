@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import { JSX } from 'react';
 
 export const parseMinecraftColorCodes = (input: string): JSX.Element[] => {
   const result: JSX.Element[] = [];

@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
 import EditButton from '../../components/EditButton';
-import DeleteButton from '../../components/DeleteButton';
-import { deletePageItem } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
 
 type Player = {
   username: string;

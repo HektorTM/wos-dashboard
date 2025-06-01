@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const { theme, toggleTheme } = useTheme();
-  const {authUser, setAuthUser} = useAuth();
+  const {setAuthUser} = useAuth();
   const [query, setQuery] = useState('');
   const [techOpen, setTechOpen] = useState(false);
   const navigate = useNavigate();

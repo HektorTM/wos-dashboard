@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import PageMetaBox from '../../components/PageMetaBox';
-import Modal from '../../components/Modal';
-import { parseTime, parseUUIDToUsername } from '../../utils/parser';
+import { parseTime } from '../../utils/parser';
 
 type PlayerTab = 'general' | 'friends' | 'unlockables' | 'stats' | 'cosmetics' | 'ecologs';
 
@@ -61,7 +60,6 @@ const ViewPlayer = () => {
   const [activeTab, setActiveTab] = useState<PlayerTab>('general');
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
-  const navigate = useNavigate();
   const [error, setError] = useState('');
 
   
@@ -93,18 +91,6 @@ const ViewPlayer = () => {
       <h3>{title}</h3>
     </div>
   );
-  const getUsername = async (uuid: string) => {
-      try {
-        const res = await fetch(`http://localhost:3001/api/mc-user/uuid/${uuid}`, {
-          method: 'GET',
-        });
-
-        const data = await res.json();
-        return data.id as string;
-      } catch (err) {
-        console.error(err);
-      }
-  };
 
   const renderTabContent = () => {
     if (!playerdata) return null;

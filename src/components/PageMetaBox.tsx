@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { parseTime, parseUUIDToUsername, toUpperCase } from '../utils/parser';
 import { useNavigate } from 'react-router-dom';
 import { usePermission } from '../utils/usePermission';
-import { fetchLocked } from '../helpers/PageMeta';
 import Modal from './Modal';
 
 interface PageMetaBoxProps {
@@ -65,7 +64,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
 
       if (!res.ok) throw new Error('Failed to submit request');
 
-      const result = await res.json();
+      await res.json();
       alert('Unlock request submitted successfully!');
       closeRequestModal();
     } catch (err) {
