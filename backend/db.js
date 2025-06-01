@@ -1,14 +1,15 @@
 // db.js
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 // Create the  pool
 const db = mysql.createPool({
-  host: 'localhost',      // Or your server IP
-  user: 'root',      // e.g. 'root'
-  password: 'HektorTM',  // your MySQL password
-  database: 'WoS',   // your MySQL DB name
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: parseInt(process.env.DB_CONN_LIMIT, 10) || 10,
   queueLimit: 0
 });
 
