@@ -4,7 +4,7 @@ const session = require('express-session');
 const cors = require('cors');
 const cron = require('node-cron');
 const requireAuth = require('./middleware/auth');
-const SQLiteStore = require('connect-sqlite3')(session);
+const MySQLStore = require('express-mysql-session')(session);
 const currencyRoutes = require('./Routes/db_server/CurrencyRoutes');
 const UnlockableRoutes = require('./Routes/db_server/UnlockableRoutes');
 const CitemRoutes = require('./Routes/db_server/CitemRoutes');
@@ -28,27 +28,33 @@ require('./utils/initTables');
 const app = express();
 const PORT = 3001;
 
+const mysqlOptions = {
+  host: 'localhost',
+  port: 3306,
+  user: 'root',
+  password: 'HektorTM',
+  database: 'wos_sessions',
+  createDatabaseTable: true
+};
 
+const sessionStore = new MySQLStore(mysqlOptions);
 
 console.log('Serverfile started')
 
 app.use(express.json());
 app.use(session({
-  secret: 'a-very-secret-key', // Use environment variable for production
+  secret: 'a-very-secret-key', // Use env variable in production
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false, // Set to true if you're using HTTPS in production
-    sameSite: 'lax', // Helps with CSRF protection
+    secure: false, // Set to true for HTTPS
+    sameSite: 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   },
-  store: new SQLiteStore({
-    dir: './sessions', // Directory where session data will be stored (you can change this path)
-    db: 'sessions.db', // Name of the SQLite database file for storing session data
-    ttl: 86400 // 24 hours (same as maxAge for cookie)
-  })
+  store: sessionStore
 }));
+
 
 app.use(cors({
   origin: 'http://localhost:5173',
