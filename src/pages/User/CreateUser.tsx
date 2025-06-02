@@ -21,7 +21,7 @@ const CreateUser = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newUser = { uuid, password, permissions, editorUUID: authUser?.uuid, };
+    const newUser = { uuid, password, permissions, editorUUID: `${authUser?.uuid}`, };
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/register`, {
