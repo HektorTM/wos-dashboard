@@ -43,14 +43,17 @@ const sessionStore = new MySQLStore(mysqlOptions);
 console.log('Serverfile started')
 
 app.use(express.json());
+
+app.set('trust proxy', 1);
+
 app.use(session({
   secret: process.env.SECRET, // Use env variable in production
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false, // Set to true for HTTPS
-    sameSite: 'lax',
+    secure: process.env.COOKIE_SECURE, // Set to true for HTTPS
+    sameSite: process.env.COOKIE_SAMESITE,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   },
   store: sessionStore
