@@ -36,7 +36,7 @@ async function updateUsername(uuid) {
 
 // --- Register ---
 router.post('/register', async (req, res) => {
-  const { uuid, password, editorUUID } = req.body;
+  const { uuid, password, permissions, editorUUID } = req.body;
 
   if (!uuid || !password) {
     return res.status(400).json({ error: 'UUID and password are required' });
@@ -56,8 +56,8 @@ router.post('/register', async (req, res) => {
 
   try {
     await db.query(
-      'INSERT INTO users (uuid, username, password_hash) VALUES (?, ?, ?)',
-      [uuid, username, hashed]
+      'INSERT INTO users (uuid, username, permissions, password_hash) VALUES (?, ?, ?, ?)',
+      [uuid, username, permissions, hashed]
     );
 
     await logActivity({
