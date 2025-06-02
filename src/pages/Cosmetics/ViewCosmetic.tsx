@@ -63,7 +63,7 @@ const ViewCurrency = () => {
         };
 
         try {
-            const res = await fetch(`http://localhost:3001/api/cosmetics/${id}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cosmetics/${id}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },

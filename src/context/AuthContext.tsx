@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       
-      const response = await fetch('http://localhost:3001/api/users/me', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
         method: 'GET',
         credentials: 'include',
       });

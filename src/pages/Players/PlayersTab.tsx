@@ -17,7 +17,7 @@ const PlayerTab = () => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/playerdata', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/playerdata`, {
           method: 'GET',
           credentials: 'include',
         });

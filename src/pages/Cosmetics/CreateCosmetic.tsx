@@ -29,7 +29,7 @@ const CreateCosmetic = () => {
         try {
             setLoading(true);
 
-            const res = await fetch(`http://localhost:3001/api/cosmetics/`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cosmetics/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },

@@ -12,7 +12,7 @@ export const usePermission = () => {
     if (!authUser?.uuid) return;
 
     setLoading(true);
-    fetch(`http://localhost:3001/api/users/permissions/${authUser?.uuid}`, {method: 'GET', credentials: 'include'})
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/permissions/${authUser?.uuid}`, {method: 'GET', credentials: 'include'})
       .then((res) => res.json())
       .then((data) => {
         setPermissions(Array.isArray(data.permissions) ? data.permissions : []);

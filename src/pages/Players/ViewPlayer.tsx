@@ -67,7 +67,7 @@ const ViewPlayer = () => {
   useEffect(() => {
     const fetchPlayerData = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/playerdata/${uuid}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/playerdata/${uuid}`, {
           method: 'GET',
           credentials: 'include',
         });

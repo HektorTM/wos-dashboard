@@ -27,7 +27,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/users', {method: 'GET', credentials: 'include'});
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {method: 'GET', credentials: 'include'});
         const data = await res.json();
 
         const parsedUsers = data.map((user: User) => ({

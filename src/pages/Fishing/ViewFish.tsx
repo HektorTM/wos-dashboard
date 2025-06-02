@@ -19,7 +19,7 @@ const ViewFish = () => {
   useEffect(() => {
     const fetchFish = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/fishies/${id}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/fishies/${id}`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -64,7 +64,7 @@ const ViewFish = () => {
     };
   
     try {
-      const res = await fetch(`http://localhost:3001/api/fishies/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/fishies/${id}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

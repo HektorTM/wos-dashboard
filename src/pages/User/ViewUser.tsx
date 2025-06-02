@@ -16,7 +16,7 @@ const ViewUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/users/${id}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
           method: 'GET',
           credentials: 'include',
         });

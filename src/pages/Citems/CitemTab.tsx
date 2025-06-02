@@ -26,7 +26,7 @@ const CitemTab = () => {
   useEffect(() => {
     const fetchCitems = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/citems',
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/citems`,
           {credentials: 'include',}
         );
         if (!res.ok) throw new Error('Failed to fetch citems');
@@ -47,7 +47,7 @@ const CitemTab = () => {
     if (!window.confirm('Are you sure you want to delete this Citem?')) return;
     
     try {
-      const res = await fetch(`http://localhost:3001/api/citems/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/citems/${id}`, {
         method: 'DELETE',
         credentials: 'include'
       });

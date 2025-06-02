@@ -26,7 +26,7 @@ const ChannelTab = () => {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/channels', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/channels`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -63,7 +63,7 @@ const ChannelTab = () => {
     if (!window.confirm(`Are you sure you want to delete channel "${name}"?`)) return;
     
     try {
-      const res = await fetch(`http://localhost:3001/api/channels/${name}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/channels/${name}`, {
         method: 'DELETE',
         credentials: 'include',
       });

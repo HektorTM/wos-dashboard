@@ -15,14 +15,14 @@ const Dashboard = () => {
   const [activities, setActivities] = useState<ActivityLog[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/activity/recent', {
+    fetch(`${import.meta.env.VITE_API_URL}/api/activity/recent`, {
       method: 'GET',
       credentials: 'include',
     })
       .then((res) => {
         if (!res.ok) {
           if (res.status === 401) {
-            //navigate('/login'); // Redirect to login if unauthorized
+            navigate('/login'); // Redirect to login if unauthorized
           }
           throw new Error('Unauthorized');
         }

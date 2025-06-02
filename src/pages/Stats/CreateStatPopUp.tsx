@@ -35,7 +35,7 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
 
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3001/api/stats', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/stats`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

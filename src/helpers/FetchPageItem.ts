@@ -1,6 +1,6 @@
 export const fetchPageItem = async (type: string, id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/${type}/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/${type}/${id}`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -20,7 +20,7 @@ export const fetchPageItem = async (type: string, id: string) => {
 
   export const fetchType = async (type: string) => {
     try {
-        const res = await fetch(`http://localhost:3001/api/${type}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/${type}`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -40,7 +40,7 @@ export const fetchPageItem = async (type: string, id: string) => {
 
   export const deletePageItem = async (type: string, id: string, uuid: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/${type}/${id}?uuid=${uuid}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/${type}/${id}?uuid=${uuid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

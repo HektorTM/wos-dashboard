@@ -17,7 +17,7 @@ const Sidebar = () => {
     localStorage.removeItem('authUser');
     setAuthUser(null);
     try {
-      const response = await fetch('http://localhost:3001/api/users/logout', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
         method: 'POST',
         credentials: 'include',
       });

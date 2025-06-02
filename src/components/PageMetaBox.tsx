@@ -49,7 +49,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch('http://localhost:3001/api/requests/', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/requests/`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -89,7 +89,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
 
   const fetchMeta = async () => {
     try {
-      const res = await fetch(`http://localhost:3001/api/page-data/${type}/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -138,7 +138,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
     if (!data) return;
     setToggling(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/page-data/${type}/${id}/lock?uuid=${authUser?.uuid}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}/lock?uuid=${authUser?.uuid}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -1,6 +1,6 @@
 export const touchPageMeta = async (type: string, id: string, uuid: string) => {
     try {
-      await fetch(`http://localhost:3001/api/page-data/${type}/${id}/touch?uuid=${uuid}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}/touch?uuid=${uuid}`, {
         method: 'PATCH',
         credentials: 'include',
       });
@@ -11,7 +11,7 @@ export const touchPageMeta = async (type: string, id: string, uuid: string) => {
 
 export const createPageMeta = async (type: string, id: string, uuid: string) => {
   try {
-    await fetch(`http://localhost:3001/api/page-data/${type}/${id}?uuid=${uuid}`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}?uuid=${uuid}`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -23,7 +23,7 @@ export const createPageMeta = async (type: string, id: string, uuid: string) => 
 
 export const fetchLocked = async (type: string, id: string) => {
   try {
-    const res = await fetch(`http://localhost:3001/api/page-data/${type}/${id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -41,7 +41,7 @@ export const fetchLocked = async (type: string, id: string) => {
 
 export const deletePageMeta = async (type: string, id: string, uuid: string) => {
   try {
-    await fetch(`http://localhost:3001/api/page-data/${type}/${id}?uuid=${uuid}`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}?uuid=${uuid}`, {
       method: 'DELETE',
       credentials: 'include',
     });

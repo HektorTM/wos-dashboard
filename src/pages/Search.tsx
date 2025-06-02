@@ -44,7 +44,7 @@ const SearchResults = () => {
       setError(null);
       
       try {
-        const res = await fetch(`http://localhost:3001/api/search?q=${encodeURIComponent(query)}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/search?q=${encodeURIComponent(query)}`, {
           method: 'GET',
           credentials: 'include',
         });

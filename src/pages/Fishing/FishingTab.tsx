@@ -28,7 +28,7 @@ const FishingTab = () => {
   useEffect(() => {
     const fetchFishies = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/fishies', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/fishies`, {
           method: 'GET',
           credentials: 'include',
         });

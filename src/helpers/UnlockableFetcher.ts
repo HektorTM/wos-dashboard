@@ -1,6 +1,6 @@
 export const createUnlockable = async ( id: string, uuid: string ) => {
   try {
-    const res = await fetch('http://localhost:3001/api/unlockables', {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/unlockables`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -26,7 +26,7 @@ export const createUnlockable = async ( id: string, uuid: string ) => {
 };
 
 export const checkUnlockableExists = async (id: string): Promise<{ exists: boolean}> => {
-  const res = await fetch(`http://localhost:3001/api/unlockables/exists/${id}`,{
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/unlockables/exists/${id}`,{
     method: 'GET',
     credentials: 'include'
   });

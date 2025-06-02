@@ -25,7 +25,7 @@ const UnlockableTab = () => {
   useEffect(() => {
     const fetchUnlockables = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/unlockables', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/unlockables`, {
           method: 'GET',
           credentials: 'include',
         });

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { fetchType } from '../../helpers/FetchPageItem';
-import { getStaffUserByUUID, parseTime } from '../../utils/parser';
+import { parseTime } from '../../utils/parser';
 import { usePermission } from '../../utils/usePermission';
 
 type Request = {
@@ -53,7 +53,7 @@ const RequestTab = () => {
     if (!currentRequest) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/requests/${currentRequest.ind}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/requests/${currentRequest.ind}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

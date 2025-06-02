@@ -44,7 +44,7 @@ const CreateCurrencyPopup = ({ onClose, onCreate }: CreateCurrencyPopupProps) =>
 
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3001/api/currencies', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/currencies`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

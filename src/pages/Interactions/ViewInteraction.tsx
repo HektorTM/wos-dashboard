@@ -91,7 +91,7 @@ const ViewInteraction = () => {
   useEffect(() => {
     const fetchInteraction = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions/${id}`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -122,7 +122,7 @@ const ViewInteraction = () => {
         
         const conditionsPromises = interaction.actions.map(async (action) => {
           const res = await fetch(
-            `http://localhost:3001/api/conditions/interaction/${id}:${action.action_id}`, 
+            `${import.meta.env.VITE_API_URL}/api/conditions/interaction/${id}:${action.action_id}`, 
             { method: 'GET', credentials: 'include' }
           );
           return res.json();
@@ -183,7 +183,7 @@ const ViewInteraction = () => {
         
         const conditionsPromises = interaction.particles.map(async (particle) => {
           const res = await fetch(
-            `http://localhost:3001/api/conditions/particle/${id}:${particle.particle_id}`, 
+            `${import.meta.env.VITE_API_URL}/api/conditions/particle/${id}:${particle.particle_id}`, 
             { method: 'GET', credentials: 'include' }
           );
           return res.json();

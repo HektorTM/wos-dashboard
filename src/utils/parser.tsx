@@ -61,7 +61,7 @@ export const parseMinecraftColorCodes = (input: string): JSX.Element[] => {
 
 export const parseUUIDToUsername = async (uuid: string) => {
   try {
-    const res = await fetch(`http://localhost:3001/api/mc-user/uuid/${uuid}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/mc-user/uuid/${uuid}`, {
       method: 'GET',
     });
     const data = await res.json();
@@ -73,7 +73,7 @@ export const parseUUIDToUsername = async (uuid: string) => {
 
 export const parseUsernameToUUID = async (username: string) => {
   try {
-    const res = await fetch(`http://localhost:3001/api/mc-user/username/${username}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/mc-user/username/${username}`, {
       method: 'GET',
     });
     const data = await res.json();
@@ -85,7 +85,7 @@ export const parseUsernameToUUID = async (username: string) => {
 
 export const getStaffUserByUUID = async (uuid: string) => {
   try {
-    const res = await fetch(`http://localhost:3001/api/users/${uuid}/username`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${uuid}/username`, {
       method: 'GET',
       credentials: 'include'
     });
