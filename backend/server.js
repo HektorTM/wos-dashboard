@@ -58,7 +58,7 @@ app.use(session({
 
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.CORS_DOMAIN,
   credentials: true,
 }));
 
