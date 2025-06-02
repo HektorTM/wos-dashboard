@@ -46,7 +46,7 @@ const CreateRecipePopup = ({ onClose, onCreate }: CreateRecipePopupProps) => {
 
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3001/api/recipes', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/recipes`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

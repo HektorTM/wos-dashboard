@@ -73,7 +73,7 @@ const ViewUser = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:3001/api/users/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -97,7 +97,7 @@ const ViewUser = () => {
     if (!user) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/users/${id}/reactivate`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}/reactivate`, {
         method: 'POST',
         credentials: 'include',
       });

@@ -21,9 +21,6 @@ const Dashboard = () => {
     })
       .then((res) => {
         if (!res.ok) {
-          if (res.status === 401) {
-            navigate('/login'); // Redirect to login if unauthorized
-          }
           throw new Error('Unauthorized');
         }
         return res.json();

@@ -54,7 +54,7 @@ const UserList = () => {
   const handleDelete = async (uuid: string) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await fetch(`http://localhost:3001/api/users/${uuid}`, {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/users/${uuid}`, {
           method: 'DELETE',
           credentials: 'include',
           headers: {

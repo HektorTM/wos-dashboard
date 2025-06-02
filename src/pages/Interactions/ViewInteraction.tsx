@@ -265,8 +265,8 @@ const ViewInteraction = () => {
       if (!currentActionId) return;
 
       const endpoint = currentCondition 
-        ? `http://localhost:3001/api/conditions/${currentType}/${id}:${currentActionId}/${currentCondition.condition_id}`
-        : `http://localhost:3001/api/conditions/${currentType}/${id}:${currentActionId}`;
+        ? `${import.meta.env.VITE_API_URL}/api/conditions/${currentType}/${id}:${currentActionId}/${currentCondition.condition_id}`
+        : `${import.meta.env.VITE_API_URL}/api/conditions/${currentType}/${id}:${currentActionId}`;
 
       const method = currentCondition ? 'PUT' : 'POST';
       
@@ -280,7 +280,7 @@ const ViewInteraction = () => {
       if (res.ok) {
         // Refresh the conditions data
         const fetchConditions = async () => {
-          const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+          const updatedData = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions/${id}`, {
             method: 'GET',
             credentials: 'include',
           });
@@ -305,7 +305,7 @@ const ViewInteraction = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:3001/api/conditions/${type}/${id}:${actionId}/${conditionId}`,
+        `${import.meta.env.VITE_API_URL}/api/conditions/${type}/${id}:${actionId}/${conditionId}`,
         {
           method: 'DELETE',
           credentials: 'include'
@@ -314,7 +314,7 @@ const ViewInteraction = () => {
 
       if (res.ok) {
         // Refresh the conditions data
-        const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+        const updatedData = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions/${id}`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -384,21 +384,21 @@ const ViewInteraction = () => {
       
       switch (tab) {
         case 'actions':
-          endpoint = `http://localhost:3001/api/interactions/${interactionId}/actions/${itemId}`;
-          deleteEndpoint = `http://localhost:3001/api/conditions/interaction/${interactionId}:${itemId}`; 
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${interactionId}/actions/${itemId}`;
+          deleteEndpoint = `${import.meta.env.VITE_API_URL}/api/conditions/interaction/${interactionId}:${itemId}`; 
           break;
         case 'holograms':
-          endpoint = `http://localhost:3001/api/interactions/${id}/holograms/${itemId}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/holograms/${itemId}`;
           break;
         case 'particles':
-          endpoint = `http://localhost:3001/api/interactions/${id}/particles/${itemId}`;
-          deleteEndpoint = `http://localhost:3001/api/conditions/particles/${interactionId}:${itemId}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/particles/${itemId}`;
+          deleteEndpoint = `${import.meta.env.VITE_API_URL}/api/conditions/particles/${interactionId}:${itemId}`;
           break;
         case 'blocks':
-          endpoint = `http://localhost:3001/api/interactions/${id}/blocks/${encodeURIComponent(itemId as string)}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/blocks/${encodeURIComponent(itemId as string)}`;
           break;
         case 'npcs':
-          endpoint = `http://localhost:3001/api/interactions/${id}/npcs/${encodeURIComponent(itemId as string)}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/npcs/${encodeURIComponent(itemId as string)}`;
           break;
       }
 
@@ -414,7 +414,7 @@ const ViewInteraction = () => {
 
       if (res.ok && res2.ok) {
         // Refresh the data
-        const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+        const updatedData = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions/${id}`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -452,7 +452,7 @@ const ViewInteraction = () => {
 
     switch (currentTab) {
       case 'actions':
-        endpoint = `http://localhost:3001/api/interactions/${id}/actions`;
+        endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/actions`;
         body = {
           behaviour: newItem.behaviour || 'default',
           matchtype: newItem.matchtype || 'default',
@@ -460,7 +460,7 @@ const ViewInteraction = () => {
         };
         break;
       case 'holograms':
-        endpoint = `http://localhost:3001/api/interactions/${id}/holograms`;
+        endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/holograms`;
         body = {
           behaviour: newItem.behaviour || 'default',
           matchtype: newItem.matchtype || 'default',
@@ -468,7 +468,7 @@ const ViewInteraction = () => {
         };
         break;
       case 'particles':
-        endpoint = `http://localhost:3001/api/interactions/${id}/particles`;
+        endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/particles`;
         body = {
           behaviour: newItem.behaviour || 'default',
           matchtype: newItem.matchtype || 'default',
@@ -477,13 +477,13 @@ const ViewInteraction = () => {
         };
         break;
       case 'blocks':
-        endpoint = `http://localhost:3001/api/interactions/${id}/blocks`;
+        endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/blocks`;
         body = {
           location: newItem.location || '0,0,0,world'
         };
         break;
       case 'npcs':
-        endpoint = `http://localhost:3001/api/interactions/${id}/npcs`;
+        endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/npcs`;
         body = {
           npc_id: newItem.npc_id || 'default_npc'
         };
@@ -498,7 +498,7 @@ const ViewInteraction = () => {
     });
 
     if (res.ok) {
-      const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+      const updatedData = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions/${id}`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -519,7 +519,7 @@ const ViewInteraction = () => {
 
       switch (currentTab) {
         case 'actions':
-          endpoint = `http://localhost:3001/api/interactions/${id}/actions/${currentItem.action_id}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/actions/${currentItem.action_id}`;
           body = {
             behaviour: newItem.behaviour,
             matchtype: newItem.matchtype,
@@ -527,7 +527,7 @@ const ViewInteraction = () => {
           };
           break;
         case 'holograms':
-          endpoint = `http://localhost:3001/api/interactions/${id}/holograms/${currentItem.hologram_id}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/holograms/${currentItem.hologram_id}`;
           body = {
             behaviour: newItem.behaviour || 'default',
             matchtype: newItem.matchtype || 'default',
@@ -535,7 +535,7 @@ const ViewInteraction = () => {
           };
           break;
         case 'particles':
-          endpoint = `http://localhost:3001/api/interactions/${id}/particles/${currentItem.particle_id}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/particles/${currentItem.particle_id}`;
           body = {
             behaviour: newItem.behaviour || 'default',
             matchtype: newItem.matchtype || 'default',
@@ -544,13 +544,13 @@ const ViewInteraction = () => {
           };
           break;
         case 'blocks':
-          endpoint = `http://localhost:3001/api/interactions/${id}/blocks/${encodeURIComponent(currentItem)}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/blocks/${encodeURIComponent(currentItem)}`;
           body = {
             location: newItem.location || '0,0,0,world'
           };
           break;
         case 'npcs':
-          endpoint = `http://localhost:3001/api/interactions/${id}/npcs/${encodeURIComponent(currentItem)}`;
+          endpoint = `${import.meta.env.VITE_API_URL}/api/interactions/${id}/npcs/${encodeURIComponent(currentItem)}`;
           body = {
             npc_id: newItem.npc_id || 'default_npc'
           };
@@ -565,7 +565,7 @@ const ViewInteraction = () => {
       });
 
       if (res.ok) {
-        const updatedData = await fetch(`http://localhost:3001/api/interactions/${id}`, {
+        const updatedData = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions/${id}`, {
           method: 'GET',
           credentials: 'include',
         });
