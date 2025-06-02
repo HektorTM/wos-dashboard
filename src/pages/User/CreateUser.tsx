@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PERMISSION_GROUPS } from '../../utils/permissions';
+import { PERMISSION_GROUPS, PermissionKey } from '../../utils/permissions';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
 const CreateUser = () => {
+  const { authUser } = useAuth();
   const { theme } = useTheme();
   const [uuid, setUUID] = useState('');
   const [password, setPassword] = useState('');
-  const [permissions, setPermissions] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState<PermissionKey[]>([]);
   const navigate = useNavigate();
-  const { authUser } = useAuth();
+  
 
-  const handlePermissionChange = (perm: string) => {
+  const handlePermissionChange = (perm: PermissionKey) => {
     setPermissions((prev) =>
       prev.includes(perm) ? prev.filter((p) => p !== perm) : [...prev, perm]
     );
@@ -21,7 +22,12 @@ const CreateUser = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newUser = { uuid, password, permissions, editorUUID: `${authUser?.uuid}`, };
+    const newUser = {
+       uuid,
+       password,
+       permissions,
+       editorUUID: authUser?.uuid,
+    };
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/register`, {
