@@ -57,7 +57,7 @@ router.post('/register', async (req, res) => {
   try {
     await db.query(
       'INSERT INTO users (uuid, username, password_hash, permissions) VALUES (?, ?, ?, ?)',
-      [uuid, username, hashed, permissions]
+      [uuid, username, hashed, JSON.stringify(permissions)]
     );
 
     await logActivity({
