@@ -81,9 +81,6 @@ const PlayerTab = () => {
                 <tr key={player.username} onClick={() => handleClick(player.uuid)}>
                     <td>{player.username}</td>
                     <td>{player.uuid}</td>
-                    <td>
-                      <EditButton perm="PLAYER_VIEW" nav={`/view/player/${player.uuid}`}></EditButton>
-                    </td>
                 </tr>
               ))}
               {filteredPlayers.length === 0 && (
