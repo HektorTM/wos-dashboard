@@ -87,6 +87,24 @@ router.get('/', async (req, res) => {
     'currency' AS type
   FROM currencies
   WHERE LOWER(id) LIKE ? OR name LIKE ?
+
+  UNION ALL
+
+  SELECT 
+    id COLLATE utf8mb4_general_ci AS id,
+    id COLLATE utf8mb4_general_ci AS label,
+    'interaction' AS type
+  FROM interactions
+  WHERE LOWER(id) LIKE ?
+
+  UNION ALL
+
+  SELECT
+    id COLLATE utf8mb4_general_ci AS id,
+    citem_id COLLATE utf8mb4_general_ci AS label,
+    'fish' AS type
+  FROM fishing
+  WHERE LOWER(id) LIKE ? OR citem_id LIKE ?
 `;
 
 
@@ -98,7 +116,9 @@ router.get('/', async (req, res) => {
         searchPattern, searchPattern,                     // unlockables
         searchPattern, searchPattern,                     // channels ✅ (missing before)
         searchPattern, searchPattern,                     // Players
-        searchPattern, searchPattern                      // Currencies
+        searchPattern, searchPattern,                     // Currencies
+        searchPattern, searchPattern,                     // Interactions
+        searchPattern, searchPattern,                     // Fishing 
     ];
   try {
     const [results] = await db.query(query, params);
