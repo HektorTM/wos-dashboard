@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import EditButton from '../../components/EditButton';
+import { useNavigate } from 'react-router-dom';
 
 type Player = {
   username: string;
@@ -13,6 +14,7 @@ const PlayerTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -34,6 +36,10 @@ const PlayerTab = () => {
 
     fetchPlayers();
   }, []);
+
+  const handleClick = async (uuid: string) => {
+    navigate(`/view/player/${uuid}`)
+  }
 
   const filteredPlayers = players.filter(u =>
     u.username.toLowerCase().includes(search.toLowerCase())
@@ -68,12 +74,11 @@ const PlayerTab = () => {
               <tr>
                 <th>Username</th>
                 <th>UUID</th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
                 {filteredPlayers.map((player) => (
-                <tr key={player.username}>
+                <tr key={player.username} onClick={() => handleClick(player.uuid)}>
                     <td>{player.username}</td>
                     <td>{player.uuid}</td>
                     <td>
