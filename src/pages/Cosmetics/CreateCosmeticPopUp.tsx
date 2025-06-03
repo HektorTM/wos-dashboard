@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
+import { parseID } from '../../utils/parser';
 
 type Cosmetic = {
   type: string;
@@ -30,7 +31,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
     
     const payload = {
       type,
-      id,
+      id: parseID(id),
       display,
       description,
       uuid: authUser?.uuid,
@@ -47,7 +48,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('cosmetic', `${id}`, `${authUser?.uuid}`);
+        createPageMeta('cosmetic', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
           type,
           id,
@@ -104,7 +105,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
             <input
               type="text"
               value={id}
-              onChange={(e) => setId(e.target.value)}
+              onChange={(e) => setId(parseID(e.target.value))}
               required
               disabled={loading}
             />
