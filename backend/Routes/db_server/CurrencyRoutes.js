@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // MySQL db connection
 const logActivity = require('../../utils/LogActivity');
-const { parseID } = require('../../utils/IDparser');
 
 // Utility: Get currency by ID
 async function getCurrencyByID(id) {
@@ -48,7 +47,7 @@ router.post('/', async (req, res) => {
     await db.query(`
       INSERT INTO currencies (id, name, short_name, icon, color, hidden_if_zero)
       VALUES (?, ?, ?, ?, ?, ?)
-    `, [parseID(id), name, short_name, icon || null, color, hidden_if_zero ? 1 : 0]);
+    `, [id, name, short_name, icon || null, color, hidden_if_zero ? 1 : 0]);
 
     logActivity({
       type: 'Currency',

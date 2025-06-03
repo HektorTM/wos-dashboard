@@ -58,6 +58,11 @@ export const parseMinecraftColorCodes = (input: string): JSX.Element[] => {
   return result;
 };
 
+export const parseID = (id: string) => {
+  return String(id)
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '');
+}
 
 export const parseUUIDToUsername = async (uuid: string) => {
   try {

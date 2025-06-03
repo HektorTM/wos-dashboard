@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // Now using MySQL connection
 const logActivity = require('../../utils/LogActivity');
-const { parseID } = require('../../utils/IDparser');
 
 async function getCosmeticByID(id) {
     const [rows] = await db.query('SELECT * FROM cosmetics WHERE id = ?', [id]);
@@ -61,7 +60,7 @@ router.post('/', async (req, res) => {
         await db.query(`
             INSERT INTO cosmetics (type, id, display, description)
             VALUES (?, ?, ?, ?)
-        `, [type, parseID(id), display, description]);
+        `, [type, id, display, description]);
         
         await logActivity({
             type: type,

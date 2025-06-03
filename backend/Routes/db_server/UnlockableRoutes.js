@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // MySQL db connection (pool or promise-based)
 const logActivity = require('../../utils/LogActivity');
-const { parseID } = require('../../utils/IDparser');
 
 // 1. Get all unlockables
 router.get('/', async (req, res) => {
@@ -57,7 +56,7 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    await db.query('INSERT INTO unlockables (id, temp) VALUES (?, ?)', [parseID(id), temp ? 1 : 0]);
+    await db.query('INSERT INTO unlockables (id, temp) VALUES (?, ?)', [id, temp ? 1 : 0]);
 
     res.status(201).json({ message: 'Unlockable created successfully' });
 

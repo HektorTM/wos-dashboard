@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // MySQL connection
 const logActivity = require('../../utils/LogActivity');
-const { parseID } = require('../../utils/IDparser');
 
 // ✅ Get all interactions
 router.get('/', async (req, res) => {
@@ -277,7 +276,7 @@ router.post('/', async (req, res) => {
     }
 
     try {
-      await db.query('INSERT INTO interactions (id) VALUES (?)', [parseID(id)]);
+      await db.query('INSERT INTO interactions (id) VALUES (?)', [id]);
   
       res.status(201).json({ message: 'Interaction created successfully' });
   

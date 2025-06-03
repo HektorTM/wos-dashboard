@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // MySQL db connection (pool or promise-based)
 const logActivity = require('../../utils/LogActivity'); 
-const { parseID } = require('../../utils/IDparser');
 
 // 1. Get all fishes
 router.get('/', async (req, res) => {
@@ -40,7 +39,7 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
   try {
-    await db.query('INSERT INTO fishing (id, citem_id, catch_interaction, rarity, regions) VALUES (?, ?, ?, ?, ?)', [parseID(id), citem_id, catch_interaction, rarity, regions]);
+    await db.query('INSERT INTO fishing (id, citem_id, catch_interaction, rarity, regions) VALUES (?, ?, ?, ?, ?)', [id, citem_id, catch_interaction, rarity, regions]);
 
     res.status(201).json({ message: 'Fish created successfully' });
 
