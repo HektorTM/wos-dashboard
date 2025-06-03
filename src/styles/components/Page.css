@@ -65,7 +65,7 @@
     border: 1px solid var(--border-color);
   }
 
-  .page-table-container:hover {
+  .page-table-container tbody tr:hover {
     background-color: var(--table-hover-bg);
 
   }
