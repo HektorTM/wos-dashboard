@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // MySQL connection
 const logActivity = require('../../utils/LogActivity');
+import { parseID } from '../../utils/IDparser';
 
 // ✅ Get all interactions
 router.get('/', async (req, res) => {
