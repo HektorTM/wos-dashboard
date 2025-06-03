@@ -6,6 +6,7 @@ import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateCosmeticPopup from './CreateCosmeticPopUp';
+import { parseMinecraftColorCodes } from '../../utils/parser';
 
 type Cosmetic = {
   type: string;
@@ -80,7 +81,7 @@ const CurrencyTab = () => {
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
-          + Create Unlockable
+          + Create Cosmetic
         </button>
       </div>
 
@@ -108,8 +109,8 @@ const CurrencyTab = () => {
                 <tr key={cosmetic.id}>
                   <td>{cosmetic.type}</td>
                   <td>{cosmetic.id}</td>
-                  <td>{cosmetic.display}</td>
-                  <td>{cosmetic.description}</td>
+                  <td>{parseMinecraftColorCodes(cosmetic.display)}</td>
+                  <td>{parseMinecraftColorCodes(cosmetic.description)}</td>
                   <td>
                     <EditButton perm='COSMETIC_EDIT' nav={`/view/cosmetic/${cosmetic.id}`} ></EditButton>
                     <DeleteButton perm='COSMETIC_DELETE' onClick={() => deleteCosmetic(cosmetic.id)}></DeleteButton>
