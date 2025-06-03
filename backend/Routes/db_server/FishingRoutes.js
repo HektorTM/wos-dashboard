@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // MySQL db connection (pool or promise-based)
 const logActivity = require('../../utils/LogActivity'); 
-import { parseID } from '../../utils/IDparser';
+const { parseID } = require('../../utils/IDparser');
 
 // 1. Get all fishes
 router.get('/', async (req, res) => {

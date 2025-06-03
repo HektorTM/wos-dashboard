@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../db'); // Now using MySQL connection
 const logActivity = require('../../utils/LogActivity');
-import { parseID } from '../../utils/IDparser';
+const { parseID } = require('../../utils/IDparser');
 
 async function getCosmeticByID(id) {
     const [rows] = await db.query('SELECT * FROM cosmetics WHERE id = ?', [id]);
