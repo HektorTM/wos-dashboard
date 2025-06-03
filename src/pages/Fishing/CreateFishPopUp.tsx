@@ -32,7 +32,7 @@ const CreateFishPopup = ({ onClose, onCreate }: CreateFishPopupProps) => {
     e.preventDefault();
     
     const payload = {
-      id,
+      id: parseID(id),
       citem_id,
       catch_interaction,
       rarity,
@@ -51,7 +51,7 @@ const CreateFishPopup = ({ onClose, onCreate }: CreateFishPopupProps) => {
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('fish', `${id}`, `${authUser?.uuid}`);
+        createPageMeta('fish', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
           id,
           citem_id,
