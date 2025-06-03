@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
+import { parseID } from '../../utils/parser';
 
 type Currency = {
   id: string;
@@ -33,7 +34,7 @@ const CreateCurrencyPopup = ({ onClose, onCreate }: CreateCurrencyPopupProps) =>
     e.preventDefault();
     
     const payload = {
-      id,
+      id: parseID(id),
       name,
       short_name,
       icon,
@@ -53,7 +54,7 @@ const CreateCurrencyPopup = ({ onClose, onCreate }: CreateCurrencyPopupProps) =>
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('currency', `${id}`, `${authUser?.uuid}`);
+        createPageMeta('currency', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
           id,
           name,

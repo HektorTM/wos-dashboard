@@ -24,7 +24,7 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
     e.preventDefault();
     
     const payload = {
-      id,
+      id: parseID(id),
       uuid: authUser?.uuid,
     };
 
@@ -39,7 +39,7 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('interaction', `${id}`, `${authUser?.uuid}`);
+        createPageMeta('interaction', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
           id
         });
@@ -77,7 +77,7 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
             <input
               type="text"
               value={id}
-              onChange={(e) => setId(parseID(e.target.value))}
+              onChange={(e) => setId(e.target.value)}
               required
               disabled={loading}
             />

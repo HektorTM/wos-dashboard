@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
+import { parseID } from '../../utils/parser';
 
 type Unlockable = {
   id: string;
@@ -25,7 +26,7 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
     e.preventDefault();
     
     const payload = {
-      id,
+      id: parseID(id),
       temp,
       uuid: authUser?.uuid,
     };
@@ -41,7 +42,7 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('unlockable', `${id}`, `${authUser?.uuid}`);
+        createPageMeta('unlockable', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
           id,
           temp: temp ? 1 : 0

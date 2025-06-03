@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
+import { parseID } from '../../utils/parser';
 
 const CreateCosmetic = () => {
     const { authUser } = useAuth();
@@ -20,7 +21,7 @@ const CreateCosmetic = () => {
 
         const payload = {
             type,
-            id,
+            id: parseID(id),
             display,
             description,
             uuid: authUser?.uuid,
@@ -39,7 +40,7 @@ const CreateCosmetic = () => {
 
             const result = await res.json();
             if (res.ok) {
-                createPageMeta(`cosmetic`, `${id}`, `${authUser?.uuid}`)
+                createPageMeta(`cosmetic`, `${parseID(id)}`, `${authUser?.uuid}`)
 
                 alert('Cosmetic created!');
                 // Optional: clear form

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
+import { parseID } from '../../utils/parser';
 
 type Stat = {
   id: string;
@@ -27,7 +28,7 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
     e.preventDefault();
     
     const payload = {
-      id,
+      id: parseID(id),
       max,
       capped,
       uuid: authUser?.uuid,
@@ -44,7 +45,7 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('stat', `${id}`, `${authUser?.uuid}`);
+        createPageMeta('stat', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
           id,
           max,
