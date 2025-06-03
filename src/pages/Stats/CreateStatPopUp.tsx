@@ -85,7 +85,7 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
             <input
               type="text"
               value={id}
-              onChange={(e) => setId(e.target.value)}
+              onChange={(e) => setId(parseID(e.target.value))}
               required
               disabled={loading}
             />

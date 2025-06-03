@@ -81,7 +81,7 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
             <input
               type="text"
               value={id}
-              onChange={(e) => setId(e.target.value)}
+              onChange={(e) => setId(parseID(e.target.value))}
               required
               disabled={loading}
             />

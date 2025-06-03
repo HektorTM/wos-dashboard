@@ -92,7 +92,7 @@ const CreateCosmetic = () => {
                         type="text"
                         className="form-control"
                         value={id}
-                        onChange={(e) => setId(e.target.value)}
+                        onChange={(e) => setId(parseID(e.target.value))}
                         required
                     />
                 </div>
