@@ -38,9 +38,9 @@ router.post('/', async (req, res) => {
   if (!id) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
-
+  id = toString(id).toLocaleLowerCase;
   try {
-    await db.query('INSERT INTO fishing (id, citem_id, catch_interaction, rarity, regions) VALUES (?, ?, ?, ?, ?)', [id, citem_id, catch_interaction, rarity, regions]);
+    await db.query('INSERT INTO fishing (id, citem_id, catch_interaction, rarity, regions) VALUES (?, ?, ?, ?, ?)', [parseID(id), citem_id, catch_interaction, rarity, regions]);
 
     res.status(201).json({ message: 'Fish created successfully' });
 

@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
     await db.query(`
       INSERT INTO currencies (id, name, short_name, icon, color, hidden_if_zero)
       VALUES (?, ?, ?, ?, ?, ?)
-    `, [id, name, short_name, icon || null, color, hidden_if_zero ? 1 : 0]);
+    `, [parseID(id), name, short_name, icon || null, color, hidden_if_zero ? 1 : 0]);
 
     logActivity({
       type: 'Currency',

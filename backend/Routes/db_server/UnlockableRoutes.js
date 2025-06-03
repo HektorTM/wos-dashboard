@@ -54,9 +54,9 @@ router.post('/', async (req, res) => {
   if (!id) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
-
+  id = toString(id).toLocaleLowerCase;
   try {
-    await db.query('INSERT INTO unlockables (id, temp) VALUES (?, ?)', [id, temp ? 1 : 0]);
+    await db.query('INSERT INTO unlockables (id, temp) VALUES (?, ?)', [parseID(id), temp ? 1 : 0]);
 
     res.status(201).json({ message: 'Unlockable created successfully' });
 

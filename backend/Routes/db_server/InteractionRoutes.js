@@ -274,9 +274,9 @@ router.post('/', async (req, res) => {
     if (!id) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-  
+
     try {
-      await db.query('INSERT INTO interactions (id) VALUES (?)', [id]);
+      await db.query('INSERT INTO interactions (id) VALUES (?)', [parseID(id)]);
   
       res.status(201).json({ message: 'Interaction created successfully' });
   

@@ -60,8 +60,8 @@ router.post('/', async (req, res) => {
         await db.query(`
             INSERT INTO cosmetics (type, id, display, description)
             VALUES (?, ?, ?, ?)
-        `, [type, id, display, description]);
-
+        `, [type, praseID(id), display, description]);
+        
         await logActivity({
             type: type,
             target_id: id,
