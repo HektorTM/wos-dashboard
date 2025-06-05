@@ -52,7 +52,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.COOKIE_SECURE, // Set to true for HTTPS
+    secure: process.env.COOKIE_SECURE === 'true', // Set to true for HTTPS
     sameSite: process.env.COOKIE_SAMESITE,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   },

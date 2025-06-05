@@ -25,7 +25,9 @@ const typeLabels: Record<string, string> = {
   channel: 'Channels',
   player: 'Players',
   unlockable: 'Unlockables',
-  currency: 'Currencies'
+  currency: 'Currencies',
+  interaction: 'Interactions',
+  fish: 'Fish'
 };
 
 const SearchResults = () => {

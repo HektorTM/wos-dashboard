@@ -23,7 +23,7 @@ router.get('/:uuid', async (req, res) => {
         if (PlayerRows.length === 0) {
             return res.status(404).json({ error: 'Player not found' });
         }
-
+        const [data] = await db.query('SELECT * FROM playerdata WHERE uuid = ?', [uuid]);
         const [nicknames] = await db.query('SELECT * FROM nicknames WHERE uuid = ?', [uuid]);
         const [unlockables] = await db.query('SELECT * FROM playerdata_unlockables WHERE uuid = ?', [uuid]);
         const [stats] = await db.query('SELECT * FROM playerdata_stats WHERE uuid = ?', [uuid]);
@@ -32,6 +32,7 @@ router.get('/:uuid', async (req, res) => {
         const [ecologs] = await db.query('SELECT * FROM eco_log WHERE uuid = ?', [uuid]);
 
         res.json({
+            data,
             nicknames,
             unlockables,
             stats,

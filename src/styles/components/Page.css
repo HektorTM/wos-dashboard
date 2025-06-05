@@ -64,11 +64,6 @@
     transition: var(--transition);
     border: 1px solid var(--border-color);
   }
-
-  .page-table-container tbody tr:hover {
-    background-color: var(--table-hover-bg);
-
-  }
   
   .page-table {
     width: 100%;
@@ -97,9 +92,11 @@
     border-bottom: none;
   }
   
-  .page-table tr:hover td {
-    background-color: var(--table-hover-bg);
-  }
+ .page-table tbody tr:hover td {
+  background-color: var(--hover-bg);
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+}
 
 
 

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import PageMetaBox from '../../components/PageMetaBox';
+import PlayerMetaBox from '../../components/PlayerMetaBox';
 import { parseTime } from '../../utils/parser';
 
 type PlayerTab = 'general' | 'friends' | 'unlockables' | 'stats' | 'cosmetics' | 'ecologs';
@@ -324,7 +324,7 @@ const ViewPlayer = () => {
     <div className={`page-container ${theme}`}>
       <div className="content-wrapper" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
         <div className="meta-box-wrapper" style={{ width: '350px' }}>
-          <PageMetaBox type="player" id={uuid!} />
+          <PlayerMetaBox uuid={uuid!} />
         </div>
         
         <div className="tabs-content-wrapper" style={{ flex: 1 }}>

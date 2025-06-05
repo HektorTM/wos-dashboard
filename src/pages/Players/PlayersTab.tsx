@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import EditButton from '../../components/EditButton';
 import { useNavigate } from 'react-router-dom';
 
 type Player = {
