@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const Sidebar = () => {
   const { theme, toggleTheme } = useTheme();
   const {setAuthUser} = useAuth();
+  const {authUser} = useAuth();
   const [query, setQuery] = useState('');
   const [techOpen, setTechOpen] = useState(false);
   const navigate = useNavigate();
@@ -32,6 +33,9 @@ const Sidebar = () => {
     }
   };
   
+  const handleAccount = () => {
+    navigate(`/account?uuid=${authUser?.uuid}`)
+  }
 
   const userpage = () => {
     navigate('/users');
@@ -146,6 +150,15 @@ const Sidebar = () => {
         )}
         
         <div className="footer-buttons-row">
+          <button 
+            onClick={handleAccount}
+            className="account-btn"
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"/>
+            </svg>
+          </button>
           <button className="logout-btn" onClick={handleLogout}>
             <svg viewBox="0 0 24 24">
               <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>

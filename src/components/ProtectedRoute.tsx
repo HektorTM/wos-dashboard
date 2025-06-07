@@ -11,11 +11,12 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requiredPermission }: ProtectedRouteProps) => {
-  const { authUser } = useAuth();
+  const { authUser, authLoading } = useAuth();
   const { hasPermission, loading } = usePermission();
 
   // Show nothing or a loader while checking permissions
   if (loading) return null; // Or a spinner/loading screen
+  if (authLoading) return <div>Loading...</div>
 
   if (!authUser) {
     return <Navigate to="/login" replace />;
