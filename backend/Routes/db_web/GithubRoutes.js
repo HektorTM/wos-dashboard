@@ -1,8 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { Octokit } = require('@octokit/rest');
+let Octokit;
 
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+(async () => {
+  const { Octokit: OctokitImport } = await import('@octokit/rest');
+  Octokit = OctokitImport;
+})();
+
+let octokit;
+router.use(async (req, res, next) => {
+  if (!octokit && Octokit) {
+    octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+  }
+  next();
+});
 
 // Create new issue
 router.post('/issues', async (req, res) => {
