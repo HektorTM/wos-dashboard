@@ -32,6 +32,7 @@ import ViewPlayer from './pages/Players/ViewPlayer';
 import FishingTab from './pages/Fishing/FishingTab';
 import ViewFish from './pages/Fishing/ViewFish';
 import RequestTab from './pages/Requests/RequestTab';
+import BugReportPage from './pages/Bugs';
 
 
 
@@ -63,6 +64,7 @@ const App = () => {
                 <Route path="/players" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><PlayerTab></PlayerTab></ProtectedRoute>} />
                 <Route path="/fishing" element={<ProtectedRoute requiredPermission='FISHING_VIEW'><FishingTab></FishingTab></ProtectedRoute>} />
                 <Route path="/requests" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><RequestTab></RequestTab></ProtectedRoute>} />
+                <Route path="/bugs" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><BugReportPage></BugReportPage></ProtectedRoute>} />
 
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
                 <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
