@@ -15,11 +15,24 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.get('/username/:uuid', async (req, res) => {
+    const { uuid } = req.params;
+
+    try {
+        const [username] = await db.query('SELECT username FROM playerdata WHERE uuid = ?', [uuid]);
+
+        res.json(username);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+})
+
 router.get('/:uuid', async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const [PlayerRows] = await db.query('SELECT * FROM playerdata WHERE uuid = ?', [uuid]);
+        const [PlayerRows] = await db.query('SELECT 1 FROM playerdata WHERE uuid = ?', [uuid]);
         if (PlayerRows.length === 0) {
             return res.status(404).json({ error: 'Player not found' });
         }

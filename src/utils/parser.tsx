@@ -66,15 +66,17 @@ export const parseID = (id: string) => {
 
 export const parseUUIDToUsername = async (uuid: string) => {
   try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/mc-user/uuid/${uuid}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/playerdata/username/${uuid}`, {
       method: 'GET',
+      credentials: 'include',
     });
     const data = await res.json();
-    return data.name;
+    return data.username;
   } catch {
     return null;
   }
 };
+
 
 export const parseUsernameToUUID = async (username: string) => {
   try {
@@ -108,4 +110,23 @@ export const parseTime = (isoString?: string) => {
 
 export const toUpperCase = (value: string) => {
   return value.charAt(0).toUpperCase() + value.slice(1);
+};
+
+export const parseArrayToString = (input: string): string => {
+  return input.replace(/["[\]]/g, '');
+};
+
+export const parseStringToArray = (arrayString: string): string[] => {
+  try {
+    const parsed = JSON.parse(arrayString);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {
+    // fallback if not JSON, clean manually
+    return arrayString
+      .replace(/[[\]"]/g, '') // remove brackets and quotes
+      .split(',')
+      .map(str => str.trim())
+      .filter(Boolean);
+  }
+  return [];
 };

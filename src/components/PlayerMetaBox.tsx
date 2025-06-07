@@ -67,6 +67,7 @@ const PlayerMetaBox: React.FC<PlayerMetaBoxProps> = ({ uuid }) => {
         <h4>Actions</h4>
         {data && (
           <>
+            <button className="meta-page-button">Add Comment</button>
             <button onClick={backToList} className="meta-page-button">
               Back to List 
             </button>

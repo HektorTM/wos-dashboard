@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PERMISSIONS } from '../../utils/permissions';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 
-const getPermissionLabels = (keys: string[]) => {
-  return PERMISSIONS.filter((p) => keys.includes(p.key)).map((p) => p.label).join(', ');
-};
+
 
 interface User {
   uuid: string;
@@ -110,7 +107,6 @@ const UserList = () => {
                 <th>UUID</th>
                 <th>Username</th>
                 <th>Status</th>
-                <th>Permissions</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -125,7 +121,6 @@ const UserList = () => {
                     <span className="badge inactive">Inactive</span>
                     )}
                   </td>
-                  <td>{getPermissionLabels(user.permissions as string[])}</td>
                   <td>
                   <button
                       className="action-btn"
