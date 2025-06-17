@@ -10,7 +10,11 @@ interface ProtectedRouteProps {
   requiredPermission?: PermissionKey;
 }
 
-const ProtectedRoute = ({ children, requiredPermission }: ProtectedRouteProps) => {
+interface ProtectedRouteNoPermProps {
+  children: React.ReactNode;
+}
+
+export const ProtectedRoute = ({ children, requiredPermission }: ProtectedRouteProps) => {
   const { authUser, authLoading } = useAuth();
   const { hasPermission, loading } = usePermission();
 
@@ -19,7 +23,7 @@ const ProtectedRoute = ({ children, requiredPermission }: ProtectedRouteProps) =
   if (authLoading) return <div>Loading...</div>
 
   if (!authUser) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" />;
   }
 
   if (requiredPermission && !hasPermission(requiredPermission)) {
@@ -29,4 +33,17 @@ const ProtectedRoute = ({ children, requiredPermission }: ProtectedRouteProps) =
   return <>{children}</>;
 };
 
-export default ProtectedRoute;
+
+export const ProtectedRouteNoPerm = ({ children }: ProtectedRouteNoPermProps) => {
+  const { authUser, authLoading } = useAuth();
+
+  // Show nothing or a loader while checking permissions
+  if (authLoading) return <div>Loading...</div>
+
+  if (!authUser) {
+    return <Navigate to="/login" />;
+  }
+
+  return <>{children}</>;
+};
+

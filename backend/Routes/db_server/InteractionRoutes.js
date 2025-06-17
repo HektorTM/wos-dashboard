@@ -317,4 +317,30 @@ router.delete('/:id/particles/:itemId', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+  const {id} = req.params;
+  const {uuid} = req.query;
+
+  try {
+    await db.query('DELETE FROM inter_actions WHERE id = ?', [id]);
+    await db.query('DELETE FROM inter_particles WHERE id = ?', [id]);
+    await db.query('DELETE FROM inter_blocks WHERE interaction_id = ?', [id]);
+    await db.query('DELETE FROM inter_holograms WHERE interaction_id = ?', [id]);
+    await db.query('DELETE FROM inter_npcs WHERE interaction_id = ?', [id]);
+    await db.query('DELETE FROM interactions WHERE id = ?', [id]);
+    res.status(200).json({message: 'Interaction deleted successfully'});
+    
+    logActivity({
+        type: 'Interaction',
+        target_id: id,
+        user: uuid,
+        action: 'Deleted',
+      });
+  
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    console.error(err);
+  }
+})
+
 module.exports = router;

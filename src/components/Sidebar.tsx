@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 const Sidebar = () => {
   const { theme, toggleTheme } = useTheme();
   const {setAuthUser} = useAuth();
-  const {authUser} = useAuth();
   const [query, setQuery] = useState('');
   const [techOpen, setTechOpen] = useState(false);
   const navigate = useNavigate();
@@ -34,7 +33,7 @@ const Sidebar = () => {
   };
   
   const handleAccount = () => {
-    navigate(`/account?uuid=${authUser?.uuid}`)
+    navigate(`/account`)
   }
 
   const userpage = () => {

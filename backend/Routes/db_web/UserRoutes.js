@@ -206,12 +206,29 @@ router.post('/:uuid/reactivate', async (req, res) => {
 });
 
 // --- Get logged-in user ---
-router.get('/me', (req, res) => {
+router.get('/me', async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Not authenticated' });
   }
 
-  res.json({ user: req.session.user });
+  try {
+    const user = await getUserByUUID(req.session.user.uuid);
+    if (!user) {
+      return res.status(404).json({error: 'User not found'});
+    }
+
+    res.json({ user: {
+      uuid: user.uuid,
+      username: user.username,
+      permissions: JSON.parse(user.permissions || '[]')
+    } });
+
+  } catch (err) {
+    console.error('Error in GET /me:', err);
+    res.status(500).json({error: 'Database error'});
+  }
+
+
 });
 
 // --- Get all users ---
@@ -281,6 +298,51 @@ router.delete('/:uuid', async (req, res) => {
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+
+// --- Change Password ---
+router.post('/change-password', async (req, res) => {
+  const { current_password, new_password } = req.body;
+  
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  if (!current_password || !new_password) {
+    return res.status(400).json({ error: 'Current and new password are required' });
+  }
+
+  if (new_password.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  }
+
+  try {
+    const user = await getUserByUUID(req.session.user.uuid);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify current password
+    const valid = await bcrypt.compare(current_password, user.password_hash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const hashed = await bcrypt.hash(new_password, 10);
+
+    // Update password in database
+    await db.query('UPDATE users SET password_hash = ? WHERE uuid = ?', [
+      hashed, 
+      req.session.user.uuid
+    ]);
+
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (err) {
+    console.error('Password change error:', err);
+    res.status(500).json({ error: 'Failed to change password' });
   }
 });
 

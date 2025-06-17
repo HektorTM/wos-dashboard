@@ -42,30 +42,29 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1>Dashboard Overview</h1>
-        <p>Welcome back! Here's what's happening with your system.</p>
+        <h1>Dashboard</h1>
       </div>
 
       <div className="dashboard-content">
         <div className="content-main">
           <div className="placeholder-card">
-            <h3>System Statistics</h3>
+            <h3>Server Statistics</h3>
             <div className="stats-grid">
               <div className="stat-card">
-                <h4>Total Users</h4>
-                <p>1,248</p>
+                <h4>Total Players</h4>
+                <p>//</p>
               </div>
               <div className="stat-card">
                 <h4>Active Sessions</h4>
-                <p>84</p>
+                <p>//</p>
               </div>
               <div className="stat-card">
-                <h4>New Today</h4>
-                <p>32</p>
+                <h4>Total Interactions</h4>
+                <p>//</p>
               </div>
               <div className="stat-card">
-                <h4>Transactions</h4>
-                <p>1,482</p>
+                <h4>Total Staff</h4>
+                <p>//</p>
               </div>
             </div>
           </div>

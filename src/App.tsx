@@ -20,7 +20,7 @@ import CitemTab from './pages/Citems/CitemTab';
 import SearchResults from './pages/Search';
 import Login from './pages/Login';
 import { ThemeProvider } from './context/ThemeContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import { ProtectedRoute, ProtectedRouteNoPerm } from './components/ProtectedRoute';
 import ViewCosmetic from './pages/Cosmetics/ViewCosmetic';
 import StatsTab from './pages/Stats/StatsTab';
 import ViewStat from './pages/Stats/ViewStat';
@@ -33,14 +33,15 @@ import FishingTab from './pages/Fishing/FishingTab';
 import ViewFish from './pages/Fishing/ViewFish';
 import RequestTab from './pages/Requests/RequestTab';
 import BugReportPage from './pages/Bugs';
+import AccountPage from './pages/User/AccountPage';
 
 
 
 const App = () => {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Router>
+      <Router>
+        <AuthProvider>
           <Routes>
             {/* Auth Layout */}
             <Route element={<AuthLayout />}>
@@ -63,8 +64,9 @@ const App = () => {
                 <Route path="/interactions" element={<ProtectedRoute requiredPermission='INTERACTION_VIEW'><InteractionTab /></ProtectedRoute>} />
                 <Route path="/players" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><PlayerTab></PlayerTab></ProtectedRoute>} />
                 <Route path="/fishing" element={<ProtectedRoute requiredPermission='FISHING_VIEW'><FishingTab></FishingTab></ProtectedRoute>} />
-                <Route path="/requests" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><RequestTab></RequestTab></ProtectedRoute>} />
-                <Route path="/bugs" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><BugReportPage></BugReportPage></ProtectedRoute>} />
+                <Route path="/requests" element={<ProtectedRouteNoPerm><RequestTab></RequestTab></ProtectedRouteNoPerm>} />
+                <Route path="/bugs" element={<ProtectedRouteNoPerm><BugReportPage></BugReportPage></ProtectedRouteNoPerm>} />
+                <Route path="/account" element={<ProtectedRouteNoPerm><AccountPage></AccountPage></ProtectedRouteNoPerm>} />
 
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
                 <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
@@ -82,8 +84,8 @@ const App = () => {
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />
             </Route>
           </Routes>
-        </Router>
-      </AuthProvider>
+        </AuthProvider>
+      </Router>
     </ThemeProvider>
   );
 };

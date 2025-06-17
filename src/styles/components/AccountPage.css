@@ -1,0 +1,153 @@
+/* Account Page Specific Styles */
+.account-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+}
+
+.account-card .card-body {
+  padding: 1.5rem;
+}
+
+.account-card .card-title {
+  color: var(--text-color);
+  margin-bottom: 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.account-info dt {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.account-info dd {
+  color: var(--text-color);
+  margin-bottom: 0.75rem;
+}
+
+/* Form Controls */
+.account-form .form-control {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 0.75rem 1rem;
+}
+
+.account-form .form-control:focus {
+  border-color: var(--primary);
+  background-color: var(--input-bg);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+}
+
+.account-form .form-label {
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Alerts */
+.account-alert {
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.account-alert-danger {
+  background-color: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-text);
+}
+
+.account-alert-success {
+  background-color: var(--success-bg);
+  border: 1px solid var(--success-border);
+  color: var(--success-text);
+}
+
+/* Buttons */
+.account-btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--btn-text-color);
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.account-btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .account-card {
+    margin-bottom: 1rem;
+  }
+  
+  .account-card .card-body {
+    padding: 1rem;
+  }
+  
+  .account-info dt, 
+  .account-info dd {
+    font-size: 0.9rem;
+  }
+}
+
+
+/* Player head styles */
+.account-card-with-head {
+  display: flex;
+  width: 28rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.account-info-section {
+  flex: 0.3;
+  padding: 1.5rem;
+}
+
+.player-head-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: var(--card-header-bg);
+  border-left: 1px solid var(--border-color);
+}
+
+.player-head-image {
+  width: 100px;
+  height: 100px;
+  image-rendering: pixelated;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .account-card-with-head {
+    flex-direction: column;
+  }
+  
+  .player-head-section {
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 0;
+  }
+  
+  .player-head-image {
+    width: 80px;
+    height: 80px;
+  }
+}
