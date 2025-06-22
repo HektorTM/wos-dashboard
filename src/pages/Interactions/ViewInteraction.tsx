@@ -88,6 +88,9 @@ const ViewInteraction = () => {
 
   const [unlockableExists, setUnlockableExists] = useState(true);
 
+
+  const [isMoving, setIsMoving] = useState(false);
+
   useEffect(() => {
     const fetchInteraction = async () => {
       try {
@@ -171,7 +174,43 @@ const ViewInteraction = () => {
       setUnlockableExists(true);
     
   }
-  
+
+
+  const handleMoveAction = async (actionId: number, direction: 'up' | 'down') => {
+    if (isMoving) return;
+
+    setIsMoving(true);
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/interactions/${id}/actions/${actionId}/move?direction=${direction}`,
+        {
+          method: 'PUT',
+          credentials: 'include'
+        }
+      );
+
+      if (!res.ok) throw new Error('Failed to move action');
+
+      // Refresh interaction data
+      const updatedRes = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions/${id}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const updatedInteraction = await updatedRes.json();
+      setInteraction({
+        ...updatedInteraction,
+        blocks: updatedInteraction.blocks || [],
+        npcs: updatedInteraction.npcs || []
+      });
+    } catch (err) {
+      console.error('Error moving action:', err);
+      setError('Failed to move action');
+    } finally {
+      setIsMoving(false);
+    }
+  };
+
 
   useEffect(() => {
     if (!interaction) return;
@@ -761,7 +800,43 @@ const ViewInteraction = () => {
                   <tbody>
                     {interaction.actions.map((action) => (
                       <tr key={action.action_id}>
-                        <td>{action.action_id}</td>
+                        <td>{action.action_id}
+                          <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '8px' }}>
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              disabled//={!interaction?.actions || index === 0}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMoveAction(action.action_id, 'up');
+                              }}
+                              style={{ 
+                                padding: '2px 4px',
+                                marginBottom: '2px',
+                                fontSize: '12px',
+                                lineHeight: '1'
+                              }}
+                            >
+                              ↑
+                            </button>
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              disabled//={!interaction?.actions || index === (interaction.actions.length  -1) }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMoveAction(action.action_id, 'down');
+                              }}
+                              style={{ 
+                                padding: '2px 4px',
+                                fontSize: '12px',
+                                lineHeight: '1'
+                              }}
+                            >
+                              ↓
+                            </button>
+                         </div>
+
+
+                        </td>
                         <td>{action.behaviour}</td>
                         <td>{action.matchtype}</td>
                         <td>
@@ -1140,6 +1215,8 @@ const ViewInteraction = () => {
             <option value="has_not_stats"></option>
             <option value="is_in_region"></option>
             <option value="is_not_in_region"></option>
+            <option value="has_active_cooldown"></option>
+            <option value="has_not_active_cooldown"></option>
           </datalist>
           
           <label>Value</label>

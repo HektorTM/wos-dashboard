@@ -34,6 +34,8 @@ import ViewFish from './pages/Fishing/ViewFish';
 import RequestTab from './pages/Requests/RequestTab';
 import BugReportPage from './pages/Bugs';
 import AccountPage from './pages/User/AccountPage';
+import CooldownTab from './pages/Cooldowns/CooldownTab';
+import ViewCooldown from './pages/Cooldowns/ViewCooldown';
 
 
 
@@ -64,6 +66,7 @@ const App = () => {
                 <Route path="/interactions" element={<ProtectedRoute requiredPermission='INTERACTION_VIEW'><InteractionTab /></ProtectedRoute>} />
                 <Route path="/players" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><PlayerTab></PlayerTab></ProtectedRoute>} />
                 <Route path="/fishing" element={<ProtectedRoute requiredPermission='FISHING_VIEW'><FishingTab></FishingTab></ProtectedRoute>} />
+                <Route path="/cooldowns" element={<ProtectedRoute requiredPermission='COOLDOWN_VIEW'><CooldownTab></CooldownTab></ProtectedRoute>} />
                 <Route path="/requests" element={<ProtectedRouteNoPerm><RequestTab></RequestTab></ProtectedRouteNoPerm>} />
                 <Route path="/bugs" element={<ProtectedRouteNoPerm><BugReportPage></BugReportPage></ProtectedRouteNoPerm>} />
                 <Route path="/account" element={<ProtectedRouteNoPerm><AccountPage></AccountPage></ProtectedRouteNoPerm>} />
@@ -79,6 +82,7 @@ const App = () => {
                 <Route path="/view/interaction/:id" element={<ProtectedRoute requiredPermission='INTERACTION_EDIT'><ViewInteraction /></ProtectedRoute>} /> 
                 <Route path="/view/player/:uuid" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><ViewPlayer></ViewPlayer></ProtectedRoute>} />
                 <Route path="/view/fish/:id" element={<ProtectedRoute requiredPermission='FISHING_EDIT'><ViewFish></ViewFish></ProtectedRoute>} />
+                <Route path="/view/cooldown/:id" element={<ProtectedRoute requiredPermission='COOLDOWN_EDIT'><ViewCooldown></ViewCooldown></ProtectedRoute>} />
 
 
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />

@@ -51,6 +51,10 @@ export type PermissionKey =
     | 'FISHING_CREATE'
     | 'FISHING_EDIT'
     | 'FISHING_DELETE'
+    | 'COOLDOWN_VIEW'
+    | 'COOLDOWN_CREATE'
+    | 'COOLDOWN_EDIT'
+    | 'COOLDOWN_DELETE'
     | 'PLAYER_VIEW'
     | 'UNLOCK'
 
@@ -265,19 +269,35 @@ export const PERMISSIONS: Permission[] = [
     },
     {
         key: 'FISHING_VIEW',
-        label: 'View FISHING',
+        label: 'View Fishing',
     },
     {
         key: 'FISHING_CREATE',
-        label: 'Create FISHING',
+        label: 'Create Fish',
     },
     {
         key: 'FISHING_EDIT',
-        label: 'Edit FISHING',
+        label: 'Edit Fish',
     },
     {
         key: 'FISHING_DELETE',
-        label: 'Delete FISHING',
+        label: 'Delete Fish',
+    },
+        {
+        key: 'COOLDOWN_VIEW',
+        label: 'View Cooldowns',
+    },
+    {
+        key: 'COOLDOWN_CREATE',
+        label: 'Create Cooldowns',
+    },
+    {
+        key: 'COOLDOWN_EDIT',
+        label: 'Edit Cooldowns',
+    },
+    {
+        key: 'COOLDOWN_DELETE',
+        label: 'Delete Cooldowns',
     },
     {
         key: 'PLAYER_VIEW',
@@ -313,9 +333,6 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             { key: "COSMETIC_DELETE", label: "Delete Cosmetics" },
         ],
     },
-
-    
-
     {
         group: "Currencies",
         permissions: [
@@ -421,6 +438,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             { key: "FISHING_CREATE", label: "Create Fish"},
             { key: "FISHING_EDIT", label: "Edit Fish" },
             { key: "FISHING_DELETE", label: "Delete Fish" },
+        ],
+    },
+
+    {
+        group: "Cooldowns",
+        permissions: [
+            { key: "COOLDOWN_VIEW", label: "View Cooldowns" },
+            { key: "COOLDOWN_CREATE", label: "Create Cooldowns"},
+            { key: "COOLDOWN_EDIT", label: "Edit Cooldowns" },
+            { key: "COOLDOWN_DELETE", label: "Delete Cooldowns" },
         ],
     },
 

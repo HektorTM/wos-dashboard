@@ -105,6 +105,90 @@ router.get('/:id/actions/:actionId', async (req, res) => {
   }
 });
 
+
+// Move Action Route
+router.put('/:id/actions/:actionId/move', async (req, res) => {
+  const { id, actionId } = req.params;
+  const { direction } = req.query;
+  
+  if (!['up', 'down'].includes(direction)) {
+    return res.status(400).json({ error: 'Invalid direction' });
+  }
+
+  try {
+    const conn = await db.getConnection();
+    await conn.beginTransaction();
+
+    try {
+      // Get current action
+      const [currentAction] = await conn.query(
+        'SELECT * FROM inter_actions WHERE id = ? AND action_id = ?',
+        [id, actionId]
+      );
+      
+      if (currentAction.length === 0) {
+        throw new Error('Action not found');
+      }
+
+      // Determine target action ID based on direction
+      const targetOffset = direction === 'up' ? -1 : 1;
+      const [adjacentActions] = await conn.query(
+        'SELECT * FROM inter_actions WHERE id = ? AND action_id = ?',
+        [id, parseInt(actionId) + targetOffset]
+      );
+
+      if (adjacentActions.length === 0) {
+        throw new Error('No adjacent action to swap with');
+      }
+      const targetAction = adjacentActions[0];
+
+      // Swap action IDs using temporary value
+      const tempId = -999; // Temporary ID for swapping
+      await conn.query(
+        'UPDATE inter_actions SET action_id = ? WHERE id = ? AND action_id = ?',
+        [tempId, id, actionId]
+      );
+      
+      await conn.query(
+        'UPDATE inter_actions SET action_id = ? WHERE id = ? AND action_id = ?',
+        [actionId, id, targetAction.action_id]
+      );
+      
+      await conn.query(
+        'UPDATE inter_actions SET action_id = ? WHERE id = ? AND action_id = ?',
+        [targetAction.action_id, id, tempId]
+      );
+
+      // Update conditions' type_id references
+      const updateConditions = async (oldActionId, newActionId) => {
+        const oldTypeId = `${id}:${oldActionId}`;
+        const newTypeId = `${id}:${newActionId}`;
+        
+        await conn.query(
+          'UPDATE conditions SET type_id = ? WHERE type = ? AND type_id = ?',
+          [newTypeId, 'interaction', oldTypeId]
+        );
+      };
+
+      await updateConditions(actionId, targetAction.action_id);
+      await updateConditions(targetAction.action_id, actionId);
+
+      await conn.commit();
+      res.json({ message: 'Action moved successfully' });
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 // POST /api/interactions/:id/actions
 router.post('/:id/actions', async (req, res) => {
   const { id } = req.params;

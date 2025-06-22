@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { parseTime, parseUUIDToUsername, toUpperCase } from '../utils/parser';
+import { getStaffUserByUUID, parseTime, toUpperCase } from '../utils/parser';
 import { useNavigate } from 'react-router-dom';
 import { usePermission } from '../utils/usePermission';
 import Modal from './Modal';
@@ -111,6 +111,16 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
       setError('Error loading metadata');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const parseUUIDToUsername = async (uuid: string): Promise<string | null> => {
+    try {
+      const response = await getStaffUserByUUID(uuid);
+      return response?.username || null;
+    } catch (error) {
+      console.error('Failed to fetch username:', error);
+      return null;
     }
   };
 

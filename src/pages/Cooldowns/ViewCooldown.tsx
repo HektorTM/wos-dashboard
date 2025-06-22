@@ -7,39 +7,39 @@ import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import { fetchPageItem } from '../../helpers/FetchPageItem';
 import Spinner from '../../components/Spinner';
 
-const ViewStat = () => {
+const ViewCooldown = () => {
     const { authUser } = useAuth();
     const { id } = useParams();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [stat, setStat] = useState<any>(null);
+    const [cooldown, setCooldown] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const { theme } = useTheme();
     const [error, setError] = useState('');
     const [locked, setLocked] = useState(false);
 
     useEffect(() => {
-        const fetchStatAndMeta = async () => {
+        const fetchCooldownAndMeta = async () => {
             try {
-                const data = await fetchPageItem('stats', `${id}`);
-                setStat(data);
+                const data = await fetchPageItem('cooldowns', `${id}`);
+                setCooldown(data);
 
             } catch (err) {
                 console.error(err);
-                setError('Failed to fetch stat');
+                setError('Failed to fetch cooldown');
             } finally {
                 setLoading(false);
             }
         };
 
         if (id) {
-            fetchStatAndMeta();
+            fetchCooldownAndMeta();
         }
     }, [id]);
 
     const fetchLockedValue = async () => {
         try {
 
-            const result = await fetchLocked('stat', `${id}`);
+            const result = await fetchLocked('cooldown', `${id}`);
             if (result == 1) {
                 setLocked(true);
             } else {
@@ -55,31 +55,32 @@ const ViewStat = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const updatedStat = {
-            id: stat.id,
-            max: stat.max,
-            capped: stat.capped,
+        const updatedCooldown = {
+            id: cooldown.id,
+            duration: cooldown.duration,
+            start_interaction: cooldown.start_interaction,
+            end_interaction: cooldown.end_interaction,
             uuid: authUser?.uuid,
         };
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/stats/${id}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cooldowns/${id}`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedStat),
+                body: JSON.stringify(updatedCooldown),
             });
 
             if (res.ok) {
-                touchPageMeta('stat', `${id}`, `${authUser?.uuid}`);
-                alert('Stat updated!');
+                touchPageMeta('cooldown', `${id}`, `${authUser?.uuid}`);
+                alert('Cooldown updated!');
             } else {
                 const errorData = await res.json();
-                alert(errorData.error || 'Error updating Stat');
+                alert(errorData.error || 'Error updating Cooldown');
             }
         } catch (err) {
             console.error(err);
-            setError('Failed to update Stat');
+            setError('Failed to update Cooldown');
         }
     };
 
@@ -90,48 +91,55 @@ const ViewStat = () => {
                 className="form-meta-container"
                 style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}
             >
-                <PageMetaBox type="stat" id={id!} />
+                <PageMetaBox type="cooldown" id={id!} />
                 <div style={{ flex: 3 }}>
                     {error && <div className="error-message">{error}</div>}
                     {locked && (
                         <div className="alert alert-warning page-input">
-                            This Stat is locked and cannot be edited.
+                            This Cooldown is locked and cannot be edited.
                         </div>
                     )}
 
                     {loading ? (
-                        <Spinner type="Stat" />
-                    ) : stat ? (
+                        <Spinner type="Cooldown" />
+                    ) : cooldown ? (
                         <form onSubmit={handleSubmit}>
                             {/* Wrapping all controls in a fieldset disabled when locked */}
                             <fieldset disabled={locked} style={{ border: 'none', padding: 0, margin: 0 }}>
                                 <div className="form-group page-input">
-                                    <label>Maximum</label>
+                                    <label>Duration</label>
                                     <input
-                                        type="text"
+                                        type="number"
+                                        min="0"
                                         className="form-control"
-                                        value={stat.max}
+                                        value={cooldown.duration}
                                         onChange={(e) =>
-                                            setStat({ ...stat, max: e.target.value })
+                                            setCooldown({ ...cooldown, duration: parseInt(e.target.value)})
                                         }
                                     />
                                 </div>
 
-                                <div className="form-check">
+                                <div className="form-group page-input">
+                                    <label>Start Interaction</label>
                                     <input
-                                        className="form-check-input"
-                                        type="checkbox"
-                                        checked={stat.capped === 1}
+                                        type="text"
+                                        className="form-control"
+                                        value={cooldown.start_interaction || ''}
                                         onChange={(e) =>
-                                            setStat({
-                                            ...stat,
-                                            capped: e.target.checked ? 1 : 0,
-                                            })
+                                            setCooldown({ ...cooldown, start_interaction: e.target.value || null})
                                         }
                                     />
-                                    <label className="form-check-label">
-                                    Capped?
-                                    </label>
+                                </div>
+                                <div className="form-group page-input">
+                                    <label>End Interaction</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={cooldown.end_interaction || ''}
+                                        onChange={(e) =>
+                                            setCooldown({ ...cooldown, end_interaction: e.target.value || null})
+                                        }
+                                    />
                                 </div>
 
                                 <button type="submit" className="btn btn-success">
@@ -140,7 +148,7 @@ const ViewStat = () => {
                             </fieldset>
                         </form>
                     ) : (
-                        <p>Stat not found</p>
+                        <p>Cooldown not found</p>
                     )}
                 </div>
             </div>
@@ -148,4 +156,4 @@ const ViewStat = () => {
     );
 };
 
-export default ViewStat;
+export default ViewCooldown;
