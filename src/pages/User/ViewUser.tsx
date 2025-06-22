@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PERMISSIONS, PermissionKey, PERMISSION_GROUPS } from '../../utils/permissions'; 
 import { useAuth } from '../../context/AuthContext';
+import TitleComp from '../../components/TitleComponent';
 
 const ViewUser = () => {
   const { id } = useParams();
@@ -117,6 +118,7 @@ const ViewUser = () => {
 
   return (
     <div className="page-container">
+      <TitleComp title={`User | ${id}`}></TitleComp>
       <div className="page-header">
         <h2>Edit User</h2>
       </div>

@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { fetchType } from '../../helpers/FetchPageItem';
 import { parseTime } from '../../utils/parser';
 import { usePermission } from '../../utils/usePermission';
+import TitleComp from '../../components/TitleComponent';
 
 type Request = {
   ind: number;
@@ -87,6 +88,7 @@ const RequestTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Requests | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Unlock Requests</h2>
         <div className="page-search">

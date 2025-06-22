@@ -7,6 +7,7 @@ import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateCosmeticPopup from './CreateCosmeticPopUp';
 import { parseMinecraftColorCodes } from '../../utils/parser';
+import TitleComp from '../../components/TitleComponent';
 
 type Cosmetic = {
   type: string;
@@ -66,6 +67,7 @@ const CurrencyTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Cosmetics | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Cosmetics</h2>
         <div className="page-search">

@@ -6,6 +6,7 @@ import PageMetaBox from '../../components/PageMetaBox';
 import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import { fetchPageItem } from '../../helpers/FetchPageItem';
 import Spinner from '../../components/Spinner';
+import TitleComp from '../../components/TitleComponent';
 
 const ViewCooldown = () => {
     const { authUser } = useAuth();
@@ -86,7 +87,7 @@ const ViewCooldown = () => {
 
     return (
         <div className={`page-container ${theme}`}>
-
+            <TitleComp title={`Cooldown | ${id}`}></TitleComp>
             <div
                 className="form-meta-container"
                 style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}

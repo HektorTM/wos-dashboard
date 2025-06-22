@@ -6,6 +6,7 @@ import DeleteButton from '../../components/DeleteButton';
 import { deletePageItem } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateUnlockablePopUp from './CreateFishPopUp';
+import TitleComp from '../../components/TitleComponent';
 
 type Fish = {
   id: string;
@@ -69,6 +70,7 @@ const FishingTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Fishing | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Fishing</h2>
         <div className="page-search">

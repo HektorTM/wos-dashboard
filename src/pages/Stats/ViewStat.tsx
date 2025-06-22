@@ -6,6 +6,7 @@ import PageMetaBox from '../../components/PageMetaBox';
 import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import { fetchPageItem } from '../../helpers/FetchPageItem';
 import Spinner from '../../components/Spinner';
+import TitleComp from '../../components/TitleComponent';
 
 const ViewStat = () => {
     const { authUser } = useAuth();
@@ -85,7 +86,7 @@ const ViewStat = () => {
 
     return (
         <div className={`page-container ${theme}`}>
-
+            <TitleComp title={`Stat | ${id}`}></TitleComp>
             <div
                 className="form-meta-container"
                 style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}

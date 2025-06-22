@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import TitleComp from '../../components/TitleComponent';
 
 const AccountPage = () => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -104,6 +105,7 @@ useEffect(() => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`My Account | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>My Account</h2>
       </div>

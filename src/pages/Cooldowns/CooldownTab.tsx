@@ -6,6 +6,7 @@ import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateStatPopup from './CreateCooldownPopUp'; // Adjust the import path as needed
+import TitleComp from '../../components/TitleComponent';
 
 type Cooldown = {
   id: string;
@@ -68,6 +69,7 @@ const CooldownTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Cooldowns | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Cooldowns</h2>
         <div className="page-search">

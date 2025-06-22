@@ -6,6 +6,7 @@ import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateCurrencyPopup from './CreateCurrencyPopUp';
+import TitleComp from '../../components/TitleComponent';
 
 type Currency = {
   id: string;
@@ -67,6 +68,7 @@ const CurrencyTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Currencies | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Currencies</h2>
         <div className="page-search">

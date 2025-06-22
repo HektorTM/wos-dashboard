@@ -6,6 +6,7 @@ import PageMetaBox from '../../components/PageMetaBox';
 import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import { fetchPageItem } from '../../helpers/FetchPageItem';
 import Spinner from '../../components/Spinner';
+import TitleComp from '../../components/TitleComponent';
 
 const ViewUnlockable = () => {
   const { authUser } = useAuth();
@@ -82,6 +83,7 @@ const ViewUnlockable = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Unlockable | ${id}`}></TitleComp>
       <div
         className="form-meta-container"
         style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}

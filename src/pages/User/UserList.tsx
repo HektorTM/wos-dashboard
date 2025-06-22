@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import TitleComp from '../../components/TitleComponent';
 
 
 
@@ -20,6 +21,7 @@ const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const PROTECTED_UUID = '28c63f6552cc47f08246b16f2176da23';
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -76,6 +78,7 @@ const UserList = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`User Management | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>User Management</h2>
         <div className='page-search'>
@@ -122,17 +125,20 @@ const UserList = () => {
                     )}
                   </td>
                   <td>
-                  <button
+                    <button
                       className="action-btn"
                       onClick={() => navigate(`/view/user/${user.uuid}`)}
+                      disabled={(user.uuid === authUser?.uuid && user.uuid !== PROTECTED_UUID) ||
+                                (user.uuid === PROTECTED_UUID && user.uuid !== authUser?.uuid)}
                       title="Edit"
                     >
-                      ✏️
+                        ✏️
                     </button>
                     <button
                       className="action-btn"
                       onClick={() => handleDelete(user.uuid)}
                       title="Delete"
+                      disabled={user.uuid === PROTECTED_UUID || user.uuid === authUser?.uuid}
                     > 
                       🗑️
                     </button>

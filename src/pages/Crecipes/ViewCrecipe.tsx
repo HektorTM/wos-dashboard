@@ -6,6 +6,7 @@ import PageMetaBox from '../../components/PageMetaBox';
 import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import { fetchPageItem } from '../../helpers/FetchPageItem';
 import Spinner from '../../components/Spinner';
+import TitleComp from '../../components/TitleComponent';
 
 const ViewCurrency = () => {
     const { authUser } = useAuth();
@@ -85,6 +86,7 @@ const ViewCurrency = () => {
 
     return (
         <div className={`page-container ${theme}`}>
+            <TitleComp title={`Recipe | ${id}`}></TitleComp>
             <h2>Edit Cosmetic</h2>
             <div
                 className="form-meta-container"

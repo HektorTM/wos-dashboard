@@ -6,6 +6,7 @@ import DeleteButton from '../../components/DeleteButton';
 import { deletePageItem } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateUnlockablePopUp from './CreateUnlockablePopUp';
+import TitleComp from '../../components/TitleComponent';
 
 type Unlockable = {
   id: string;
@@ -66,6 +67,7 @@ const UnlockableTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Unlockables | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Unlockables</h2>
         <div className="page-search">

@@ -5,6 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import PageMetaBox from '../../components/PageMetaBox';
 import Spinner from '../../components/Spinner';
+import TitleComp from '../../components/TitleComponent';
 
 const ViewFish = () => {
   const { authUser } = useAuth();
@@ -88,7 +89,7 @@ const ViewFish = () => {
 
   return (
     <div className={`page-container ${theme}`}>
-
+      <TitleComp title={`Fish | ${id}`}></TitleComp>
       <div
         className="form-meta-container"
         style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}

@@ -6,6 +6,7 @@ import DeleteButton from '../../components/DeleteButton';
 import { deletePageItem } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateInteractionPopUp from './CreateInteractionPopUp';
+import TitleComp from '../../components/TitleComponent';
 
 type Interaction = {
   id: string;
@@ -65,6 +66,7 @@ const InteractionTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Interactions | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Interactions</h2>
         <div className="page-search">

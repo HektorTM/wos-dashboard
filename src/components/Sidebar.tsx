@@ -49,7 +49,7 @@ const Sidebar = () => {
   return (
     <div className={`sidebar ${theme}`}>
       <div className="sidebar-header">
-        <h4>Admin Portal</h4>
+        <h4>Staff Portal</h4>
 
       </div>
 

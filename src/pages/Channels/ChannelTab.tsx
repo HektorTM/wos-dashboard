@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { parseMinecraftColorCodes } from '../../utils/parser';
 import EditButton from '../../components/EditButton';
 import DeleteButton from '../../components/DeleteButton';
+import TitleComp from '../../components/TitleComponent';
 
 type Channel = {
   name: string;
@@ -87,6 +88,7 @@ const ChannelTab = () => {
 
   return (
     <div className="page-container">
+      <TitleComp title={`Channels | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Channel Management</h2>
         <div className="page-search">

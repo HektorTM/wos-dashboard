@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { parseMinecraftColorCodes } from '../../utils/parser';
+import { useTheme } from '../../context/ThemeContext';
+import TitleComp from '../../components/TitleComponent';
 
 type Citem = {
   id: string;
@@ -22,6 +24,7 @@ const CitemTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const {theme} = useTheme();
 
   useEffect(() => {
     const fetchCitems = async () => {
@@ -67,7 +70,8 @@ const CitemTab = () => {
   );
 
   return (
-    <div className={'page-container §{theme}'}>
+    <div className={`page-container ${theme}`}>
+      <TitleComp title={`Citems | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Citem Management</h2>
         <div className="page-search">

@@ -4,6 +4,7 @@ import Modal from 'react-modal';
 import { toast } from 'react-toastify';
 import '../styles/components/BugReportPage.css';
 import { useAuth } from '../context/AuthContext';
+import TitleComp from '../components/TitleComponent';
 
 type Repository = {
   name: string;
@@ -128,6 +129,7 @@ const BugReportPage = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Bug Reports | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Bug Reports</h2>
         <button 

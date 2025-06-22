@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import PlayerMetaBox from '../../components/PlayerMetaBox';
 import { parseStringToArray, parseTime } from '../../utils/parser';
+import TitleComp from '../../components/TitleComponent';
 
 type PlayerTab = 'general' | 'friends' | 'unlockables' | 'stats' | 'cosmetics' | 'ecologs';
 
@@ -494,6 +495,7 @@ useEffect(() => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Player | ${playerdata?.data?.[0]?.username}`}></TitleComp>
       <div className="content-wrapper" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
         <div className="meta-box-wrapper" style={{ width: '350px' }}>
           <PlayerMetaBox uuid={uuid!} />

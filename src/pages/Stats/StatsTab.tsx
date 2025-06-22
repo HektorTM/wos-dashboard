@@ -6,6 +6,7 @@ import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateStatPopup from './CreateStatPopUp'; // Adjust the import path as needed
+import TitleComp from '../../components/TitleComponent';
 
 type Stat = {
   id: string;
@@ -67,6 +68,7 @@ const StatsTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Stats | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Stats</h2>
         <div className="page-search">

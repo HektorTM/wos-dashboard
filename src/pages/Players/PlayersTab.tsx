@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
+import TitleComp from '../../components/TitleComponent';
 
 type Player = {
   username: string;
@@ -46,6 +47,7 @@ const PlayerTab = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Players | Staff Portal`}></TitleComp>
       <div className="page-header">
         <h2>Players</h2>
         <div className="page-search">

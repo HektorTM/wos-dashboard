@@ -8,6 +8,7 @@ import Modal from '../../components/Modal';
 import { ActionForm } from './ActionForm';
 import { createUnlockable, checkUnlockableExists } from '../../helpers/UnlockableFetcher';
 import { useAuth } from '../../context/AuthContext';
+import TitleComp from '../../components/TitleComponent';
 
 type InteractionTab = 'actions' | 'holograms' | 'particles' | 'blocks' | 'npcs';
 
@@ -1126,6 +1127,7 @@ const ViewInteraction = () => {
 
   return (
     <div className={`page-container ${theme}`}>
+      <TitleComp title={`Interaction | ${id}`}></TitleComp>
       <div className="content-wrapper" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
         <div className="meta-box-wrapper" style={{ width: '350px' }}>
           <PageMetaBox type="interaction" id={id!} />
