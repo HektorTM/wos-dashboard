@@ -1238,30 +1238,34 @@ const ViewInteraction = () => {
               </button>
             </div>
           )} 
+          {!['has_unlockable', 'has_not_unlockable', 'is_in_region', 'is_not_in_region', 'has_active_cooldown', 'has_not_active_cooldown', ''].includes(newCondition.condition_key) &&(
+          <div>
+            <label>Parameter</label>
+            <input
+              type="text"
+              placeholder='e.g. Amount'
+              value={newCondition.parameter}
+              onChange={(e) => setNewCondition({...newCondition, parameter: e.target.value})}
+              className="form-control"
+            />
+          </div>
+          )}
 
-          <label>Parameter</label>
-          <input
-            type="text"
-            placeholder='e.g. Amount'
-            value={newCondition.parameter}
-            onChange={(e) => setNewCondition({...newCondition, parameter: e.target.value})}
-            className="form-control"
-          />
-        </div>
         
-        <div className="modal-actions">
-          <button 
-            className="btn btn-secondary"
-            onClick={() => setShowConditionModal(false)}
-          >
-            Cancel
-          </button>
-          <button 
-            className="btn btn-primary"
-            onClick={handleConditionSubmit}
-          >
-            {currentCondition ? 'Update' : 'Add'}
-          </button>
+          <div className="modal-actions">
+            <button 
+              className="btn btn-secondary"
+              onClick={() => setShowConditionModal(false)}
+            >
+              Cancel
+            </button>
+            <button 
+              className="btn btn-primary"
+              onClick={handleConditionSubmit}
+            >
+              {currentCondition ? 'Update' : 'Add'}
+            </button>
+          </div>
         </div>
       </Modal>
     </div>
