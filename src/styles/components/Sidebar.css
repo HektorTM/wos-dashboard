@@ -124,17 +124,25 @@
   padding-left: 2.5rem;
 }
 
+.gd-title {
+  display: flex;
+  align-items: center; /* Vertically center items */
+  /* Remove width: 100% if it's causing the button to push too far right */
+}
+
 .nav-toggle {
-  width: 100%;
-  padding: 0.5rem 1.5rem;
   background: none;
   border: none;
   color: var(--gray);
-  text-align: left;
   cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 0.25rem 0.5rem;
+  margin-left: -1rem;
+  margin-bottom: 0.8rem;; /* Space between text and toggle */
+  /* Remove margin-left: auto */
+}
+
+.nav-toggle:hover {
+  color: var(--text-color);
 }
 
 .sidebar-footer {

@@ -114,10 +114,18 @@ const Sidebar = () => {
         </div>
 
         <div className="nav-section">
-          <h6>Game Design</h6>
-          <button className="nav-toggle" onClick={() => setTechOpen(!techOpen)}>
-            {techOpen ? '▲' : '▼'}
-          </button>
+          <div className="gd-title">
+            <h6 
+              onClick={() => setTechOpen(!techOpen)}
+            >Game Design</h6>
+            <button 
+              className="nav-toggle" 
+              onClick={() => setTechOpen(!techOpen)}
+              aria-expanded={techOpen}
+            > {techOpen ? '−' : '+'}
+              {/* No text needed - using CSS pseudo-element */}
+            </button>
+          </div>
           {techOpen && (
             <ul className="submenu">
               <PermissionLink to="/channels" label="Channels" perm="CHANNEL_VIEW" hasPermission={hasPermission} loading={loading} />
