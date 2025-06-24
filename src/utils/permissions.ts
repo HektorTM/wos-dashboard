@@ -57,6 +57,7 @@ export type PermissionKey =
     | 'COOLDOWN_DELETE'
     | 'PLAYER_VIEW'
     | 'UNLOCK'
+    | 'WARP_DELETE'
 
 
 
@@ -306,6 +307,10 @@ export const PERMISSIONS: Permission[] = [
     {
         key: 'UNLOCK',
         label: 'Unlock Items'
+    },
+    {
+        key: 'WARP_DELETE',
+        label: 'Delete Warps'
     }
 
 ];
@@ -457,4 +462,11 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             {key: "PLAYER_VIEW", label: "View Players"},
         ]
     },
+
+    {
+        group: "Warps",
+        permissions: [
+            {key: "WARP_DELETE", label: "Delete Warps"},
+        ]
+    }
 ];
