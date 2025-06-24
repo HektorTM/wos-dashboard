@@ -61,7 +61,8 @@ router.get('/issues', async (req, res) => {
     const allRepos = [
       { owner: 'HektorTM', repo: 'wos-dashboard' },
       { owner: 'HektorTM', repo: 'WoSSystems' },
-      { owner: 'HektorTM', repo: 'WoSCore' }
+      { owner: 'HektorTM', repo: 'WoSCore' },
+      { owner: 'HektorTM', repo: 'WoSEssentials'}
     ];
 
     // If a specific repo is selected, filter to just that one

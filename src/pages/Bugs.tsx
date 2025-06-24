@@ -43,6 +43,7 @@ const BugReportPage = () => {
     { name: "Web | Admin Portal", value: "HektorTM/wos-dashboard" },
     { name: "Plugin | Systems", value: "HektorTM/WoSSystems" },
     { name: "Plugin | Core", value: "HektorTM/WoSCore" },
+    { name: "Plugin | Essentials", value: "HektorTM/WoSEssentials"}
   ];
 
   useEffect(() => {
