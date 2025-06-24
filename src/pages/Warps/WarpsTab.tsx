@@ -21,7 +21,7 @@ const WarpsTab = () => {
   
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchWarps = async () => {
       try {
         const data = await fetchType('warps');
         setWarps(data);
@@ -33,7 +33,7 @@ const WarpsTab = () => {
       }
     };
 
-    fetchStats();
+    fetchWarps();
   }, []);
 
   const deleteWarp = async (id: string) => {

@@ -7,7 +7,7 @@ const logActivity = require('../../utils/LogActivity');
 router.get('/', async (req, res) => {
   try {
     const [warps] = await db.query('SELECT * FROM warps');
-    res.status(200).json(stats);
+    res.status(200).json(warps);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
