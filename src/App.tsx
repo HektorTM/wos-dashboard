@@ -38,7 +38,7 @@ import CooldownTab from './pages/Cooldowns/CooldownTab';
 import ViewCooldown from './pages/Cooldowns/ViewCooldown';
 import GuiTab from './pages/Guis/GuiTab';
 import ViewGui from './pages/Guis/ViewGui';
-import ViewSlot2 from './pages/Guis/ViewInteraction';
+import ViewSlot from './pages/Guis/ViewSlot';
 import WarpsTab from './pages/Warps/WarpsTab';
 
 
@@ -71,7 +71,7 @@ const App = () => {
                 <Route path="/players" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><PlayerTab></PlayerTab></ProtectedRoute>} />
                 <Route path="/fishing" element={<ProtectedRoute requiredPermission='FISHING_VIEW'><FishingTab></FishingTab></ProtectedRoute>} />
                 <Route path="/cooldowns" element={<ProtectedRoute requiredPermission='COOLDOWN_VIEW'><CooldownTab></CooldownTab></ProtectedRoute>} />
-                {/* <Route path="/guis" element={<ProtectedRoute requiredPermission='GUI_VIEW'><GuiTab></GuiTab></ProtectedRoute>} /> */}
+                <Route path="/guis" element={<ProtectedRoute requiredPermission='GUI_VIEW'><GuiTab></GuiTab></ProtectedRoute>} />
                 <Route path="/warps" element={<ProtectedRouteNoPerm><WarpsTab></WarpsTab></ProtectedRouteNoPerm>} />
 
                 <Route path="/requests" element={<ProtectedRouteNoPerm><RequestTab></RequestTab></ProtectedRouteNoPerm>} />
@@ -90,8 +90,8 @@ const App = () => {
                 <Route path="/view/player/:uuid" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><ViewPlayer></ViewPlayer></ProtectedRoute>} />
                 <Route path="/view/fish/:id" element={<ProtectedRoute requiredPermission='FISHING_EDIT'><ViewFish></ViewFish></ProtectedRoute>} />
                 <Route path="/view/cooldown/:id" element={<ProtectedRoute requiredPermission='COOLDOWN_EDIT'><ViewCooldown></ViewCooldown></ProtectedRoute>} />
-                {/*<Route path="/view/gui/:id" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewGui></ViewGui></ProtectedRoute>} />
-                <Route path="/view/gui/:id/:slot" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewSlot2></ViewSlot2></ProtectedRoute>} />*/}
+                <Route path="/view/gui/:id" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewGui></ViewGui></ProtectedRoute>} />
+                <Route path="/view/gui/:id/:slotNumber" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewSlot></ViewSlot></ProtectedRoute>} />
                 
 
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />

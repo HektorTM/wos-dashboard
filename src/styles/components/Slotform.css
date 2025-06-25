@@ -1,0 +1,33 @@
+.slot-form {
+    max-width: 100%;
+}
+.lore-input-container {
+    margin-bottom: 1rem;
+}
+.lore-lines-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.lore-line-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+}
+.lore-line-item:last-child {
+    border-bottom: none;
+}
+.lore-line-text {
+    flex-grow: 1;
+    margin-right: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.lore-line-actions {
+    display: flex;
+    gap: 5px;
+}

@@ -9,6 +9,8 @@ import { ActionForm } from './ActionForm';
 import { createUnlockable, checkUnlockableExists } from '../../helpers/UnlockableFetcher';
 import { useAuth } from '../../context/AuthContext';
 import TitleComp from '../../components/TitleComponent';
+import ConditionList from '../../components/ConditionDataList';
+import { noParamCond } from '../../components/NoParameterConditions';
 
 type InteractionTab = 'actions' | 'holograms' | 'particles' | 'blocks' | 'npcs';
 
@@ -1208,18 +1210,7 @@ const ViewInteraction = () => {
             onChange={(e) => setNewCondition({...newCondition, condition_key: e.target.value})}
             className="form-control"
           />
-          <datalist id="condition_keys">
-            <option value="has_citem"></option>
-            <option value="has_not_citem"></option>
-            <option value="has_unlockable"></option>
-            <option value="has_not_unlockable"></option>
-            <option value="has_stats"></option>
-            <option value="has_not_stats"></option>
-            <option value="is_in_region"></option>
-            <option value="is_not_in_region"></option>
-            <option value="has_active_cooldown"></option>
-            <option value="has_not_active_cooldown"></option>
-          </datalist>
+          <ConditionList></ConditionList>
           
           <label>Value</label>
           <input
@@ -1240,7 +1231,7 @@ const ViewInteraction = () => {
               </button>
             </div>
           )} 
-          {!['has_unlockable', 'has_not_unlockable', 'is_in_region', 'is_not_in_region', 'has_active_cooldown', 'has_not_active_cooldown', ''].includes(newCondition.condition_key) &&(
+          {!noParamCond.includes(newCondition.condition_key) &&(
           <div>
             <label>Parameter</label>
             <input

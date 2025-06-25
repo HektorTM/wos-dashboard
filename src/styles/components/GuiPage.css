@@ -1,0 +1,44 @@
+.gui-grid-container {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  width: 63%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: #ff4444;
+  padding: 10px;
+  background: #ffeeee;
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+.gui-slot {
+  transition: all 0.2s ease;
+}
+
+.has-items {
+  background-color: #f0f0ff;
+}
+
+.gui-slot:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(100, 108, 255, 0.3);
+}
+
+.gui-slot.has-items:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(100, 108, 255, 0.3);
+}
+
+.gui-slot.has-items {
+  border-color: #646cff;
+  background-color: #f0f0ff;
+}
+
+.gui-slot.has-items:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 8px rgba(100, 108, 255, 0.3);
+}

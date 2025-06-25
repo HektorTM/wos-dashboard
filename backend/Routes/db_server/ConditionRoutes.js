@@ -3,6 +3,16 @@ const router = express.Router();
 const db = require('../../db'); // Your database connection
 const { logActivity } = require('../../utils/LogActivity');
 
+router.get('/', async (req, res) => {
+  try {
+    const [conditions] = await db.query('SELECT * FROM conditions');
+    res.status(200).json(conditions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // GET /api/conditions/:type/:id - Get all conditions for a specific type and ID
 router.get('/:type/:type_id', async (req, res) => {
   const { type, type_id } = req.params;

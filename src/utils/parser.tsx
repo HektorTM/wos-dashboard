@@ -14,7 +14,7 @@ export const parseMinecraftColorCodes = (input: string): JSX.Element[] => {
   };
 
   while (i < input.length) {
-    if (input[i] === '§') {
+    if (input[i] === '§' || input[i] === '&') {
       // Flush current text
       if (currentText) {
         result.push(
@@ -25,9 +25,10 @@ export const parseMinecraftColorCodes = (input: string): JSX.Element[] => {
         currentText = '';
       }
 
-      // Check for hex format §x§R§R§G§G§B§B
+      // Check for hex format §x§R§R§G§G§B§B or &x&R&R&G&G&B&B
+      const prefix = input[i];
       if (input[i + 1] === 'x' && i + 13 < input.length) {
-        const hex = input.slice(i + 2, i + 14).split('§').join('');
+        const hex = input.slice(i + 2, i + 14).split(prefix).join('');
         currentColor = `#${hex}`;
         i += 14;
         continue;

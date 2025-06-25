@@ -12,8 +12,8 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-container">
+    <div className="modal-overlay" >
+      <div className="modal-container" style={{marginTop: '20rem'}}>
         <div className="modal-header">
           <h3>{title}</h3>
           <button className="modal-close-btn" onClick={onClose}>
