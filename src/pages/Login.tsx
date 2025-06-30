@@ -67,7 +67,7 @@ const Login = () => {
             <div className="form-group">
               <label>Username</label>
               <input
-                className="login-input"
+                className="login-input" 
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}

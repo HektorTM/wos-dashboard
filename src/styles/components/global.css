@@ -1,3 +1,9 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
 .main-wrapper {
   min-height: 100vh;
   flex-grow: 1;

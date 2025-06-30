@@ -10,7 +10,6 @@
   
   .login-card {
     width: 100%;
-    max-width: 400px;
     background-color: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -135,6 +134,7 @@
     align-items: center;
     background-color: var(--bg-color);
     padding: 2rem;
+    min-height: 100vh; /* optional but helps on some mobile browsers */
   }
   
   .login-center-wrapper {
