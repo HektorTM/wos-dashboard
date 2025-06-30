@@ -121,38 +121,38 @@ const ChannelTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Short Name</th>
-                <th>Color</th>
-                <th>Format</th>
-                <th>Default</th>
-                <th>Autojoin</th>
-                <th>Forcejoin</th>
-                <th>Hidden</th>
-                <th>Broadcast</th>
-                <th>Permission</th>
-                <th>Radius</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>Name</th>
+                <th style={{padding: '4px 8px'}}>Short Name</th>
+                <th style={{padding: '4px 8px'}}>Color</th>
+                <th style={{padding: '4px 8px'}}>Format</th>
+                <th style={{padding: '4px 8px'}}>Default</th>
+                <th style={{padding: '4px 8px'}}>Autojoin</th>
+                <th style={{padding: '4px 8px'}}>Forcejoin</th>
+                <th style={{padding: '4px 8px'}}>Hidden</th>
+                <th style={{padding: '4px 8px'}}>Broadcast</th>
+                <th style={{padding: '4px 8px'}}>Permission</th>
+                <th style={{padding: '4px 8px'}}>Radius</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredChannels.map((channel) => (
-                <tr key={channel.name}>
-                  <td>{channel.name}</td>
-                  <td>{channel.short_name}</td>
-                  <td style={{ color: channel.color }}>
+                <tr key={channel.name} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{channel.name}</td>
+                  <td style={{padding: '4px 8px'}}>{channel.short_name}</td>
+                  <td style={{ color: channel.color, padding: '4px 8px' }}>
                     {parseMinecraftColorCodes(channel.color)}
                   </td>
-                  <td>{parseMinecraftColorCodes(channel.format)}</td>
-                  <td>{channel.default_channel ? '✅' : '❌'}</td>
-                  <td>{channel.autojoin ? '✅' : '❌'}</td>
-                  <td>{channel.forcejoin ? '✅' : '❌'}</td>
-                  <td>{channel.hidden ? '✅' : '❌'}</td>
-                  <td>{channel.broadcastable ? '✅' : '❌'}</td>
-                  <td>{channel.permission || '-'}</td>
-                  <td>{channel.radius}</td>
-                  <td className="actions-cell">
+                  <td style={{padding: '4px 8px'}}>{parseMinecraftColorCodes(channel.format)}</td>
+                  <td style={{padding: '4px 8px'}}>{channel.default_channel ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}}>{channel.autojoin ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}}>{channel.forcejoin ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}}>{channel.hidden ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}}>{channel.broadcastable ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}}>{channel.permission || '-'}</td>
+                  <td style={{padding: '4px 8px'}}>{channel.radius}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton 
                       perm="CHANNEL_EDIT" 
                       nav={`/view/channel/${channel.name}`} 

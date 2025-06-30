@@ -72,16 +72,16 @@ const PlayerTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>Username</th>
-                <th>UUID</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>Username</th>
+                <th style={{padding: '4px 8px'}}>UUID</th>
               </tr>
             </thead>
             <tbody>
                 {filteredPlayers.map((player) => (
-                <tr key={player.username} onClick={() => handleClick(player.uuid)}>
-                    <td>{player.username}</td>
-                    <td>{player.uuid}</td>
+                <tr key={player.username} onClick={() => handleClick(player.uuid)} style={{height: '32px', cursor: 'pointer'}}>
+                  <td style={{padding: '4px 8px'}}>{player.username}</td>
+                  <td style={{padding: '4px 8px'}}>{player.uuid}</td>
                 </tr>
               ))}
               {filteredPlayers.length === 0 && (

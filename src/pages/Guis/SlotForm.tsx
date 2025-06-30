@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 interface SlotFormProps {
   slot: {
-    slot: number;
+    slot?: number;
     material?: string;
     display_name?: string;
     lore?: string;
@@ -10,14 +10,15 @@ interface SlotFormProps {
     enchanted?: boolean | null;
     right_click?: string;
     left_click?: string;
-    visible?: number;
+    visible?: boolean | null;
     matchtype?: string;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (updatedSlot: any) => void;
+  onDisable?: boolean;
 }
 
-const SlotForm = ({ slot, onChange }: SlotFormProps) => {
+const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
   // State initialization
   const [localSlot, setLocalSlot] = useState(slot);
   const [loreText, setLoreText] = useState('');
@@ -158,12 +159,14 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
                 value={currentAction}
                 onChange={(e) => setCurrentAction(e.target.value)}
                 className="form-control"
+                disabled={onDisable || false}
                 style={{ flex: 1, marginRight: '0.5rem' }}
                 placeholder="Enter command"
                 onKeyDown={(e) => e.key === 'Enter' && handleAddAction(type)}
             />
             <button 
                 className="btn btn-primary"
+                disabled={onDisable || false}
                 onClick={() => handleAddAction(type)}
             >
                 Add
@@ -190,12 +193,14 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
                                 type="text"
                                 value={cmd}
                                 onChange={(e) => handleActionChange(type, index, e.target.value)}
+                                disabled={onDisable || false}
                                 className="form-control"
                                 style={{ flex: 1, marginRight: '0.5rem' }}
                             />
                             <button 
                                 className="action-btn"
                                 onClick={() => handleRemoveAction(type, index)}
+                                disabled={onDisable || false}
                                 style={{
                                     background: 'none',
                                     border: 'none',
@@ -240,6 +245,7 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
               value={localSlot.material || 'STONE'}
               onChange={handleInputChange}
               className="form-control"
+              disabled={onDisable || false}
             >
               {commonMaterials.map(mat => (
                 <option key={mat} value={mat}>{mat.toLowerCase().replace(/_/g, ' ')}</option>
@@ -267,6 +273,7 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
             name="display_name"
             value={localSlot.display_name || ''}
             onChange={handleInputChange}
+            disabled={onDisable || false}
             className="form-control"
             placeholder="Item display name"
           />
@@ -278,6 +285,7 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
             value={loreText}
             onChange={(e) => setLoreText(e.target.value)}
             className="form-control"
+            disabled={onDisable || false}
             placeholder="Enter lore lines (one per line)"
             rows={4}
           />
@@ -294,6 +302,7 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
             value={localSlot.custom_model_data || ''}
             onChange={handleNumberInputChange}
             className="form-control"
+            disabled={onDisable || false}
             placeholder="Leave empty for none"
             min="0"
           />
@@ -306,6 +315,7 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
             checked={localSlot.enchanted || false}
             onChange={handleInputChange}
             className="form-check-input"
+            disabled={onDisable || false}
             id="enchantedCheck"
           />
           <label className="form-check-label" htmlFor="enchantedCheck">
@@ -322,6 +332,7 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
             name="matchtype"
             value={localSlot.matchtype || 'all'}
             onChange={handleInputChange}
+            disabled={onDisable || false}
             className="form-control"
           >
             <option value="all">All</option>
@@ -329,17 +340,19 @@ const SlotForm = ({ slot, onChange }: SlotFormProps) => {
           </select>
         </div>
 
-        <div className="form-group">
-          <label>Visibility</label>
-          <select
+        <div className="form-check mb-3">
+          <input
+            type="checkbox"
             name="visible"
-            value={localSlot.visible || 1}
+            checked={localSlot.visible || false}
             onChange={handleInputChange}
-            className="form-control"
-          >
-            <option value={1}>Visible</option>
-            <option value={0}>Hidden</option>
-          </select>
+            className="form-check-input"
+            disabled={onDisable}
+            id="visibilityCheck"
+          />
+          <label className="form-check-label" htmlFor="visibilityCheck">
+            Vsibility
+          </label>
         </div>
 
         {renderActionSection('right')}

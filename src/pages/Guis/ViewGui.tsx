@@ -4,6 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 import TitleComp from '../../components/TitleComponent';
 import GuiMetaBox from '../../components/GuiMetaBox';
 import { parseMinecraftColorCodes } from '../../utils/parser';
+import { fetchLocked } from '../../helpers/PageMeta';
 
 interface Gui {
   id: string;
@@ -40,6 +41,8 @@ const ViewGui = () => {
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
   const [error, setError] = useState('');
+  const [locked, setLocked] = useState(false);
+  
 
   useEffect(() => {
     const fetchGuiData = async () => {
@@ -71,6 +74,22 @@ const ViewGui = () => {
 
     fetchGuiData();
   }, [id]);
+
+  const fetchLockedValue = async () => {
+    try {
+      
+      const result = await fetchLocked('gui', `${id}`);
+      if (result == 1) {
+        setLocked(true);
+      } else {
+        setLocked(false);
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  fetchLockedValue();
 
   const handleSlotClick = (slotNumber: number) => {
     if (!data) return;
@@ -240,8 +259,13 @@ const ViewGui = () => {
       >
         {data?.gui?.[0] && <GuiMetaBox id={id!} gui={data.gui[0]} />}
         <div style={{ flex: 3 }}>
-          {loading && <div style={{ padding: '20px', textAlign: 'center' }}>Loading GUI...</div>}
           {error && <div className="error-message">{error}</div>}
+          {locked && (
+            <div className="alert alert-warning page-input">
+              This GUI is locked and cannot be edited.
+            </div>
+          )}
+          {loading && <div style={{ padding: '20px', textAlign: 'center' }}>Loading GUI...</div>}
           {data && renderGrid()}
         </div>
       </div>

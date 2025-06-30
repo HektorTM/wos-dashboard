@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
+import { useNavigate } from 'react-router-dom';
 
 type Cosmetic = {
   type: string;
@@ -17,6 +18,7 @@ type CreateCosmeticPopupProps = {
 };
 
 const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) => {
+  const navigate = useNavigate();
   const { authUser } = useAuth();
   const { theme } = useTheme();
   const [type, setType] = useState('');
@@ -25,6 +27,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [created, setCreated] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +58,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
           display,
           description
         });
-        onClose();
+        setCreated(id);
       } else {
         setError(`Error: ${result.error}`);
       }
@@ -67,11 +70,15 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
     }
   };
 
+  const goTo = (id: string) => {
+    navigate(`/view/cosmetic/${id}`);
+  }
+
   return (
     <div className="modal-overlay">
       <div className={`modal-content ${theme}`}>
         <div className="modal-header">
-          <h3>Create Cosmetic</h3>
+          <h3>{!created ? `Create Cosmetic` : `Forward to ${id}?`}</h3>
           <button 
             onClick={onClose}
             className="modal-close"
@@ -84,22 +91,24 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group page-input">
-            <label>Type</label>
-            <div className="btn-group" role="group" aria-label="Type selection">
-                {["title", "badge", "prefix"].map((typeOption) => (
-                    <button
-                        key={typeOption}
-                        type="button"
-                        className={`btn btn-outline-primary ${type === typeOption ? "active" : ""}`}
-                        onClick={() => setType(typeOption)}
-                    >
-                        {typeOption.charAt(0).toUpperCase() + typeOption.slice(1)}
-                    </button>
-                ))}
+          {!created && (
+            <div className="form-group page-input">
+              <label>Type</label>
+              <div className="btn-group" role="group" aria-label="Type selection">
+                  {["title", "badge", "prefix"].map((typeOption) => (
+                      <button
+                          key={typeOption}
+                          type="button"
+                          className={`btn btn-outline-primary ${type === typeOption ? "active" : ""}`}
+                          onClick={() => setType(typeOption)}
+                      >
+                          {typeOption.charAt(0).toUpperCase() + typeOption.slice(1)}
+                      </button>
+                  ))}
+              </div>
             </div>
-          </div>
-          
+          )}
+          {!created && (
           <div className="form-group">
             <label>ID</label>
             <input
@@ -110,7 +119,8 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
               disabled={loading}
             />
           </div>
-
+          )}
+          {!created && (
           <div className="form-group">
             <label>Display</label>
             <input
@@ -121,7 +131,9 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
               disabled={loading}
             />
           </div>
+          )}
 
+          {!created && (
           <div className="form-group">
             <label>Description</label>
             <input
@@ -132,6 +144,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
               disabled={loading}
             />
           </div>
+          )}
 
           <div className="modal-actions">
             <button
@@ -142,7 +155,8 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
             >
               Cancel
             </button>
-            <button
+            {!created ? (
+              <button
               type="submit"
               className="btn btn-primary"
               disabled={loading}
@@ -155,6 +169,12 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
                 'Create Cosmetic'
               )}
             </button>
+            ) : (
+              <button onClick={() => goTo(id)} className='btn btn-outline-success'>
+                Go To {id}
+              </button>
+            )}
+            
           </div>
         </form>
       </div>

@@ -1,161 +1,214 @@
-/* Sidebar Styles */
-.sidebar {
-  width: var(--sidebar-width);
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  background-color: var(--sidebar-bg);
-  color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  box-shadow: 2px 0 10px rgba(67, 97, 238, 0.1);
-  transition: var(--transition);
-  z-index: 1000;
-  
-}
-
-.sidebar-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.sidebar-header h4 {
+html, body {
+  height: 100%;
   margin: 0;
-  font-weight: 600;
+  overflow-x: hidden;
 }
 
-.sidebar-search {
-  position: relative;
-  padding: 1rem;
-}
-
-.sidebar-search input {
-  width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: var(--transition);
-}
-
-.sidebar-search input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
-}
-
-.sidebar-search .search-icon {
-  position: absolute;
-  left: 1.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  fill: var(--gray);
-}
-
-.sidebar-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem 0;
+/* Sidebar container */
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width, 250px);
+  height: 100vh;
+  
+  z-index: 1000; /* Ensure it stays above other content */
+  box-shadow: 7px 0 15px 3px rgba(89, 112, 218, 0.1);
+  transition: width 0.3s ease;
   
 }
 
-.nav-section {
-  margin-bottom: 1.5rem;
+.sidebar-container.collapsed {
+  width: 70px;
 }
 
-.nav-section-header {
+/* Main sidebar and sub-sidebar shared styles */
+.sidebar, .sub-sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--bg-color);
+  
+  transition: opacity 0.4s ease, transform 0.5s ease;
+}
+
+/* Hidden state (for both sidebars) */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-20px);
+}
+
+/* Visible state */
+.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+
+/* Header styles */
+.sidebar-header, .sub-sidebar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
-  margin-bottom: 0.75rem;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.nav-section-header h6 {
+.sidebar-header h3, .sub-sidebar-header h3 {
   margin: 0;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--gray);
+  color: var(--text-color);
+  white-space: nowrap;
 }
 
-.nav-section h6 {
-  padding: 0 1.5rem;
-  margin-bottom: 0.75rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--gray);
-}
-
-.nav-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.nav-section li a {
+/* Button styles */
+.collapse-btn, .back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text-color);
   display: flex;
   align-items: center;
-  padding: 0.75rem 1.5rem;
-  color: var(--text-color);
-  text-decoration: none;
+  gap: 8px;
+  padding: 5px;
   transition: var(--transition);
 }
 
-.nav-section li a:hover {
-  background-color: var(--hover-bg);
+.back-btn span {
+  color: var(--text-color);
+  font-size: 1rem;
 }
 
-.nav-section li a svg {
-  width: 20px;
-  height: 20px;
-  margin-right: 12px;
-  fill: currentColor;
+.collapse-btn:hover, .back-btn:hover {
+  color: var(--primary);
 }
 
-.submenu {
-  padding-left: 1rem;
+.rotate-180 {
+  transform: rotate(180deg);
 }
 
-.submenu li a {
-  padding-left: 2.5rem;
+/* Content styles */
+.sidebar-content, .sub-sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0;
 }
 
-.gd-title {
+/* Category styles */
+.category {
+  margin-bottom: 5px;
+}
+
+.category-header {
   display: flex;
-  align-items: center; /* Vertically center items */
-  /* Remove width: 100% if it's causing the button to push too far right */
-}
-
-.nav-toggle {
-  background: none;
-  border: none;
-  color: var(--gray);
+  color: var(--text-color);
+  align-items: center;
+  padding: 12px 20px;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  margin-left: -1rem;
-  margin-bottom: 0.8rem;; /* Space between text and toggle */
-  /* Remove margin-left: auto */
+  transition: var(--transition);
+  user-select: none;
 }
 
-.nav-toggle:hover {
+.category-header:hover {
+  background-color: var(--hover-bg);
+  color: var(--primary)
+}
+
+.category-icon {
+  margin-right: 10px;
+  font-size: 1.1rem;
   color: var(--text-color);
 }
 
+.category-title {
+  flex: 1;
+}
+
+.arrow {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+/* Subitem styles */
+.subitem {
+  display: block;
+  padding: 12px 20px;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: var(--transition);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subitem.disabled {
+  color: var(--danger);
+}
+.subitem.disabled:hover {
+  color: var(--danger);
+}
+
+.subitem:hover {
+  background-color: var(--hover-bg);
+  color: var(--primary);
+}
+
+
+/* ============================================= */
+/* Sidebar Footer Styles */
+/* ============================================= */
+
 .sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   padding: 1rem;
+  background-color: var(--sidebar-footer-bg, var(--sidebar-bg));
   border-top: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-/* Admin button styles */
+.sidebar-footer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  color: var(--sidebar-footer-text, var(--text-color));
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-footer-item:hover {
+  background-color: var(--sidebar-footer-hover, var(--hover-bg));
+}
+
+.sidebar-footer-icon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-footer-text {
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .sidebar-footer {
+    position: static;
+    margin-top: auto;
+    padding: 1rem 1.5rem;
+  }
+}
+
 .admin-btn {
   display: flex;
   align-items: center;
@@ -176,7 +229,6 @@
   background-color: var(--primary-dark);
 }
 
-/* Footer buttons row */
 .footer-buttons-row {
   display: flex;
   gap: 0.5rem;
@@ -250,14 +302,4 @@
   width: 16px;
   height: 16px;
   fill: currentColor;
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  
-  .dashboard-container {
-    margin-left: 0;
-  }
 }

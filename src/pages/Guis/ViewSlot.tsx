@@ -3,17 +3,15 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import PageMetaBox from '../../components/PageMetaBox';
 import Modal from '../../components/Modal';
-import { ActionForm } from './ActionForm';
 import { createUnlockable, checkUnlockableExists } from '../../helpers/UnlockableFetcher';
 import { useAuth } from '../../context/AuthContext';
 import TitleComp from '../../components/TitleComponent';
-import GuiMetaBox from '../../components/GuiMetaBox';
 import SlotForm from './SlotForm';
 import ConditionList from '../../components/ConditionDataList';
 import { noParamCond } from '../../components/NoParameterConditions';
 import SlotMetaBox from '../../components/SlotMetaBox';
+import { fetchLocked } from '../../helpers/PageMeta';
 
 interface Condition {
   type: string;
@@ -37,7 +35,7 @@ interface Slot {
   enchanted: boolean | null;
   right_click: string;
   left_click: string;
-  visible: number;
+  visible: boolean | null;
   conditions: Condition[];
 }
 
@@ -58,12 +56,13 @@ const ViewSlot = () => {
   const { theme } = useTheme();
   const [error, setError] = useState('');
   const { authUser } = useAuth();
+  const [locked, setLocked] = useState(false);
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [currentItem, setCurrentItem] = useState<any>(null);
-  const [newItem, setNewItem] = useState<any>({});
+  const [newItem, setNewItem] = useState<Slot>();
 
   // Condition Modal State
   const [showConditionModal, setShowConditionModal] = useState(false);
@@ -141,6 +140,22 @@ const ViewSlot = () => {
     fetchSlotData();
   }, [id, slotNr]);
 
+  const fetchLockedValue = async () => {
+    try {
+      
+      const result = await fetchLocked('gui', `${id}`);
+      if (result == 1) {
+        setLocked(true);
+      } else {
+        setLocked(false);
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  fetchLockedValue();
+
   useEffect(() => {
     const checkUnlockableExistence = async () => {
       if (['has_unlockable', 'has_not_unlockable'].includes(newCondition.condition_key) && newCondition.value) {
@@ -205,8 +220,8 @@ const ViewSlot = () => {
   const handleAddClick = () => {
     
     setNewItem({ 
-      slot: slotNr,  // Make sure this is a valid number or string here
-      matchtype: 'default',
+      slot: slotNumber ? slotNumber : slotNr,  // Make sure this is a valid number or string here
+      matchtype: 'all',
       material: 'STONE',
       display_name: '',
       lore: JSON.stringify([]),
@@ -214,10 +229,11 @@ const ViewSlot = () => {
       enchanted: false,
       right_click: JSON.stringify([]),
       left_click: JSON.stringify([]),
-      visible: true,
+      visible: false,
     });
     setModalMode('create');
     setShowModal(true);
+
   };
 
   const handleAddConditionClick = (type: string, slotId: number) => {
@@ -409,12 +425,12 @@ const ViewSlot = () => {
 
   };
 
-  const handleModalSubmit = async (slot: string) => {
+  const handleModalSubmit = async () => {
     try {
       if (modalMode === 'create') {
         await handleAddSubmit();
       } else {
-        await handleEditSubmit(slot);
+        await handleEditSubmit();
       }
     } catch (err) {
       console.error(err);
@@ -426,15 +442,15 @@ const ViewSlot = () => {
     try {
       const endpoint = `${import.meta.env.VITE_API_URL}/api/guis/${id}/slots/${slotNr}`;
       const body = {
-        matchtype: newItem.matchtype || 'default',
-        material: newItem.material || 'STONE',
-        display_name: newItem.display_name || 'new Item',
-        lore: JSON.parse(newItem.lore || '[]'),
-        custom_model_data: newItem.custom_model_data || 0,
-        enchanted: newItem.enchanted ? 1 : 0,
-        right_click: JSON.parse(newItem.right_click || '[]'),
-        left_click: JSON.parse(newItem.left_click || '[]'),
-        visible: newItem.visible ? 1 : 0,
+        matchtype: newItem?.matchtype || 'default',
+        material: newItem?.material || 'STONE',
+        display_name: newItem?.display_name || 'new Item',
+        lore: JSON.parse(newItem?.lore || '[]'),
+        custom_model_data: newItem?.custom_model_data || 0,
+        enchanted: newItem?.enchanted ? 1 : 0,
+        right_click: JSON.parse(newItem?.right_click || '[]'),
+        left_click: JSON.parse(newItem?.left_click || '[]'),
+        visible: newItem?.visible ? 1 : 0,
       };
 
       const res = await fetch(endpoint, {
@@ -454,6 +470,7 @@ const ViewSlot = () => {
           }
         ]);
         setShowModal(false);
+        window.location.reload();
       }
     } catch (err) {
       console.error(err);
@@ -466,15 +483,15 @@ const ViewSlot = () => {
     try {
       const endpoint = `${import.meta.env.VITE_API_URL}/api/guis/${id}/slots/${slotNr}/${currentItem.slot_id}`;
       const body = {
-        matchtype: newItem.matchtype || 'default',
-        material: newItem.material || 'STONE',
-        display_name: newItem.display_name || 'new Item',
-        lore: JSON.parse(newItem.lore || '[]'),
-        custom_model_data: newItem.custom_model_data || 0,
-        enchanted: newItem.enchanted ? 1 : 0,
-        right_click: JSON.parse(newItem.right_click || '[]'),
-        left_click: JSON.parse(newItem.left_click || '[]'),
-        visible: newItem.visible ? 1 : 0,
+        matchtype: newItem?.matchtype || 'default',
+        material: newItem?.material || 'STONE',
+        display_name: newItem?.display_name || 'new Item',
+        lore: JSON.parse(newItem?.lore || '[]'),
+        custom_model_data: newItem?.custom_model_data || 0,
+        enchanted: newItem?.enchanted ? 1 : 0,
+        right_click: JSON.parse(newItem?.right_click || '[]'),
+        left_click: JSON.parse(newItem?.left_click || '[]'),
+        visible: newItem?.visible ? 1 : 0,
       };
 
       const res = await fetch(endpoint, {
@@ -504,6 +521,7 @@ const ViewSlot = () => {
       <h3>Title Test</h3>
       <button 
         className="inter-create-button"
+        disabled={locked}
         onClick={() => handleAddClick()}
         style={{ marginLeft: '1rem' }}
       >
@@ -528,7 +546,7 @@ const ViewSlot = () => {
         </p>
         <p 
           className="btn btn-sm btn-danger"
-          onClick={() => handleDelete(itemId)}
+          onClick={!locked ? () => handleDelete(itemId) : undefined}
         >
           Delete
         </p>
@@ -617,19 +635,19 @@ const ViewSlot = () => {
                                       <div style={{gap: '0.5rem'}}>
                                         <p
                                           className='btn btn-sm btn-primary'
-                                          onClick={(e) => {
+                                          onClick={!locked ? (e) => {
                                             e.stopPropagation();
                                             handleEditConditionClick("guislot", slot.slot_id, condition);
-                                          }}
+                                          }:undefined}
                                         >
                                         ✏️
                                         </p>
                                         <p 
                                           className="btn btn-sm btn-danger"
-                                          onClick={(e) => {
+                                          onClick={!locked ? (e) => {
                                             e.stopPropagation();
                                             handleDeleteCondition("guislot", slot.slot_id, condition.condition_id);
-                                          }}
+                                          }:undefined}
                                         >
                                         🗑️
                                         </p>
@@ -662,7 +680,7 @@ const ViewSlot = () => {
               </table>
             </div>
           ) : (
-            <p>No actions configured</p>
+            <p>No Slots configured</p>
           )}
         </div>
       );
@@ -698,6 +716,12 @@ const ViewSlot = () => {
         </div>
         
         <div className="tabs-content-wrapper" style={{ flex: 1 }}>
+          {error && <div className="error-message">{error}</div>}
+          {locked && (
+            <div className="alert alert-warning page-input">
+              This GUI is locked and cannot be edited.
+            </div>
+          )}
           {renderTabContent()}
         </div>
       </div>
@@ -707,7 +731,19 @@ const ViewSlot = () => {
         onClose={() => setShowModal(false)}
         title={`${modalMode === 'create' ? 'Add New' : 'Edit'}`}
       >
-        <SlotForm slot={newItem} onChange={setNewItem}></SlotForm>
+        <SlotForm slot={{
+          slot: newItem?.slot,
+          material: newItem?.material,
+          display_name: newItem?.display_name,
+          lore: newItem?.lore,
+          custom_model_data: newItem?.custom_model_data,
+          enchanted: newItem?.enchanted,
+          right_click: newItem?.right_click,
+          left_click: newItem?.left_click,
+          visible: newItem?.visible,
+          matchtype: newItem?.matchtype
+
+        }} onChange={setNewItem} onDisable={locked}></SlotForm>
 
         <div className="modal-actions">
           <button 
@@ -718,7 +754,8 @@ const ViewSlot = () => {
           </button>
           <button 
             className="btn btn-primary"
-            onClick={() => handleModalSubmit(newItem?.slot)}
+            disabled={locked}
+            onClick={() => handleModalSubmit()}
           >
             {currentCondition ? 'Update' : 'Add'}
           </button>

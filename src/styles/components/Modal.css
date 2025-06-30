@@ -61,14 +61,42 @@
     display: block;
     margin-bottom: 5px;
   }
+
+  .form-group select {
+    width: 100%;
+    padding: 8px;
+    background: var(--input-bg);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+  }
+
+  .form-group select:focus {
+    background: var(--input-bg);
+    border: 1px solid var(--primary);
+    color: var(--text-color);
+  }
+
+  
+  .form-group select:disabled {
+    background: var(--input-bg);
+    border: 1px solid var(--primary);
+    color: var(--text-color);
+  }
   
   .form-group input {
     width: 100%;
     padding: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--input-bg);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 4px;
     color: white;
+  }
+
+   .form-group input:focus {
+    background: var(--input-bg);
+    border: 1px solid var(--primary);
+    color: var(--text-color);
   }
 
   .form-group input::placeholder {

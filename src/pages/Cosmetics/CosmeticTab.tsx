@@ -8,6 +8,7 @@ import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateCosmeticPopup from './CreateCosmeticPopUp';
 import { parseMinecraftColorCodes } from '../../utils/parser';
 import TitleComp from '../../components/TitleComponent';
+import ForwardPopup from '../../components/ForwardModal';
 
 type Cosmetic = {
   type: string;
@@ -23,8 +24,10 @@ const CurrencyTab = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { authUser } = useAuth();
-
+  
+  const [showForwardPopup, setShowForwardPopup] = useState(false);
   const [showCreatePopup, setShowCreatePopup] = useState(false);
+  const [recentCreated, setRecentCreated] = useState('');
 
   useEffect(() => {
     const fetchCosmetics = async () => {
@@ -43,6 +46,7 @@ const CurrencyTab = () => {
   }, []);
 
   const handleCosmeticCreated = (newCosmetic: Cosmetic) => {
+    setRecentCreated(newCosmetic.id);
     setCosmetics([...cosmetics, newCosmetic]);
   }
 
@@ -98,22 +102,22 @@ const CurrencyTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>Type</th>
-                <th>ID</th>
-                <th>Display</th>
-                <th>Description</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>Type</th>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Display</th>
+                <th style={{padding: '4px 8px'}}>Description</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCosmetics.map((cosmetic) => (
-                <tr key={cosmetic.id}>
-                  <td>{cosmetic.type}</td>
-                  <td>{cosmetic.id}</td>
-                  <td>{parseMinecraftColorCodes(cosmetic.display)}</td>
-                  <td>{parseMinecraftColorCodes(cosmetic.description)}</td>
-                  <td>
+                <tr key={cosmetic.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{cosmetic.type}</td>
+                  <td style={{padding: '4px 8px'}}>{cosmetic.id}</td>
+                  <td style={{padding: '4px 8px'}}>{parseMinecraftColorCodes(cosmetic.display)}</td>
+                  <td style={{padding: '4px 8px'}}>{parseMinecraftColorCodes(cosmetic.description)}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='COSMETIC_EDIT' nav={`/view/cosmetic/${cosmetic.id}`} ></EditButton>
                     <DeleteButton perm='COSMETIC_DELETE' onClick={() => deleteCosmetic(cosmetic.id)}></DeleteButton>
                   </td>
@@ -136,6 +140,10 @@ const CurrencyTab = () => {
           onClose={() => setShowCreatePopup(false)}
           onCreate={handleCosmeticCreated}
         />
+      )}
+
+      {showForwardPopup && (
+        <ForwardPopup onClose={() => setShowForwardPopup(false)} type={'cosmetic'} id={recentCreated}></ForwardPopup>
       )}
 
     </div>

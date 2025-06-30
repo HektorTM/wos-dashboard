@@ -96,28 +96,28 @@ const CitemTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Material</th>
-                <th>Display Name</th>
-                <th>Lore</th>
-                <th>Enchantments</th>
-                <th>Model Data</th>
-                <th>Undroppable</th>
-                <th>Unusable</th>
-                <th>Placeable</th>
-                <th>Profile BG</th>
-                <th>Profile Pic</th>
-                <th>Left Action</th>
-                <th>Right Action</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Material</th>
+                <th style={{padding: '4px 8px'}}>Display Name</th>
+                <th style={{padding: '4px 8px'}}>Lore</th>
+                <th style={{padding: '4px 8px'}}>Enchantments</th>
+                <th style={{padding: '4px 8px'}}>Model Data</th>
+                <th style={{padding: '4px 8px'}}>Undroppable</th>
+                <th style={{padding: '4px 8px'}}>Unusable</th>
+                <th style={{padding: '4px 8px'}}>Placeable</th>
+                <th style={{padding: '4px 8px'}}>Profile BG</th>
+                <th style={{padding: '4px 8px'}}>Profile Pic</th>
+                <th style={{padding: '4px 8px'}}>Left Action</th>
+                <th style={{padding: '4px 8px'}}>Right Action</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCitems.map((citem) => (
-                <tr key={citem.id}>
-                  <td>{citem.id}</td>
-                  <td>
+                <tr key={citem.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{citem.id}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <img 
                       src={`https://mc.nerothe.com/img/1.21.4/minecraft_${citem.material.toLowerCase()}.png`}
                       alt={citem.material}
@@ -125,18 +125,18 @@ const CitemTab = () => {
                       className="material-icon"
                     />
                   </td>
-                  <td className="text-cell">{parseMinecraftColorCodes(citem.display_name)}</td>
-                  <td className="text-cell">{parseMinecraftColorCodes(citem.lore)}</td>
-                  <td className="text-cell">{citem.enchantments}</td>
-                  <td>{citem.custom_model_data}</td>
-                  <td className="boolean-cell">{citem.flag_undroppable ? '✅' : '❌'}</td>
-                  <td className="boolean-cell">{citem.flag_unusable ? '✅' : '❌'}</td>
-                  <td className="boolean-cell">{citem.flag_placeable ? '✅' : '❌'}</td>
-                  <td className="text-cell">{citem.flag_profile_bg}</td>
-                  <td className="text-cell">{citem.flag_profile_picture}</td>
-                  <td className="text-cell">{citem.action_left}</td>
-                  <td className="text-cell">{citem.action_right}</td>
-                  <td>
+                  <td style={{padding: '4px 8px'}} className="text-cell">{parseMinecraftColorCodes(citem.display_name)}</td>
+                  <td style={{padding: '4px 8px'}} className="text-cell">{parseMinecraftColorCodes(citem.lore)}</td>
+                  <td style={{padding: '4px 8px'}} className="text-cell">{citem.enchantments}</td>
+                  <td style={{padding: '4px 8px'}}>{citem.custom_model_data}</td>
+                  <td style={{padding: '4px 8px'}} className="boolean-cell">{citem.flag_undroppable ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}} className="boolean-cell">{citem.flag_unusable ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}} className="boolean-cell">{citem.flag_placeable ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}} className="text-cell">{citem.flag_profile_bg}</td>
+                  <td style={{padding: '4px 8px'}} className="text-cell">{citem.flag_profile_picture}</td>
+                  <td style={{padding: '4px 8px'}} className="text-cell">{citem.action_left}</td>
+                  <td style={{padding: '4px 8px'}} className="text-cell">{citem.action_right}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <button
                       className="action-btn"
                       onClick={() => deleteCitem(citem.id)}

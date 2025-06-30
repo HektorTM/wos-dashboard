@@ -92,6 +92,10 @@ export const parseUsernameToUUID = async (username: string) => {
 }
 
 export const getStaffUserByUUID = async (uuid: string) => {
+  if (uuid === undefined) {
+    return 'Unknown'
+  }
+  
   try {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${uuid}/username`, {
       method: 'GET',

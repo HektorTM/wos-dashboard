@@ -11,6 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 import TitleComp from '../../components/TitleComponent';
 import ConditionList from '../../components/ConditionDataList';
 import { noParamCond } from '../../components/NoParameterConditions';
+import { fetchLocked } from '../../helpers/PageMeta';
 
 type InteractionTab = 'actions' | 'holograms' | 'particles' | 'blocks' | 'npcs';
 
@@ -67,6 +68,7 @@ const ViewInteraction = () => {
   const { theme } = useTheme();
   const [error, setError] = useState('');
   const { authUser } = useAuth();
+  const [locked, setLocked] = useState(false);
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -117,6 +119,22 @@ const ViewInteraction = () => {
 
     fetchInteraction();
   }, [id]);
+
+  const fetchLockedValue = async () => {
+      try {
+        
+        const result = await fetchLocked('interaction', `${id}`);
+        if (result == 1) {
+          setLocked(true);
+        } else {
+          setLocked(false);
+        }
+  
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchLockedValue();
 
   useEffect(() => {
     if(!interaction) return;
@@ -634,6 +652,7 @@ const ViewInteraction = () => {
             onChange={setNewItem}
             onAddCommand={handleAddCommand}
             onRemoveCommand={handleRemoveCommand}
+            onDisable={locked}
           />
         );
       case 'holograms':
@@ -642,12 +661,14 @@ const ViewInteraction = () => {
             <label>Behaviour</label>
             <input
               type="text"
+              disabled={locked}
               value={newItem.behaviour || ''}
               onChange={(e) => setNewItem({...newItem, behaviour: e.target.value})}
               className="form-control"
             />
             <label>Match Type</label>
             <input
+              disabled={locked}
               type="text"
               value={newItem.matchtype || ''}
               onChange={(e) => setNewItem({...newItem, matchtype: e.target.value})}
@@ -655,6 +676,7 @@ const ViewInteraction = () => {
             />
             <label>Hologram (JSON)</label>
             <textarea
+              disabled={locked}
               value={newItem.hologram || ''}
               onChange={(e) => setNewItem({...newItem, hologram: e.target.value})}
               className="form-control"
@@ -668,6 +690,7 @@ const ViewInteraction = () => {
             <label>Behaviour</label>
             <input
               type="text"
+              disabled={locked}
               value={newItem.behaviour || ''}
               onChange={(e) => setNewItem({...newItem, behaviour: e.target.value})}
               className="form-control"
@@ -675,6 +698,7 @@ const ViewInteraction = () => {
             <label>Match Type</label>
             <input
               type="text"
+              disabled={locked}
               value={newItem.matchtype || ''}
               onChange={(e) => setNewItem({...newItem, matchtype: e.target.value})}
               className="form-control"
@@ -682,6 +706,7 @@ const ViewInteraction = () => {
             <label>Particle</label>
             <input
               type="text"
+              disabled={locked}
               required
               value={newItem.particle || ''}
               onChange={(e) => setNewItem({...newItem, particle: e.target.value})}
@@ -691,6 +716,7 @@ const ViewInteraction = () => {
             <label>Color</label>
             <input
               type="color"
+              disabled={locked}
               value={newItem.particle_color || ''}
               onChange={(e) => setNewItem({...newItem, particle_color: e.target.value})}
               className='form-control'
@@ -734,6 +760,7 @@ const ViewInteraction = () => {
         className="inter-create-button"
         onClick={() => handleAddClick(tab)}
         style={{ marginLeft: '1rem' }}
+        disabled={locked}
       >
         +
       </button>
@@ -772,7 +799,7 @@ const ViewInteraction = () => {
         </p>
         <p 
           className="btn btn-sm btn-danger"
-          onClick={() => handleDelete(tab, itemId)}
+          onClick={!locked ? () => handleDelete(tab, itemId) : undefined}
         >
           Delete
         </p>
@@ -864,19 +891,19 @@ const ViewInteraction = () => {
                                         <div style={{gap: '0.5rem'}}>
                                           <p
                                             className='btn btn-sm btn-primary'
-                                            onClick={(e) => {
+                                            onClick={!locked ? (e) => {
                                               e.stopPropagation();
                                               handleEditConditionClick("interaction", action.action_id, condition);
-                                            }}
+                                            } : undefined}
                                           >
                                           ✏️
                                           </p>
                                           <p 
                                             className="btn btn-sm btn-danger"
-                                            onClick={(e) => {
+                                            onClick={!locked ? (e) => {
                                               e.stopPropagation();
                                               handleDeleteCondition("interaction", action.action_id, condition.condition_id);
-                                            }}
+                                            } : undefined}
                                           >
                                           🗑️
                                           </p>
@@ -891,10 +918,10 @@ const ViewInteraction = () => {
                                 )}
                                 <p
                                   className='btn btn-sm btn-success'
-                                  onClick={(e) => {
+                                  onClick={!locked ? (e) => {
                                     e.stopPropagation();
                                     handleAddConditionClick("interaction",action.action_id);
-                                  }}
+                                  } : undefined}
                                   >
                                     Add Condition
                                 </p>
@@ -1135,7 +1162,14 @@ const ViewInteraction = () => {
           <PageMetaBox type="interaction" id={id!} />
         </div>
         
+        
         <div className="tabs-content-wrapper" style={{ flex: 1 }}>
+          {error && <div className="error-message">{error}</div>}
+          {locked && (
+            <div className="alert alert-warning page-input">
+              This Interaction is locked and cannot be edited.
+            </div>
+          )}
           <div className="tabs">
             <button
               className={`tab-button ${activeTab === 'actions' ? 'active' : ''}`}
@@ -1187,6 +1221,7 @@ const ViewInteraction = () => {
             Cancel
           </button>
           <button 
+            disabled={locked}
             className="btn btn-primary"
             onClick={handleModalSubmit}
           >

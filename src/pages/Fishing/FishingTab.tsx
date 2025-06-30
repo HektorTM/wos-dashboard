@@ -101,24 +101,24 @@ const FishingTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Rarity</th>
-                <th>Citem ID</th>
-                <th>Catch Interaction</th>
-                <th>Regions</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Rarity</th>
+                <th style={{padding: '4px 8px'}}>Citem ID</th>
+                <th style={{padding: '4px 8px'}}>Catch Interaction</th>
+                <th style={{padding: '4px 8px'}}>Regions</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredFishies.map((fish) => (
-                <tr key={fish.id}>
-                  <td>{fish.id}</td>
-                  <td>{fish.rarity}</td>
-                  <td>{fish.citem_id}</td>
-                  <td>{fish.catch_interaction}</td>
-                  <td>{fish.regions}</td>
-                  <td>
+                <tr key={fish.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{fish.id}</td>
+                  <td style={{padding: '4px 8px'}}>{fish.rarity}</td>
+                  <td style={{padding: '4px 8px'}}>{fish.citem_id}</td>
+                  <td style={{padding: '4px 8px'}}>{fish.catch_interaction}</td>
+                  <td style={{padding: '4px 8px'}}>{fish.regions}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='FISHING_EDIT' nav={`/view/fish/${fish.id}`}></EditButton>
                     <DeleteButton perm='FISHING_DELETE' onClick={() => deleteFish(fish.id)}></DeleteButton>
                   </td>

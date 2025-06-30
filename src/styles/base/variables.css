@@ -1,3 +1,5 @@
+
+
 :root {
     /* Color Palette */
     --primary: #4361ee;
@@ -14,7 +16,7 @@
     --white: #ffffff;
     
     /* Layout */
-    --sidebar-width: 280px;
+    --sidebar-width: 250px;
     
     /* Transitions */
     --transition: all 0.3s ease;

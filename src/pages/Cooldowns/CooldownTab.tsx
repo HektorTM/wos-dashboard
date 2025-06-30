@@ -100,22 +100,22 @@ const CooldownTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>duration</th>
-                <th>Start Interaction</th>
-                <th>End Interaction</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>duration</th>
+                <th style={{padding: '4px 8px'}}>Start Interaction</th>
+                <th style={{padding: '4px 8px'}}>End Interaction</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCooldowns.map((cd) => (
-                <tr key={cd.id}>
-                  <td>{cd.id}</td>
-                  <td>{cd.duration}</td>
-                  <td>{cd.start_interaction}</td>
-                  <td>{cd.end_interaction}</td>
-                  <td>
+                <tr key={cd.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{cd.id}</td>
+                  <td style={{padding: '4px 8px'}}>{cd.duration}</td>
+                  <td style={{padding: '4px 8px'}}>{cd.start_interaction}</td>
+                  <td style={{padding: '4px 8px'}}>{cd.end_interaction}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='COOLDOWN_EDIT' nav={`/view/cooldown/${cd.id}`} />
                     <DeleteButton perm='COOLDOWN_DELETE' onClick={() => deleteCooldown(cd.id)} />
                   </td>

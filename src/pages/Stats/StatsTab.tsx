@@ -99,20 +99,20 @@ const StatsTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Maximum</th>
-                <th>Capped?</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Maximum</th>
+                <th style={{padding: '4px 8px'}}>Capped?</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredStats.map((stat) => (
-                <tr key={stat.id}>
-                  <td>{stat.id}</td>
-                  <td>{stat.max}</td>
-                  <td>{stat.capped ? '✅' : '❌'}</td>
-                  <td>
+                <tr key={stat.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{stat.id}</td>
+                  <td style={{padding: '4px 8px'}}>{stat.max}</td>
+                  <td style={{padding: '4px 8px'}}>{stat.capped ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='STATS_EDIT' nav={`/view/stat/${stat.id}`} />
                     <DeleteButton perm='STATS_DELETE' onClick={() => deleteStat(stat.id)} />
                   </td>

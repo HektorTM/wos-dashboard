@@ -58,6 +58,7 @@ export type PermissionKey =
     | 'PLAYER_VIEW'
     | 'UNLOCK'
     | 'WARP_DELETE'
+    | 'CHANGELOG_CREATE'
 
 
 
@@ -311,6 +312,10 @@ export const PERMISSIONS: Permission[] = [
     {
         key: 'WARP_DELETE',
         label: 'Delete Warps'
+    },
+    {
+        key: 'CHANGELOG_CREATE',
+        label: 'Create Changelogs'
     }
 
 ];
@@ -327,6 +332,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
         group: "Misc",
         permissions: [
             { key: "UNLOCK", label: "Unlock Items"},
+            { key: 'CHANGELOG_CREATE', label: 'Create Changelogs'}
         ]
     },
     {

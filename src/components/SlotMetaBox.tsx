@@ -23,17 +23,14 @@ const SlotMetaBox: React.FC<SlotMetaBoxProps> = ({ id, slot }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const [toggling, setToggling] = useState(false);
   const [creatorName, setCreatorName] = useState<string | null>(null);
   const [editorName, setEditorName] = useState<string | null>(null);
   const { authUser } = useAuth();
-  const { hasPermission } = usePermission();
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestDescription, setRequestDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
  
-  const openRequestModal = () => setShowRequestModal(true);
   const closeRequestModal = () => {
     setShowRequestModal(false);
     setRequestDescription('');
@@ -120,41 +117,6 @@ const SlotMetaBox: React.FC<SlotMetaBoxProps> = ({ id, slot }) => {
     fetchMeta();
   }, [id]);
 
-  const handleLock = async () => {
-    if (pageData?.locked) {
-      if (hasPermission('UNLOCK')) {
-        await toggleLock();
-      } else {
-        openRequestModal();
-      }
-    } else {
-      await toggleLock();
-    }
-  };
-
-  const toggleLock = async () => {
-    if (!pageData) return;
-    setToggling(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/gui/${id}/lock?uuid=${authUser?.uuid}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locked: !pageData.locked }),
-      });
-
-      if (!res.ok) throw new Error('Failed to update lock status');
-
-      await fetchMeta();
-      window.location.reload();
-    } catch (err) {
-      console.error(err);
-      alert('Could not toggle lock status');
-    } finally {
-      setToggling(false);
-    }
-  };
-
   return (
     <div style={{ flex: 1 }}>
       <div className="info-box">
@@ -176,11 +138,7 @@ const SlotMetaBox: React.FC<SlotMetaBoxProps> = ({ id, slot }) => {
         <h4>Actions</h4>
         {pageData && (
           <>
-            <button onClick={handleLock} disabled={toggling} className="meta-page-button">
-              {pageData.locked ? 'Unlock Page' : 'Lock Page'}
-            </button>
-
-            <button onClick={backToList} disabled={toggling} className="meta-page-button">
+            <button onClick={backToList} className="meta-page-button">
               Back to GUI 
             </button>
           </>

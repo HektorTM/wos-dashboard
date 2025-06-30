@@ -106,25 +106,25 @@ const UserList = () => {
         <div className='page-table-container'>
           <table className="page-table">
             <thead>
-              <tr>
-                <th>UUID</th>
-                <th>Username</th>
-                <th>Status</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>UUID</th>
+                <th style={{padding: '4px 8px'}}>Username</th>
+                <th style={{padding: '4px 8px'}}>Status</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.map((user) => (
-                <tr key={user.uuid}>
-                  <td>{user.uuid}</td>
-                  <td>{user.username}</td>
-                  <td>{user.is_active ? (
+                <tr key={user.uuid} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{user.uuid}</td>
+                  <td style={{padding: '4px 8px'}}>{user.username}</td>
+                  <td style={{padding: '4px 8px'}}>{user.is_active ? (
                     <span className="badge active">Active</span>
                     ) : (
                     <span className="badge inactive">Inactive</span>
                     )}
                   </td>
-                  <td>
+                  <td style={{padding: '4px 8px'}}>
                     <button
                       className="action-btn"
                       onClick={() => navigate(`/view/user/${user.uuid}`)}

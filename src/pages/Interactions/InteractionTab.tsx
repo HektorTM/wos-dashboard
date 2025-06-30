@@ -97,16 +97,16 @@ const InteractionTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredInteractions.map((interaction) => (
-                <tr key={interaction.id}>
-                  <td>{interaction.id}</td>
-                  <td>
+                <tr key={interaction.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{interaction.id}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='INTERACTION_EDIT' nav={`/view/interaction/${interaction.id}`}></EditButton>
                     <DeleteButton perm='INTERACTION_DELETE' onClick={() => deleteInteraction(interaction.id)}></DeleteButton>
                   </td>

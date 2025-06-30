@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 
 interface ActionFormProps {
     item: any;
+    onDisable?: boolean | undefined;
     onChange: (item: any) => void;
     onAddCommand: () => void;
     onRemoveCommand: (index: number) => void;
 }
 
-export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: ActionFormProps) => {
+export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand, onDisable }: ActionFormProps) => {
     // Initialize commands state safely
     const [commands, setCommands] = useState<string[]>(() => {
         if (Array.isArray(item.commands)) {
@@ -63,6 +64,7 @@ export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: Ac
         <div className="form-group">
             <label>Behaviour</label>
             <select
+                disabled={onDisable || false}
                 value={item.behaviour || 'break'}
                 onChange={(e) => onChange({...item, behaviour: e.target.value})}
                 className="form-control"
@@ -73,6 +75,7 @@ export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: Ac
 
             <label>Match Type</label>
             <select
+                disabled={onDisable || false}
                 value={item.matchtype || 'all'}
                 onChange={(e) => onChange({...item, matchtype: e.target.value})}
                 className="form-control"
@@ -84,6 +87,7 @@ export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: Ac
             <label>Commands</label>
             <div style={{ display: 'flex', marginBottom: '1rem' }}>
                 <input
+                    disabled={onDisable || false}
                     type="text"
                     value={currentCommand}
                     onChange={(e) => setCurrentCommand(e.target.value)}
@@ -95,7 +99,7 @@ export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: Ac
                 <button 
                     className="btn btn-primary"
                     onClick={handleAddCommand}
-                    disabled={!currentCommand}
+                    disabled={!currentCommand || (onDisable || false)}
                 >
                     Add
                 </button>
@@ -119,12 +123,14 @@ export const ActionForm = ({ item, onChange, onAddCommand, onRemoveCommand }: Ac
                             <input
                                 type="text"
                                 value={cmd}
+                                disabled={onDisable || false}
                                 onChange={(e) => handleCommandChange(index, e.target.value)}
                                 className="form-control"
                                 style={{ flex: 1, marginRight: '0.5rem' }}
                             />
                             <button 
                                 className="action-btn"
+                                disabled={onDisable || false}
                                 onClick={() => handleRemoveCommand(index)}
                                 style={{
                                     background: 'none',

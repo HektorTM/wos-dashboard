@@ -1,23 +1,26 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { ReactNode } from 'react';
 import { PermissionKey } from '../utils/permissions';
 
 type PermissionLinkProps = {
-  to: string;
-  label: string;
-  perm: PermissionKey;
+  perm?: PermissionKey;
   hasPermission: (key: PermissionKey) => boolean;
   loading?: boolean;
+  children: ReactNode;
 };
 
-const PermissionLink: React.FC<PermissionLinkProps> = ({ to, label, perm, hasPermission, loading }) => {
+const PermissionLink: React.FC<PermissionLinkProps> = ({ perm, hasPermission, loading, children }) => {
   if (loading) return null;
+
+  if (perm === null || perm === undefined) {
+    return <>{children}</>
+  }
+
   if (!hasPermission(perm)) return null;
 
   return (
-    <li>
-      <Link to={to}>{label}</Link>
-    </li>
+    <>
+      {children}
+    </>
   );
 };
 

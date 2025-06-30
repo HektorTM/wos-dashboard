@@ -97,20 +97,20 @@ const RecipeTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Output</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Type</th>
+                <th style={{padding: '4px 8px'}}>Output</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredRecipes.map((recipe) => (
-                <tr key={recipe.id}>
-                  <td>{recipe.id}</td>
-                  <td>{recipe.type}</td>
-                  <td>{recipe.output}</td>
-                  <td>
+                <tr key={recipe.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{recipe.id}</td>
+                  <td style={{padding: '4px 8px'}}>{recipe.type}</td>
+                  <td style={{padding: '4px 8px'}}>{recipe.output}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='RECIPE_EDIT' nav={`/view/recipe/${recipe.id}`} ></EditButton>
                     <DeleteButton perm='RECIPE_DELETE' onClick={() => deleteRecipe(recipe.id)}></DeleteButton>
                   </td>

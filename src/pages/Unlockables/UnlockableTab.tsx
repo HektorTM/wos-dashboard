@@ -98,18 +98,18 @@ const UnlockableTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Type</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUnlockables.map((unlockable) => (
-                <tr key={unlockable.id}>
-                  <td>{unlockable.id}</td>
-                  <td>{unlockable.temp ? 'Temporary' : 'Permanent'}</td>
-                  <td>
+                <tr key={unlockable.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{unlockable.id}</td>
+                  <td style={{padding: '4px 8px'}}>{unlockable.temp ? 'Temporary' : 'Permanent'}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='UNLOCKABLE_EDIT' nav={`/view/unlockable/${unlockable.id}`}></EditButton>
                     <DeleteButton perm='UNLOCKABLE_DELETE' onClick={() => deleteUnlockable(unlockable.id)}></DeleteButton>
                   </td>

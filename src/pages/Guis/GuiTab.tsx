@@ -97,16 +97,16 @@ const GuiTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredGuis.map((gui) => (
-                <tr key={gui.id}>
-                  <td>{gui.id}</td>
-                  <td>
+                <tr key={gui.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{gui.id}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='GUI_EDIT' nav={`/view/gui/${gui.id}`}></EditButton>
                     <DeleteButton perm='GUI_DELETE' onClick={() => deleteGui(gui.id)}></DeleteButton>
                   </td>

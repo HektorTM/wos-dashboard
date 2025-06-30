@@ -99,27 +99,26 @@ const CurrencyTab = () => {
         <div className="page-table-container">
           <table className="page-table">
             <thead>
-              <tr>
-                <th>Icon</th>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Short Name</th>
-                <th>Color</th>
-                <th>Hidden if Zero</th>
-                <th>Actions</th>
+              <tr style={{height: '32px'}}>
+                <th style={{padding: '4px 8px'}}>Icon</th>
+                <th style={{padding: '4px 8px'}}>ID</th>
+                <th style={{padding: '4px 8px'}}>Name</th>
+                <th style={{padding: '4px 8px'}}>Short Name</th>
+                <th style={{padding: '4px 8px'}}>Color</th>
+                <th style={{padding: '4px 8px'}}>Hidden if Zero</th>
+                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCurrencies.map((currency) => (
-                <tr key={currency.id}>
-                  {/*{ await fetchLockedValue(currency.id) && '🔒' } LATER */}
-                  <td>{currency.icon}</td>
-                  <td>{currency.id}</td>
-                  <td>{currency.name}</td>
-                  <td>{currency.short_name}</td>
-                  <td>{currency.color}</td>
-                  <td>{currency.hidden_if_zero ? '✅' : '❌'}</td>
-                  <td>
+                <tr key={currency.id} style={{height: '32px'}}>
+                  <td style={{padding: '4px 8px'}}>{currency.icon}</td>
+                  <td style={{padding: '4px 8px'}}>{currency.id}</td>
+                  <td style={{padding: '4px 8px'}}>{currency.name}</td>
+                  <td style={{padding: '4px 8px'}}>{currency.short_name}</td>
+                  <td style={{padding: '4px 8px'}}>{currency.color}</td>
+                  <td style={{padding: '4px 8px'}}>{currency.hidden_if_zero ? '✅' : '❌'}</td>
+                  <td style={{padding: '4px 8px'}}>
                     <EditButton perm='CURRENCY_EDIT' nav={`/view/currency/${currency.id}`} ></EditButton>
                     <DeleteButton perm='CURRENCY_DELETE' onClick={() => deleteCurrency(currency.id)}></DeleteButton>
                   </td>

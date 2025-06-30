@@ -54,5 +54,15 @@ const db = require('../webmeta');
     )
   `);
 
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS changelogs (
+      id INT NOT NULL AUTO_INCREMENT,
+      time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      changelog TEXT NOT NULL,
+      created_by VARCHAR(255) NOT NULL,
+      PRIMARY KEY (id)
+    )
+    `);
+
   console.log("Tables initialized.");
 })();

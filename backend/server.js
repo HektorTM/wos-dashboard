@@ -27,6 +27,7 @@ const GithubRoutes = require('./Routes/db_web/GithubRoutes');
 const CooldownRoutes = require('./Routes/db_server/CooldownRoutes');
 const GuiRoutes = require('./Routes/db_server/GuiRoutes');
 const WarpRoutes = require('./Routes/db_server/WarpRoutes');
+const ChangelogRoutes = require('./Routes/db_web/ChangelogRoutes');
 
 require('./utils/initTables');
 
@@ -92,6 +93,7 @@ app.use('/api/bugs', GithubRoutes);
 app.use('/api/cooldowns', CooldownRoutes);
 app.use('/api/guis', GuiRoutes);
 app.use('/api/warps', WarpRoutes);
+app.use('/api/changelogs', ChangelogRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 
