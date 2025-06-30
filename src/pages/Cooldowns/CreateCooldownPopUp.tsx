@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
+import { useNavigate } from 'react-router-dom';
 
 type Cooldown = {
   id: string;
@@ -25,6 +26,8 @@ const CreateCooldownPopup = ({ onClose, onCreate }: CreateCooldownPopupProps) =>
   const [end_interaction, setEndInteraction] = useState('')
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const [created, setCreated] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +58,7 @@ const CreateCooldownPopup = ({ onClose, onCreate }: CreateCooldownPopupProps) =>
           start_interaction,
           end_interaction,
         })
-        onClose();
+        setCreated(id);
       } else {
         setError(`Error: ${result.error}`);
       }
@@ -67,11 +70,15 @@ const CreateCooldownPopup = ({ onClose, onCreate }: CreateCooldownPopupProps) =>
     }
   };
 
+  const goTo = (id: string) => {
+    navigate(`/view/cooldown/${id}`);
+  }
+
   return (
     <div className="modal-overlay">
       <div className={`modal-content ${theme}`}>
         <div className="modal-header">
-          <h3>Create New Cooldown</h3>
+          <h3>{!created ? `Create Cooldown` : `Forward to ${id}?`}</h3>
           <button 
             onClick={onClose}
             className="modal-close"
@@ -83,50 +90,57 @@ const CreateCooldownPopup = ({ onClose, onCreate }: CreateCooldownPopupProps) =>
         
         {error && <div className="error-message">{error}</div>}
 
+        
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>ID</label>
-            <input
-              type="text"
-              value={id}
-              onChange={(e) => setId(parseID(e.target.value))}
-              required
-              disabled={loading}
-            />
-          </div>
+          {!created && (
+            <div className="form-group">
+              <label>ID</label>
+              <input
+                type="text"
+                value={id}
+                onChange={(e) => setId(parseID(e.target.value))}
+                required
+                disabled={loading}
+              />
+            </div>
+          )}
+          {!created && (
+            <div className="form-group">
+              <label>Duration</label>
+              <input
+                type="number"
+                min="0"
+                value={duration}
+                onChange={(e) => setDuration(parseInt(e.target.value))}
+                required
+                disabled={loading}
+              />
+            </div>
+          )}
+          {!created && (
+            <div className="form-group">
+              <label>Start Interaction</label>
+              <input
+                type="text"
+                value={start_interaction}
+                onChange={(e) => setStartInteraction(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+          )}
 
-          <div className="form-group">
-            <label>Duration</label>
-            <input
-              type="number"
-              min="0"
-              value={duration}
-              onChange={(e) => setDuration(parseInt(e.target.value))}
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Start Interaction</label>
-            <input
-              type="text"
-              value={start_interaction}
-              onChange={(e) => setStartInteraction(e.target.value)}
-              disabled={loading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>End Interaction</label>
-            <input
-              type="text"
-              value={end_interaction}
-              onChange={(e) => setEndInteraction(e.target.value)}
-              
-              disabled={loading}
-            />
-          </div>
+          {!created && (
+            <div className="form-group">
+              <label>End Interaction</label>
+              <input
+                type="text"
+                value={end_interaction}
+                onChange={(e) => setEndInteraction(e.target.value)}
+                
+                disabled={loading}
+              />
+            </div>
+          )}
 
           <div className="modal-actions">
             <button
@@ -137,7 +151,8 @@ const CreateCooldownPopup = ({ onClose, onCreate }: CreateCooldownPopupProps) =>
             >
               Cancel
             </button>
-            <button
+            {!created ? (
+              <button
               type="submit"
               className="btn btn-primary"
               disabled={loading}
@@ -150,6 +165,11 @@ const CreateCooldownPopup = ({ onClose, onCreate }: CreateCooldownPopupProps) =>
                 'Create Cooldown'
               )}
             </button>
+            ) : (
+              <button onClick={() => goTo(id)} className='btn btn-outline-success'>
+                Go To {id}
+              </button>
+            )}
           </div>
         </form>
       </div>
