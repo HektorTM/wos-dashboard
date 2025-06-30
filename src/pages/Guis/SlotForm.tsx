@@ -27,12 +27,6 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
   const [currentLeftClickAction, setCurrentLeftClickAction] = useState('');
   const [leftClickActions, setLeftClickActions] = useState<string[]>([]);
 
-  const commonMaterials = [
-    'STONE', 'GRASS_BLOCK', 'DIAMOND', 'IRON_INGOT', 'GOLD_INGOT',
-    'EMERALD', 'REDSTONE', 'LAPIS_LAZULI', 'COAL', 'BOOK',
-    'CHEST', 'ENDER_CHEST', 'ANVIL', 'ENCHANTING_TABLE', 'COMPASS'
-  ];
-
   // Initialize from slot prop
   useEffect(() => {
     setLocalSlot(slot);
@@ -240,17 +234,14 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
         <div className="form-group">
           <label>Material</label>
           <div className="input-group">
-            <select
+            <input
               name="material"
-              value={localSlot.material || 'STONE'}
+              value={localSlot.material}
               onChange={handleInputChange}
               className="form-control"
               disabled={onDisable || false}
             >
-              {commonMaterials.map(mat => (
-                <option key={mat} value={mat}>{mat.toLowerCase().replace(/_/g, ' ')}</option>
-              ))}
-            </select>
+            </input>
             <div className="input-group-append">
               <span className="input-group-text">
                 <img 

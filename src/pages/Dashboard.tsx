@@ -100,8 +100,7 @@ const Dashboard = () => {
     .replace(/</g, '&lt;') // prevent HTML injection
     .replace(/>/g, '&gt;')
     .replace(/\n/g, '<br/>') // handle line breaks
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') // bold
-    .replace(/_(.+?)_/g, '<u>$1</u>'); // underline
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); // bold
 }
 
 

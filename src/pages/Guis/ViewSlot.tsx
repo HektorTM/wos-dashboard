@@ -518,7 +518,7 @@ const ViewSlot = () => {
 
   const renderTabHeader = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-      <h3>Title Test</h3>
+      <h3>Slot Configuration</h3>
       <button 
         className="inter-create-button"
         disabled={locked}
