@@ -6,6 +6,8 @@ import { parseID } from '../../utils/parser';
 
 type Gui = {
   id: string;
+  size: number;
+  title: string;
 }
 
 type CreateGuiPopupProps = {
@@ -17,6 +19,8 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
   const { authUser } = useAuth();
   const { theme } = useTheme();
   const [id, setId] = useState('');
+  const [size, setSize] = useState(1);
+  const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,6 +29,8 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
     
     const payload = {
       id: parseID(id),
+      title: title,
+      size: size,
       uuid: authUser?.uuid,
     };
 
@@ -41,7 +47,9 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
       if (res.ok) {
         createPageMeta('gui', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
-          id
+          id,
+          title,
+          size
         });
         onClose();
       } else {
@@ -81,6 +89,31 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
               required
               disabled={loading}
             />
+          </div>
+
+          <div className="form-group">
+            <label>Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(parseID(e.target.value))}
+              required
+              disabled={loading}
+            />
+          </div>
+
+          <div className='form-group'>
+            <label>Size</label>
+            <input
+              type="number"
+              min={1}
+              max={6}
+              value={size}
+              onChange={(e) => setSize(e.target.valueAsNumber)}
+              required
+              disabled={loading}
+            ></input>
+
           </div>
 
           <div className="modal-actions">

@@ -5,8 +5,8 @@ import EditButton from '../../components/EditButton';
 import DeleteButton from '../../components/DeleteButton';
 import { deletePageItem } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
-import CreateInteractionPopUp from './CreateGuiPopUp';
 import TitleComp from '../../components/TitleComponent';
+import CreateGuiPopup from './CreateGuiPopUp';
 
 type Gui = {
   id: string;
@@ -125,7 +125,7 @@ const GuiTab = () => {
       )}
 
       {showCreatePopup && (
-        <CreateInteractionPopUp 
+        <CreateGuiPopup 
           onClose={() => setShowCreatePopup(false)}
           onCreate={handleGuiCreated}
         />

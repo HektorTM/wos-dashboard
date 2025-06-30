@@ -125,14 +125,14 @@ router.get('/:id/slots/:slot/:slotId', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { id, uuid } = req.body;
+    const { id, title, size, uuid } = req.body;
   
-    if (!id) {
+    if (!id || !title || !size) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     try {
-      await db.query('INSERT INTO guis (id) VALUES (?)', [id]);
+      await db.query('INSERT INTO guis (id, title, size) VALUES (?, ?, ?)', [id, title, size]);
   
       res.status(201).json({ message: 'GUI created successfully' });
   
