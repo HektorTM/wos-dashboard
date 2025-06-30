@@ -96,7 +96,7 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(parseID(e.target.value))}
+              onChange={(e) => setTitle(e.target.value)}
               required
               disabled={loading}
             />
