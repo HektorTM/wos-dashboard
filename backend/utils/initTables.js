@@ -63,6 +63,24 @@ const db = require('../webmeta');
       PRIMARY KEY (id)
     )
     `);
+  
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS projects (
+      id VARCHAR(255) NOT NULL,
+      uuid VARCHAR(255) NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      public BOOLEAN NOT NULL,
+      notes TEXT,
+      PRIMARY KEY (id)
+    )
+    `)
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS project_items (
+      id VARCHAR(255) NOT NULL,
+      type VARCHAR(255) NOT NULL,
+      item_id VARCHAR(255) NOT NULL,
+      added_by VARCHAR(255) NOT NULL
+    )`)
 
   console.log("Tables initialized.");
 })();

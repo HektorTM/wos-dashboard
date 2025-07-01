@@ -149,6 +149,7 @@
 
 .subitem:hover {
   background-color: var(--hover-bg);
+  cursor: pointer;
   color: var(--primary);
 }
 

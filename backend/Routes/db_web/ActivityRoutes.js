@@ -23,4 +23,18 @@ router.get('/recent', async (req, res) => {
   }
 });
 
+router.get('/me', async (req, res) => {
+  const {uuid} = req.body;
+
+  try {
+
+    const logs = await db.query(`
+        SELECT * FROM activity_log WHERE user = ?
+      `, [uuid]);
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch activity logs for user', message: err.message});
+  }
+});
+
 module.exports = router;

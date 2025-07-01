@@ -29,6 +29,21 @@ router.get('/:type/:id', async (req, res) => {
   }
 });
 
+router.get('/:uuid', async (req, res) => {
+  const { uuid } = req.params; 
+
+  try {
+    const rows = await db.query('SELECT * FROM page_data WHERE created_by = ?', [uuid]);
+    if (rows.length === 0) {
+      return res.status(404).json({error: 'Page Data not found'});
+    }
+    res.status(200).json(rows[0])
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
+})
+
 // 3. Create a page
 router.post('/:type/:id', async (req, res) => {
   const { type, id } = req.params;
