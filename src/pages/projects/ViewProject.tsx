@@ -8,6 +8,7 @@ import TitleComp from '../../components/TitleComponent';
 import ProjectMetaBox from "../../components/metaboxes/ProjectMetaBox.tsx";
 import DeleteButton from "../../components/buttons/DeleteButton.tsx";
 import {useAuth} from "../../context/AuthContext.tsx";
+import {usePermission} from "../../utils/usePermission.ts";
 
 interface Project {
     id: string;
@@ -42,6 +43,7 @@ const ViewProject = () => {
     const { theme } = useTheme();
     const [error, setError] = useState('');
     const [locked, setLocked] = useState(false);
+    const { hasPermission } = usePermission();
 
     const fetchProjectData = async () => {
         try {
@@ -191,7 +193,7 @@ const ViewProject = () => {
     return (
         <div className={`page-container ${theme}`}>
             <TitleComp title={`Project | ${project?.name}`} />
-            {!project?.public && !(project?.members?.some(member => member.uuid === authUser?.uuid) && authUser?.uuid !== project?.uuid) ? (
+            {!project?.public && (project?.members?.some(member => member.uuid !== authUser?.uuid) && authUser?.uuid != project?.uuid && !hasPermission('ADMIN_PROJECT_EDIT')) ? (
                 <div>
                     <div className="alert alert-warning">
                         This project is private. You do not have access to view it.
