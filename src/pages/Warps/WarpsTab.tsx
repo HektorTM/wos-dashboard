@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import DeleteButton from '../../components/DeleteButton';
+import DeleteButton from '../../components/buttons/DeleteButton.tsx';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 
 import TitleComp from '../../components/TitleComponent';

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { PermissionKey } from '../utils/permissions';
-import { usePermission } from "../utils/usePermission";
+import { PermissionKey } from '../../utils/permissions.ts';
+import { usePermission } from "../../utils/usePermission.ts";
 
 type EditButtonProps = {
     perm: PermissionKey;

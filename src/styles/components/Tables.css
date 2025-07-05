@@ -67,7 +67,7 @@
   
   /* Hover effects */
   .page-table tr:hover {
-    background-color: var(--table-hover-bg);
+    background-color: var(--hover-bg);
   }
   
   .condition-table tbody tr:hover {

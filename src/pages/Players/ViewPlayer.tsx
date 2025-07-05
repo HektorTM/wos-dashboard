@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import PlayerMetaBox from '../../components/PlayerMetaBox';
+import PlayerMetaBox from '../../components/metaboxes/PlayerMetaBox.tsx';
 import { parseStringToArray, parseTime } from '../../utils/parser';
 import TitleComp from '../../components/TitleComponent';
 

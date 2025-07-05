@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { getStaffUserByUUID, parseTime, toUpperCase } from '../utils/parser';
+import { useAuth } from '../../context/AuthContext.tsx';
+import { getStaffUserByUUID, parseTime, toUpperCase } from '../../utils/parser.tsx';
 import { useNavigate } from 'react-router-dom';
-import { usePermission } from '../utils/usePermission';
-import Modal from './Modal';
+import { usePermission } from '../../utils/usePermission.ts';
+import Modal from '../Modal.tsx';
 
 interface Gui {
   id: string;

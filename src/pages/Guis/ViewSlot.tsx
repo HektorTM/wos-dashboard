@@ -10,7 +10,7 @@ import TitleComp from '../../components/TitleComponent';
 import SlotForm from './SlotForm';
 import ConditionList from '../../components/ConditionDataList';
 import { noParamCond } from '../../components/NoParameterConditions';
-import SlotMetaBox from '../../components/SlotMetaBox';
+import SlotMetaBox from '../../components/metaboxes/SlotMetaBox.tsx';
 import { fetchLocked } from '../../helpers/PageMeta';
 
 interface Condition {

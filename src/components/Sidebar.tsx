@@ -49,17 +49,6 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
       ],
     },
     {
-      id: 'misc',
-      title: 'Misc.',
-      icon: <RiPuzzle2Line />,
-      subItems: [
-        { id: 'projects', title: 'Projects', href: '/projects' },
-        { id: 'requests', title: 'Requests', href: '/requests' },
-        { id: 'bugreports', title: 'Bug Reports', href: '/bugs' },
-        { id: 'warps', title: 'Warps', href: '/warps' }
-      ]
-    },
-    {
       id: 'gamedesign',
       title: 'Game Design',
       icon: <PiGameControllerBold />,
@@ -86,6 +75,17 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
         { id: 'tickets', title: 'Tickets', href: '#', disabled: true},
         { id: 'warnings', title: 'Warnings', href: '#', disabled: true},
         { id: 'logs', title: 'Logs', href: '#', disabled: true}
+      ]
+    },
+    {
+      id: 'misc',
+      title: 'Misc.',
+      icon: <RiPuzzle2Line />,
+      subItems: [
+        { id: 'projects', title: 'Projects', href: '/projects' },
+        { id: 'requests', title: 'Requests', href: '/requests' },
+        { id: 'bugreports', title: 'Bug Reports', href: '/bugs' },
+        { id: 'warps', title: 'Warps', href: '/warps' }
       ]
     },
     

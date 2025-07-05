@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import DeleteButton from '../../components/DeleteButton';
-import EditButton from '../../components/EditButton';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
-import CreateCosmeticPopup from './CreateProjectPopUp';
-import { getStaffUserByUUID } from '../../utils/parser';
 import TitleComp from '../../components/TitleComponent';
+import CreateProjectPopUp from "./CreateProjectPopUp";
+import {ProjectEditButton} from "../../components/buttons/ProjectEditButton.tsx";
+import {ProjectDeleteButton} from "../../components/buttons/ProjectDeleteButton.tsx";
+import {getStaffUserByUUID} from "../../utils/parser.tsx";
 
 type Project = {
   id: string;
   uuid: string;
-  title: string;
+  name: string;
   public: boolean;
 };
 
 const ProjectsTab = () => {
   const { theme } = useTheme();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<(Project & { creatorName?: string})[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -29,11 +29,27 @@ const ProjectsTab = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const data = await fetchType('projects');
-        setProjects(data);
+        const rawProjects: Project[] = await fetchType('projects');
+
+        // Then proceed with the full list
+        const enrichedProjects = await Promise.all(
+            rawProjects.map(async (project) => {
+              let creatorName: string | undefined;
+              try {
+                if(project.uuid) {
+                    creatorName = await parseUUIDToUsername(project.uuid);
+                }
+              } catch (err) {
+                console.error(`Failed to fetch creator name for project ${project.id}:`, err);
+              }
+              return { ...project, creatorName };
+            })
+        );
+
+        setProjects(enrichedProjects);
       } catch (err) {
-        console.error(err);
-        setError('Failed to load projects. Please try again.');
+        console.error('Error fetching projects:', err);
+        setError('Failed to load projects');
       } finally {
         setLoading(false);
       }
@@ -41,6 +57,16 @@ const ProjectsTab = () => {
 
     fetchProjects();
   }, []);
+
+  const parseUUIDToUsername = async (uuid: string): Promise<string | undefined> => {
+    try {
+      const response = await getStaffUserByUUID(uuid);
+      return response?.username || undefined;
+    } catch (error) {
+      console.error('Failed to fetch username:', error);
+      return undefined;
+    }
+  };
 
   const handleProjectCreated = (newProject: Project) => {
     setProjects([...projects, newProject]);
@@ -60,7 +86,7 @@ const ProjectsTab = () => {
   };
 
   const filteredProjects = projects.filter((c) =>
-    [c.id, c.title].some((field) =>
+    [c.id, c.name].some((field) =>
       String(field || '').toLowerCase().includes(search.toLowerCase())
     )
   );
@@ -110,12 +136,12 @@ const ProjectsTab = () => {
               {filteredProjects.map((project) => (
                 <tr key={project.id} style={{height: '32px'}}>
                   <td style={{ padding: '4px 8px' }}>{project.id}</td>
-                  <td style={{ padding: '4px 8px' }}>{project.title}</td>
-                  <td style={{ padding: '4px 8px' }}>{getStaffUserByUUID(project.uuid)}</td>
+                  <td style={{ padding: '4px 8px' }}>{project.name}</td>
+                  <td style={{ padding: '4px 8px' }}>{project.creatorName || '-'}</td>
                   <td style={{ padding: '4px 8px' }}>{project.public ? '✅' : '❌'}</td>
                   <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='COSMETIC_EDIT' nav={`/view/project/${project.id}`} ></EditButton>
-                    <DeleteButton perm='COSMETIC_DELETE' onClick={() => deleteProject(project.id)}></DeleteButton>
+                    <ProjectEditButton id={project.id} nav={`/view/project/${project.id}`}></ProjectEditButton>
+                    <ProjectDeleteButton id={project.id} onClick={() => deleteProject(project.id)}></ProjectDeleteButton>
                   </td>
                 </tr>
               ))}
@@ -132,7 +158,7 @@ const ProjectsTab = () => {
       )}
 
       {showCreatePopup && (
-        <CreateCosmeticPopup 
+        <CreateProjectPopUp
           onClose={() => setShowCreatePopup(false)}
           onCreate={handleProjectCreated}
         />

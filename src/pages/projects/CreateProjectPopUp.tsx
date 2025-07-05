@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
-import { parseID } from '../../utils/parser';
 import { useNavigate } from 'react-router-dom';
 import { generateUUID } from '../../utils/uuid';
 
 type Project = {
   id: string;
-  title: string;
+  name: string;
   uuid: string;
   public: boolean;
 }
@@ -22,9 +21,9 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateProjectPopupProps) => 
   const navigate = useNavigate();
   const { authUser } = useAuth();
   const { theme } = useTheme();
-  const [id] = generateUUID();
-  const [title, setTitle] = useState('');
-  const [publicState, setPublicState] = useState('');
+  const [id] = useState(generateUUID(10));
+  const [name, setName] = useState('');
+  const [publicState, setPublicState] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [created, setCreated] = useState('');
@@ -34,7 +33,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateProjectPopupProps) => 
     
     const payload = {
       id: id,
-      title: title,
+      name: name,
       uuid: authUser?.uuid,
       public: publicState,
   };
@@ -50,9 +49,10 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateProjectPopupProps) => 
 
       const result = await res.json();
       if (res.ok) {
+        createPageMeta('project', `${id}`, `${authUser?.uuid}`);
         onCreate({
           id: id,
-          title: title,
+          name: name,
           uuid: `${authUser?.uuid}`,
           public: publicState ? true : false,
         });
@@ -76,7 +76,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateProjectPopupProps) => 
     <div className="modal-overlay">
       <div className={`modal-content ${theme}`}>
         <div className="modal-header">
-          <h3>{!created ? `Create Projcet` : `Forward to ${id}?`}</h3>
+          <h3>{!created ? `Create Project` : `Forward to ${id}?`}</h3>
           <button 
             onClick={onClose}
             className="modal-close"
@@ -99,24 +99,23 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateProjectPopupProps) => 
           )}
           {!created && (
           <div className="form-group">
-            <label>Title</label>
+            <label>Project Name</label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
               disabled={loading}
             />
           </div>
           )}
           {!created && (
-          <div className="form-group">
+          <div className="form-group checkbox-group">
             <label>Public</label>
             <input
               type="checkbox"
-              value={publicState}
-              onChange={(e) => setPublicState(e.target.value)}
-              required
+              checked={publicState}
+              onChange={(e) => setPublicState(e.target.checked)}
               disabled={loading}
             />
           </div>

@@ -103,23 +103,67 @@
     color: var(--text-color);
     font-size: small;
   }
-  
-  .checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 5px; /* Reduced gap */
-    
-  }
-  
-  .checkbox-group label {
-    order: 1; /* Makes label appear first */
-    margin-right: 4px; /* Small space between text and checkbox */
-  }
-  
-  .checkbox-group input {
-    order: 2; /* Makes checkbox appear after label */
-    margin: 0;
-    margin-bottom: 5px;
-    width: 15px;
-    
-  }
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  /* Reset default appearance */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  margin: 0;
+  margin-right: 5px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+
+  /* Basic unchecked style */
+  border: 1px solid #777;
+  border-radius: 3px;
+  outline: none;
+  transition: var(--transition);
+  position: relative; /* Needed for absolute positioning of checkmark */
+}
+
+/* Checked state styles */
+.checkbox-group input[type="checkbox"]:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Checkmark - centered and larger */
+.checkbox-group input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;  /* Increased from 4px */
+  height: 5px;  /* Adjusted proportion */
+  border: solid white;
+  border-width: 0 2px 2px 0;
+
+
+  /* I need this to flip */
+  transform: translate(-50%, -60%) rotate(-45deg) scaleX(-1);
+}
+
+.checkbox-group label {
+  margin-right: 4px;
+  color: var(--text-color);
+  cursor: pointer;
+  user-select: none; /* Prevent text selection */
+}
+
+/* Hover and focus states */
+.checkbox-group input[type="checkbox"]:hover {
+  border-color: var(--primary);
+}
+
+.checkbox-group input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 2px rgba(var(--primary), 0.2);
+}

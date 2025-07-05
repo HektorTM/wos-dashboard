@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import TitleComp from '../../components/TitleComponent';
-import GuiMetaBox from '../../components/GuiMetaBox';
+import GuiMetaBox from '../../components/metaboxes/GuiMetaBox.tsx';
 import { parseMinecraftColorCodes } from '../../utils/parser';
 import { fetchLocked } from '../../helpers/PageMeta';
 

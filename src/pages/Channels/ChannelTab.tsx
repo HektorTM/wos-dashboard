@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { parseMinecraftColorCodes } from '../../utils/parser';
-import EditButton from '../../components/EditButton';
-import DeleteButton from '../../components/DeleteButton';
+import EditButton from '../../components/buttons/EditButton.tsx';
+import DeleteButton from '../../components/buttons/DeleteButton.tsx';
 import TitleComp from '../../components/TitleComponent';
 
 type Channel = {

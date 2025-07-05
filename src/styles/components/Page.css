@@ -193,6 +193,15 @@ html, body, #root {
   color: var(--text-color);
 }
 
+.form-control:disabled {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+}
+
 .form-control:focus {
   outline: none;
   background-color: var(--input-bg);
@@ -203,6 +212,20 @@ html, body, #root {
 textarea.form-control {
   min-height: 100px;
   resize: vertical;
+}
+
+
+textarea.form-control:focus {
+  outline: none;
+  color: var(--text-color);
+  background-color: var(--input-bg);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+}
+textarea.form-control:disabled {
+  outline: none;
+  color: var(--text-color);
+  background-color: var(--input-bg);
 }
 
 /* ============================================= */

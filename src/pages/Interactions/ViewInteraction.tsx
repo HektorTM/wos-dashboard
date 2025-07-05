@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import PageMetaBox from '../../components/PageMetaBox';
+import PageMetaBox from '../../components/metaboxes/PageMetaBox.tsx';
 import Modal from '../../components/Modal';
 import { ActionForm } from './ActionForm';
 import { createUnlockable, checkUnlockableExists } from '../../helpers/UnlockableFetcher';
@@ -757,12 +757,12 @@ const ViewInteraction = () => {
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
       <h3>{title}</h3>
       <button 
-        className="inter-create-button"
+        className="create-button"
         onClick={() => handleAddClick(tab)}
         style={{ marginLeft: '1rem' }}
         disabled={locked}
       >
-        +
+        Add new
       </button>
     </div>
   );
@@ -1225,7 +1225,7 @@ const ViewInteraction = () => {
             className="btn btn-primary"
             onClick={handleModalSubmit}
           >
-            {modalMode === 'create' ? 'Add' : 'Save'}
+            {modalMode === 'create' ? 'Create' : 'Save'}
           </button>
         </div>
       </Modal>

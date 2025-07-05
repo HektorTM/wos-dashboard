@@ -1,14 +1,13 @@
-
 import { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { getStaffUserByUUID, parseTime, toUpperCase } from '../utils/parser';
+import { useAuth } from '../../context/AuthContext.tsx';
+import { getStaffUserByUUID, parseTime, toUpperCase } from '../../utils/parser.tsx';
 import { useNavigate } from 'react-router-dom';
-import { usePermission } from '../utils/usePermission';
-import Modal from './Modal';
+import { usePermission } from '../../utils/usePermission.ts';
+import Modal from '../Modal.tsx';
 
-interface PageMetaBoxProps {
-  type: string;
+interface SlotMetaBoxProps {
   id: string;
+  slot: string;
 }
 
 interface PageData {
@@ -19,27 +18,25 @@ interface PageData {
   edited_at?: string;
 }
 
-const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
-  const [data, setData] = useState<PageData | null>(null);
+const SlotMetaBox: React.FC<SlotMetaBoxProps> = ({ id, slot }) => {
+  const [pageData, setPageData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const [toggling, setToggling] = useState(false);
   const [creatorName, setCreatorName] = useState<string | null>(null);
   const [editorName, setEditorName] = useState<string | null>(null);
   const { authUser } = useAuth();
-  const { hasPermission } = usePermission();
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestDescription, setRequestDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-
-  const openRequestModal = () => setShowRequestModal(true);
+ 
   const closeRequestModal = () => {
     setShowRequestModal(false);
     setRequestDescription('');
     setSubmitError('');
   };
+
 
   const handleRequestSubmit = async () => {
     if (!requestDescription.trim()) {
@@ -55,7 +52,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           request_type: 'UNLOCK',
-          type,
+          type: 'gui',
           id,
           uuid: authUser?.uuid,
           description: requestDescription
@@ -69,33 +66,25 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
       closeRequestModal();
     } catch (err) {
       console.error('Request submission error:', err);
-      setSubmitError( 'Failed to submit request');
+      setSubmitError('Failed to submit request');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const backToList = async () => {
-    let destination = type;
-    if (destination === "currency") {
-      destination = "currencies";
-    } else if (destination === "fish") {
-      destination = "fishing";
-    } else {
-      destination = destination+"s";
-    }
-    navigate(`/${destination}`)
-  }
+  const backToList = () => {
+    navigate(`/view/gui/${id}`);
+  };
 
   const fetchMeta = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/gui/${id}`, {
         method: 'GET',
         credentials: 'include',
       });
       if (!res.ok) throw new Error('Failed to load metadata');
       const result = await res.json();
-      setData(result);
+      setPageData(result);
 
       if (result.created_by) {
         const name = await parseUUIDToUsername(result.created_by);
@@ -126,73 +115,31 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
 
   useEffect(() => {
     fetchMeta();
-  }, [type, id]);
-
-  
-
-  const handleLock = async () => {
-    if (data?.locked) {
-      if (hasPermission('UNLOCK')) {
-        toggleLock();
-      } else {
-        openRequestModal();
-      }
-    } else {
-      toggleLock();
-    }
-  };
-
-  
-
-  const toggleLock = async () => {
-    if (!data) return;
-    setToggling(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}/lock?uuid=${authUser?.uuid}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locked: !data.locked }),
-      });
-
-      if (!res.ok) throw new Error('Failed to update lock status');
-
-      await fetchMeta(); // Refresh metadata after lock change
-      window.location.reload();
-    } catch (err) {
-      console.error(err);
-      alert('Could not toggle lock status');
-    } finally {
-      setToggling(false);
-    }
-  };
-
+  }, [id]);
 
   return (
     <div style={{ flex: 1 }}>
       <div className="info-box">
-        <h4>{toUpperCase(type?.toString())}</h4>
+        <h4>{toUpperCase("Gui")}</h4>
         {loading && <p>Loading...</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        {data && (
+        {pageData && (
           <>
             <ul style={{ listStyle: 'none', padding: 0 }}>
               <li><strong>Identifier</strong> <br /> {id}</li>
+              <li><strong>Slot Number</strong> <br /> {slot}</li>
               <li><strong>Created By</strong> <br /> {creatorName || '—'}</li>
-              <li><strong>Last Edited By</strong> <br /> {editorName || '—'} ( {parseTime(`${data?.edited_at}`)} )</li>
+              <li><strong>Last Edited By</strong> <br /> {editorName || '—'} ( {parseTime(`${pageData?.edited_at}`)} )</li>
             </ul>
           </>
         )}
       </div>
       <div className="info-box">
         <h4>Actions</h4>
-        {data && (
+        {pageData && (
           <>
-            <button onClick={handleLock} disabled={toggling} className="meta-page-button">
-              {data.locked ? 'Unlock Page' : 'Lock Page'}
-            </button>
-            <button onClick={backToList} disabled={toggling} className="meta-page-button">
-              Back to List 
+            <button onClick={backToList} className="meta-page-button">
+              Back to GUI 
             </button>
           </>
         )}
@@ -205,7 +152,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
       >
         <div className="form-group">
           <p>
-            <strong>Requesting unlock for:</strong> {type} / {id}
+            <strong>Requesting unlock for:</strong> gui / {id}
           </p>
           
           <label>Reason for Unlock Request</label>
@@ -237,11 +184,8 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
           </button>
         </div>
       </Modal>
-
     </div>
-    
-    
   );
 };
 
-export default PageMetaBox;
+export default SlotMetaBox;

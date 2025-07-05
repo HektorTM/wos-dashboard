@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { parseTime } from '../utils/parser';
+import { parseTime } from '../../utils/parser.tsx';
 import { useNavigate } from 'react-router-dom';
 
 interface PlayerMetaBoxProps {

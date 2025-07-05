@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import PageMetaBox from '../../components/PageMetaBox';
+import PageMetaBox from '../../components/metaboxes/PageMetaBox.tsx';
 import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import { fetchPageItem } from '../../helpers/FetchPageItem';
 import Spinner from '../../components/Spinner';

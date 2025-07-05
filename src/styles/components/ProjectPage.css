@@ -1,0 +1,58 @@
+.item-table-container {
+    max-height: 85vh;
+    overflow-y: auto;
+    overflow-x: auto;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    width: 100%;
+}
+
+.item-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.item-table th {
+    background-color: var(--table-header-bg);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.item-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.item-table tr:last-child td {
+    border-bottom: none;
+}
+
+.item-table tbody tr:hover td {
+    background-color: var(--hover-bg);
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.member-notes-container {
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    gap: 20px;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.member-tab {
+    background-color: var(--bg-color);
+}
+

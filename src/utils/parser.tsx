@@ -65,16 +65,23 @@ export const parseID = (id: string) => {
     .replace(/[^a-z0-9_]/g, '');
 }
 
-export const parseUUIDToUsername = async (uuid: string) => {
+export const parseUUIDToUsername = async (uuid: string): Promise<string> => {
   try {
+    // Use the same endpoint pattern that works in fetchMeta
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/playerdata/username/${uuid}`, {
       method: 'GET',
       credentials: 'include',
     });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
     const data = await res.json();
-    return data.username;
-  } catch {
-    return null;
+
+    // Adjust these based on your actual API response
+    return data.username || data.displayName || data.name || 'Unknown';
+  } catch (err) {
+    console.error(`Username resolution failed for ${uuid}:`, err);
+    return 'Unknown';
   }
 };
 

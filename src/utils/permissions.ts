@@ -59,6 +59,8 @@ export type PermissionKey =
     | 'UNLOCK'
     | 'WARP_DELETE'
     | 'CHANGELOG_CREATE'
+    | 'ADMIN_PROJECT_EDIT'
+    | 'ADMIN_PROJECT_DELETE'
 
 
 
@@ -316,8 +318,15 @@ export const PERMISSIONS: Permission[] = [
     {
         key: 'CHANGELOG_CREATE',
         label: 'Create Changelogs'
+    },
+    {
+        key: 'ADMIN_PROJECT_EDIT',
+        label: 'Edit Projects'
+    },
+    {
+        key: 'ADMIN_PROJECT_DELETE',
+        label: 'Delete Projects'
     }
-
 ];
 
 export const PERMISSION_GROUPS: PermissionGroup[] = [
@@ -461,7 +470,13 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             { key: "COOLDOWN_DELETE", label: "Delete Cooldowns" },
         ],
     },
-
+    {
+        group: "Projects",
+        permissions: [
+            { key: "ADMIN_PROJECT_EDIT", label: "Edit Projects" },
+            { key: "ADMIN_PROJECT_DELETE", label: "Delete Projects" },
+        ],
+    },
     {
         group: "Players",
         permissions: [

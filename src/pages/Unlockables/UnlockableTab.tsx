@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import EditButton from '../../components/EditButton';
-import DeleteButton from '../../components/DeleteButton';
+import EditButton from '../../components/buttons/EditButton.tsx';
+import DeleteButton from '../../components/buttons/DeleteButton.tsx';
 import { deletePageItem } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateUnlockablePopUp from './CreateUnlockablePopUp';

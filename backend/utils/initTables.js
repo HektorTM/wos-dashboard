@@ -82,5 +82,13 @@ const db = require('../webmeta');
       added_by VARCHAR(255) NOT NULL
     )`)
 
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS project_members (
+      id VARCHAR(255) NOT NULL,
+      uuid VARCHAR(255) NOT NULL
+    )
+    
+    `)
+
   console.log("Tables initialized.");
 })();

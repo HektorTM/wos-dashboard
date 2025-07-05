@@ -1,10 +1,10 @@
 import React from "react";
-import { PermissionKey } from '../utils/permissions';
-import { usePermission } from "../utils/usePermission";
+import { PermissionKey } from '../../utils/permissions.ts';
+import { usePermission } from "../../utils/usePermission.ts";
 
 type DeleteButtonProps = {
 
-    perm: PermissionKey;
+    perm?: PermissionKey;
     onClick: () => void;
     loading?: boolean;
 };
@@ -12,7 +12,10 @@ type DeleteButtonProps = {
 const DeleteButton: React.FC<DeleteButtonProps> = ({  perm, onClick, loading }) => {
   const { hasPermission } = usePermission();
   if (loading) return null;
-  if (!hasPermission(perm)) return null;
+  if (perm !== undefined && perm === null) {
+      if (!hasPermission(perm)) return null;
+
+  }
 
   return (
     <button

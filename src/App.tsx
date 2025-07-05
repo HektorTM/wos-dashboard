@@ -40,6 +40,8 @@ import GuiTab from './pages/Guis/GuiTab';
 import ViewGui from './pages/Guis/ViewGui';
 import ViewSlot from './pages/Guis/ViewSlot';
 import WarpsTab from './pages/Warps/WarpsTab';
+import ProjectsTab from "./pages/projects/ProjectsTab.tsx";
+import ViewProject from "./pages/projects/ViewProject.tsx";
 
 
 
@@ -73,6 +75,7 @@ const App = () => {
                 <Route path="/cooldowns" element={<ProtectedRoute requiredPermission='COOLDOWN_VIEW'><CooldownTab></CooldownTab></ProtectedRoute>} />
                 <Route path="/guis" element={<ProtectedRoute requiredPermission='GUI_VIEW'><GuiTab></GuiTab></ProtectedRoute>} />
                 <Route path="/warps" element={<ProtectedRouteNoPerm><WarpsTab></WarpsTab></ProtectedRouteNoPerm>} />
+                <Route path="/projects" element={<ProtectedRouteNoPerm><ProjectsTab /></ProtectedRouteNoPerm>} />
 
                 <Route path="/requests" element={<ProtectedRouteNoPerm><RequestTab></RequestTab></ProtectedRouteNoPerm>} />
                 <Route path="/bugs" element={<ProtectedRouteNoPerm><BugReportPage></BugReportPage></ProtectedRouteNoPerm>} />
@@ -92,6 +95,7 @@ const App = () => {
                 <Route path="/view/cooldown/:id" element={<ProtectedRoute requiredPermission='COOLDOWN_EDIT'><ViewCooldown></ViewCooldown></ProtectedRoute>} />
                 <Route path="/view/gui/:id" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewGui></ViewGui></ProtectedRoute>} />
                 <Route path="/view/gui/:id/:slotNumber" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewSlot></ViewSlot></ProtectedRoute>} />
+                <Route path="/view/project/:id" element={<ProtectedRouteNoPerm><ViewProject /></ProtectedRouteNoPerm>} />
                 
 
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />
