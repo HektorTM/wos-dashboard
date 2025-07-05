@@ -83,7 +83,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
       icon: <RiPuzzle2Line />,
       subItems: [
         { id: 'projects', title: 'Projects', href: '/projects' },
-        { id: 'requests', title: 'Requests', href: '/requests' },
+        { id: 'requests', title: 'Requests', href: '/requests', disabled: true },
         { id: 'bugreports', title: 'Bug Reports', href: '/bugs' },
         { id: 'warps', title: 'Warps', href: '/warps' }
       ]
