@@ -27,7 +27,8 @@ const typeLabels: Record<string, string> = {
   unlockable: 'Unlockables',
   currency: 'Currencies',
   interaction: 'Interactions',
-  fish: 'Fish'
+  fish: 'Fish',
+  gui: 'GUIs',
 };
 
 const SearchResults = () => {
@@ -98,43 +99,62 @@ const SearchResults = () => {
   }
 
   return (
-    <div className="search-page">
-      <h2>Search Results for "{query}"</h2>
-      
-      {results ? (
-        <>
-          <p className="results-count">Found {results.total} results</p>
-          
-          {Object.keys(results.results).length === 0 ? (
-            <div className="no-results">No results found for your search.</div>
-          ) : (
-            <div className="results-grid">
-              {Object.entries(results.results).map(([type, items]) => (
-                <div key={type} className="result-group">
-                  <h3>{typeLabels[type] || type} <span>({items.length})</span></h3>
-                  <div className="result-items">
-                    {items.map((item) => (
-                      <div 
-                        key={`${type}-${item.id}`} 
-                        className="result-item"
-                        onClick={() => handleResultClick(type, item.id)}
-                      >
-                        <div className="item-content">
-                          <span className="item-name">{item.id}</span>
-                          <span className="item-type">{item.label === '0' ? 'Permanent' : item.label === '1' ? 'Temporary' : item.label}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+      <div className="search-page">
+        <div className="search-header">
+          <h2>Search Results for "{query}"</h2>
+          {results && <p className="results-count">Found {results.total} results</p>}
+        </div>
+
+        <div className="scrollable-results">
+          {isLoading ? (
+              <div className="loading-state">
+                <div className="spinner"></div>
+                <p>Searching for "{query}"...</p>
+              </div>
+          ) : error ? (
+              <div className="error-state">
+                <div className="error-message">
+                  <h3>Search Error</h3>
+                  <p>{error}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+          ) : !query ? (
+              <div className="empty-state">
+                <div className="info-message">Please enter a search term</div>
+              </div>
+          ) : results ? (
+              <div className="results-grid">
+                {Object.keys(results.results).length === 0 ? (
+                    <div className="no-results">No results found for your search.</div>
+                ) : (
+                    Object.entries(results.results).map(([type, items]) => (
+                        <div key={type} className="result-group">
+                          <h3>{typeLabels[type] || type} <span>({items.length})</span></h3>
+                          <div className="result-items">
+                            {items.map((item) => (
+                                <div
+                                    key={`${type}-${item.id}`}
+                                    className="result-item"
+                                    onClick={() => handleResultClick(type, item.id)}
+                                >
+                                  <div className="item-content">
+                                    <span className="item-name">{item.id}</span> <br />
+                                    <span className="item-type">{item.label === '0' ? 'Permanent' : item.label === '1' ? 'Temporary' : item.label}</span>
+                                  </div>
+                                </div>
+                            ))}
+                          </div>
+                        </div>
+                    ))
+                )}
+              </div>
+          ) : (
+              <div className="empty-state">
+                <div className="no-results">No search results to display</div>
+              </div>
           )}
-        </>
-      ) : (
-        <div className="no-results">No search results to display</div>
-      )}
-    </div>
+        </div>
+      </div>
   );
 };
 

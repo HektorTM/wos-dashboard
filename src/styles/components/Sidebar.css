@@ -13,6 +13,29 @@
   
 }
 
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sidebar-title {
+  margin: 0;
+  color: var(--text-color);
+  white-space: nowrap;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
 .sidebar-container.collapsed {
   width: 70px;
 }
@@ -153,6 +176,74 @@
   color: var(--primary);
 }
 
+/* ============================================== */
+/* Sidebar Search Styles */
+/* ============================================== */
+/* Sidebar Search Styles - Improved */
+.sidebar-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.sidebar-search.collapsed {
+  width: auto;
+  justify-content: center;
+  padding-left: 0;
+}
+
+.search-icon {
+  position: absolute;
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar-search.collapsed .search-icon {
+  position: static;
+  padding: 8px;
+  margin: 0 auto;
+}
+
+.sidebar-search.collapsed .search-icon:hover {
+  background-color: var(--hover-bg);
+  cursor: pointer;
+}
+
+.search-input-container {
+  flex: 1;
+  margin-left: 10px; /* Space for icon */
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar-search.collapsed .search-input-container {
+  margin-left: 0;
+}
+
+.search-input {
+  width: 100%;
+  padding-top: 5px;
+  border: 1px solid var(--border-color);
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.sidebar-search.collapsed .search-input {
+  width: 0;
+  padding: 8px 0;
+  border: none;
+}
 
 /* ============================================= */
 /* Sidebar Footer Styles */

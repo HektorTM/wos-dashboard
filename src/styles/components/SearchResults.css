@@ -1,117 +1,145 @@
-/* SearchResults.css */
+/* Search Results Page - With Scrollable Results Area */
 .search-page {
-    margin-left: var(--sidebar-width);
-    padding: 2rem;
-    min-height: 100vh;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: var(--transition);
+  padding: 2rem;
+  color: var(--text-color);
+  width: calc(100% - var(--sidebar-width, 250px));
+  background-color: var(--bg-color);
+  transition: var(--transition);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.sidebar-container .search-page {
+  margin-left: var(--sidebar-width, 250px);
+  width: calc(100% - var(--sidebar-width, 250px));
+}
+
+.sidebar-container.collapsed .search-page {
+  margin-left: 70px;
+  width: calc(100% - 70px);
+}
+
+.search-header {
+  margin-bottom: 1.5rem;
+}
+
+.search-page h2 {
+  margin-bottom: 0.5rem;
+}
+
+.results-count {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.scrollable-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+  position: relative;
+
+  /* Shadow effects */
+  --shadow-size: 15px;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* Top shadow - visible when scrolled down */
+  mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          black var(--shadow-size),
+          black calc(100% - var(--shadow-size)),
+          transparent 100%
+  );
+
+
+  /* Smooth transitions */
+  transition: mask-image 0.2s ease, -webkit-mask-image 0.2s ease;
+}
+
+/* Custom scrollbar for the results area */
+.scrollable-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-results::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+.scrollable-results::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+.results-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 2rem; /* Extra space at bottom */
+}
+
+/* Rest of your existing result styles... */
+.result-group {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.result-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.75rem;
+}
+
+.result-item {
+  background-color: var(--table-row-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.result-item:hover {
+  background-color: var(--hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.item-name {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+}
+
+.item-type {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+
+/* Loading and error states */
+.loading-state, .error-state, .empty-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .search-page {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 1rem;
   }
-  
-  .results-count {
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-  }
-  
-  .results-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  .result-group {
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .result-group h3 {
-    margin: 0 0 1rem 0;
-    color: var(--text-color);
-  }
-  
-  .result-group h3 span {
-    color: var(--text-muted);
-    font-size: 0.9em;
-  }
-  
+
   .result-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: 1fr;
   }
-  
-  .result-item {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .result-item:hover {
-    background-color: var(--hover-bg);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .item-content {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .item-name {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-  }
-  
-  .item-type {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-  }
-  
-  .no-results {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-muted);
-  }
-  
-  .error-message {
-    background-color: var(--danger-bg);
-    color: var(--danger-text);
-    padding: 1rem;
-    border: 1px solid var(--danger-bg);
-    border-radius: 6px;
-    margin-bottom: 1rem;
-  }
-  
-  .info-message {
-    background-color: var(--info-bg);
-    color: var(--info-text);
-    padding: 1rem;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-  }
-  
-  .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-left-color: var(--primary);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 1rem;
-  }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  @media (max-width: 768px) {
-    .search-page {
-      margin-left: 0;
-      padding: 1rem;
-    }
-  }
+}

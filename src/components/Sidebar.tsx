@@ -2,7 +2,7 @@ import { useState, type JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { FaArrowLeft, FaChevronLeft, FaChevronRight, FaHome, FaShieldAlt } from 'react-icons/fa';
+import {FaArrowLeft, FaChevronLeft, FaChevronRight, FaHome, FaSearch, FaShieldAlt} from 'react-icons/fa';
 import { PiGameControllerBold } from 'react-icons/pi';
 import { RiPuzzle2Line } from 'react-icons/ri';
 import PermissionLink from './PermissionLink';
@@ -35,6 +35,13 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [showSubSidebar, setShowSubSidebar] = useState(false);
   const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && query.trim() !== '') {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   // Categories data
   const categories: Category[] = [
@@ -135,14 +142,30 @@ return (
       {/* Main Sidebar */}
       <div className={`sidebar ${showSubSidebar ? 'hidden' : ''}`}>
         <div className="sidebar-header">
-          <h3>{isCollapsed ? '' : 'Staff Portal'}</h3>
-          <button 
-            className="collapse-btn" 
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            <FaChevronLeft className={isCollapsed ? 'rotate-180' : ''} />
-          </button>
+          <div className="sidebar-header-top">
+            <h3 className="sidebar-title">{isCollapsed ? '' : 'Staff Portal'}</h3>
+            <button
+                className="collapse-btn"
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              <FaChevronLeft className={isCollapsed ? 'rotate-180' : ''} />
+            </button>
+          </div>
+
+          <div className={`sidebar-search ${isCollapsed ? 'collapsed' : ''}`}>
+            <span className="category-icon"><FaSearch /></span>
+            <div className="search-input-container">
+              <input
+                  className="search-input"
+                  type="text"
+                  placeholder="Search globally..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={handleKeyPress}
+              />
+            </div>
+          </div>
         </div>
         
         <div className="sidebar-content">
