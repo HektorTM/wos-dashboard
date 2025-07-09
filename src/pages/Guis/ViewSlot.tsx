@@ -11,7 +11,7 @@ import SlotForm from './SlotForm';
 import ConditionList from '../../components/ConditionDataList';
 import { noParamCond } from '../../components/NoParameterConditions';
 import SlotMetaBox from '../../components/metaboxes/SlotMetaBox.tsx';
-import { fetchLocked } from '../../helpers/PageMeta';
+import {createPageMeta, fetchLocked} from '../../helpers/PageMeta';
 
 interface Condition {
   type: string;
@@ -177,6 +177,7 @@ const ViewSlot = () => {
 
   const handleCreateUnlockable = async () => {
       await createUnlockable( newCondition.value, `${authUser?.uuid}` );
+    await createPageMeta( 'unlockable', `${newCondition.value}`, `${authUser?.uuid}` );
       setUnlockableExists(true);
     
   }

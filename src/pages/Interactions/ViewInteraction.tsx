@@ -11,7 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 import TitleComp from '../../components/TitleComponent';
 import ConditionList from '../../components/ConditionDataList';
 import { noParamCond } from '../../components/NoParameterConditions';
-import { fetchLocked } from '../../helpers/PageMeta';
+import {createPageMeta, fetchLocked} from '../../helpers/PageMeta';
 
 type InteractionTab = 'actions' | 'holograms' | 'particles' | 'blocks' | 'npcs';
 
@@ -192,6 +192,7 @@ const ViewInteraction = () => {
 
   const handleCreateUnlockable = async () => {
       await createUnlockable( newCondition.value, `${authUser?.uuid}` );
+      await createPageMeta( 'unlockable', `${newCondition.value}`, `${authUser?.uuid}` );
       setUnlockableExists(true);
     
   }
