@@ -40,6 +40,12 @@ router.post('/', async (req, res) => {
   }
   
   try {
+
+    const [existingRows] = await db.query('SELECT * FROM stats WHERE id = ?', [id]);
+    if (existingRows.length > 0) {
+      return res.status(400).json({ error: 'Stat with this ID already exists' });
+    }
+
     await db.query('INSERT INTO stats (id, max, capped) VALUES (?, ?, ?)', [id, max, capped ? 1 : 0]);
 
     res.status(201).json({ message: 'Stat created successfully' });

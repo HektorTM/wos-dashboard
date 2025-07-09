@@ -360,6 +360,12 @@ router.post('/', async (req, res) => {
     }
 
     try {
+      const [existingRows] = await db.query('SELECT * FROM interactions WHERE id = ?', [id]);
+      if (existingRows.length > 0) {
+        return res.status(400).json({ error: 'Interaction with this ID already exists' });
+      }
+
+
       await db.query('INSERT INTO interactions (id) VALUES (?)', [id]);
   
       res.status(201).json({ message: 'Interaction created successfully' });

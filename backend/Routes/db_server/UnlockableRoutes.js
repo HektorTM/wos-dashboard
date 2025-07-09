@@ -56,6 +56,11 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    const [existingRows] = await db.query('SELECT * FROM unlockables WHERE id = ?', [id]);
+    if (existingRows.length > 0) {
+      return res.status(400).json({ error: 'Unlockable with this ID already exists' });
+    }
+
     await db.query('INSERT INTO unlockables (id, temp) VALUES (?, ?)', [id, temp ? 1 : 0]);
 
     res.status(201).json({ message: 'Unlockable created successfully' });

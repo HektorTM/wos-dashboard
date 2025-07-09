@@ -40,6 +40,13 @@ router.post('/', async (req, res) => {
   }
   
   try {
+
+    // Check if cooldown with the same ID already exists
+    const [existingRows] = await db.query('SELECT * FROM cooldowns WHERE id = ?', [id]);
+    if (existingRows.length > 0) {
+      return res.status(400).json({ error: 'Cooldown with this ID already exists' });
+    }
+
     await db.query('INSERT INTO cooldowns (id, duration, start_interaction, end_interaction) VALUES (?, ?, ?, ?)', [
       id,
       duration,

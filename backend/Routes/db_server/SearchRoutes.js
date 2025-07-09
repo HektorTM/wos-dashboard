@@ -105,6 +105,15 @@ router.get('/', async (req, res) => {
     'fish' AS type
   FROM fishing
   WHERE LOWER(id) LIKE ? OR citem_id LIKE ?
+  
+  UNION ALL
+  
+  SELECT
+    id COLLATE utf8mb4_general_ci AS id,
+    id COLLATE utf8mb4_general_ci AS label,
+    'gui' AS type
+  FROM guis
+    WHERE LOWER(id) LIKE ? OR LOWER(title) LIKE ?
 `;
 
 
@@ -118,7 +127,8 @@ router.get('/', async (req, res) => {
         searchPattern, searchPattern,                     // Players
         searchPattern, searchPattern,                     // Currencies
         searchPattern, searchPattern,                     // Interactions
-        searchPattern, searchPattern,                     // Fishing 
+        searchPattern, searchPattern,                     // Fishing
+        searchPattern, searchPattern,                     // guis
     ];
   try {
     const [results] = await db.query(query, params);

@@ -132,6 +132,11 @@ router.post('/', async (req, res) => {
     }
 
     try {
+        const [existingRows] = await db.query('SELECT * FROM guis WHERE id = ?', [id]);
+        if (existingRows.length > 0) {
+            return res.status(400).json({ error: 'GUI with this ID already exists' });
+        }
+
       await db.query('INSERT INTO guis (id, title, size) VALUES (?, ?, ?)', [id, title, size]);
   
       res.status(201).json({ message: 'GUI created successfully' });

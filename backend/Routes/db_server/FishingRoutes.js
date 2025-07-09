@@ -39,6 +39,11 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
   try {
+    const [existingRows] = await db.query('SELECT * FROM fishing WHERE id = ?', [id]);
+    if (existingRows.length > 0) {
+      return res.status(400).json({ error: 'Fish with this ID already exists' });
+    }
+
     await db.query('INSERT INTO fishing (id, citem_id, catch_interaction, rarity, regions) VALUES (?, ?, ?, ?, ?)', [id, citem_id, catch_interaction, rarity, regions]);
 
     res.status(201).json({ message: 'Fish created successfully' });
