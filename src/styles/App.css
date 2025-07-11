@@ -9,6 +9,7 @@
 @import './components/Page.css';
 @import './components/SearchResults.css';
 @import './components/Modal.css';
+@import './components/SlotModal.css';
 @import './components/Tables.css';
 @import './components/AccountPage.css';
 @import './components/GuiPage.css';

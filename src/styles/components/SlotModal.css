@@ -1,0 +1,324 @@
+/* SlotModal.css */
+/* Fixed modal content with explicit background */
+.slot-modal-container {
+    margin-bottom: 20rem;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-height: 80vh; /* Limit height to 80% of viewport */
+    overflow-y: auto; /* Make it scrollable */
+    border: 1px solid var(--border-color);
+}
+
+.slot-modal-content {
+    background: var(--bg-color) !important; /* Your custom color */
+    color: #ffffff; /* Light text for contrast */
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure child elements inherit proper colors */
+.slot-modal-content * {
+    color: inherit;
+}
+
+.slot-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.slot-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: inherit; /* Inherits from modal-content */
+}
+
+.slot-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Form styles */
+.slot-form-group {
+    margin-bottom: 1.5rem; /* Increased margin */
+    width: 100%;
+}
+
+.slot-form-group select {
+    width: 100%;
+    padding: 8px;
+    background: var(--input-bg);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+}
+
+.commands-list {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.5rem;
+    width: 100%;
+    max-height: 200px; /* Limit height */
+    overflow-y: auto; /* Make it scrollable */
+    margin-bottom: 1rem;
+}
+.action-input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.slot-form-group select:focus {
+    background: var(--input-bg);
+    border: 1px solid var(--primary);
+    color: var(--text-color);
+}
+
+
+.slot-form-group select:disabled {
+    background: var(--input-bg);
+    border: 1px solid var(--danger);
+    color: var(--text-color);
+}
+
+.slot-form-group input {
+    width: 100%;
+    padding: 8px;
+    background: var(--input-bg);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+}
+
+.slot-form-group input:focus {
+    background: var(--input-bg);
+    border: 1px solid var(--primary);
+    color: var(--text-color);
+}
+
+.slot-form-group input:disabled {
+    background: var(--input-bg);
+    border: 1px solid var(--danger);
+    color: var(--text-color);
+}
+
+.slot-form-group input::placeholder {
+    color: var(--text-color);
+    font-size: small;
+}
+
+.slot-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.slot-checkbox-group input[type="checkbox"] {
+    /* Reset default appearance */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    margin: 0;
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+
+    /* Basic unchecked style */
+    border: 1px solid #777;
+    border-radius: 3px;
+    outline: none;
+    transition: var(--transition);
+    position: relative; /* Needed for absolute positioning of checkmark */
+}
+
+/* Checked state styles */
+.slot-checkbox-group input[type="checkbox"]:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Checkmark - centered and larger */
+.slot-checkbox-group input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;  /* Increased from 4px */
+    height: 5px;  /* Adjusted proportion */
+    border: solid white;
+    border-width: 0 2px 2px 0;
+
+
+    /* I need this to flip */
+    transform: translate(-50%, -60%) rotate(-45deg) scaleX(-1);
+}
+
+.slot-checkbox-group label {
+    margin-right: 4px;
+    color: var(--text-color);
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+}
+
+/* Hover and focus states */
+.slot-checkbox-group input[type="checkbox"]:hover {
+    border-color: var(--primary);
+}
+
+.slot-checkbox-group input[type="checkbox"]:focus {
+    box-shadow: 0 0 0 2px rgba(var(--primary), 0.2);
+}
+
+
+/* Form Container */
+.slot-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px; /* Adjust as needed */
+    margin: 0 auto;
+}
+
+/* Remove the row/column structure */
+.slot-form .col-md-6 {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+}
+
+/* Form Group - Horizontal layout for label + input */
+.slot-form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+/* Labels - fixed width, left-aligned */
+.slot-form-group label {
+    flex: 0 0 120px; /* Fixed width for labels */
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-right: 1rem;
+}
+
+/* Inputs take remaining space */
+.slot-form-group .form-control {
+    flex: 1;
+    min-width: 0; /* Prevent flex overflow */
+}
+
+/* Input groups (like material with image) */
+.slot-input-group {
+    display: flex;
+    flex: 1;
+}
+
+.slot-input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.slot-input-group-append {
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    border-radius: 0 4px 4px 0;
+}
+
+.slot-input-group input{
+    color: var(--text-color);
+}
+
+/* Checkbox/radio inputs */
+.slot-form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.slot-form-check label {
+    flex: 0 0 120px; /* Fixed width for labels */
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-right: 1rem;
+}
+
+.slot-form-check-input {
+    align-content: baseline;
+    margin-right: 0.5rem;
+}
+.slot-form-check-input input:checked {
+    align-content: baseline;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    margin-right: 0.5rem;
+}
+
+.slot-form-check-label {
+    order: 1;
+}
+
+/* Textarea specific styles */
+.slot-form-group textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.slot-form-group input {
+    color: var(--text-color);
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+}
+
+.slot-form-group select {
+    color: var(--text-color);
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+}
+
+/* Help text */
+.slot-form-text {
+    display: block;
+    margin-top: 0.25rem;
+    margin-left: 120px; /* Align with inputs */
+    color: var(--text-muted);
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .slot-form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .slot-form-group label {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+        flex: 0 0 auto;
+    }
+
+    .slot-form-check-input {
+        margin-left: 0;
+    }
+
+    .slot-form-text {
+        margin-left: 0;
+    }
+}

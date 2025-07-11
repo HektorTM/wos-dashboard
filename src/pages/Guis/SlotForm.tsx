@@ -119,6 +119,7 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
         }
     };
 
+  // @ts-expect-error unused
   const handleMoveAction = (type: 'right' | 'left', index: number, direction: 'up' | 'down') => {
     const actions = type === 'right' ? [...rightClickActions] : [...leftClickActions];
     
@@ -144,81 +145,77 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
     const label = type === 'right' ? 'Right Click Action' : 'Left Click Action';
 
     return (
-      <div className="form-group">
-        <label>{label}</label>
-        <div className="action-input-container">
-          <div style={{ display: 'flex', marginBottom: '1rem' }}>
-            <input
-                type="text"
-                value={currentAction}
-                onChange={(e) => setCurrentAction(e.target.value)}
-                className="form-control"
-                disabled={onDisable || false}
-                style={{ flex: 1, marginRight: '0.5rem' }}
-                placeholder="Enter command"
-                onKeyDown={(e) => e.key === 'Enter' && handleAddAction(type)}
-            />
-            <button 
-                className="btn btn-primary"
-                disabled={onDisable || false}
-                onClick={() => handleAddAction(type)}
-            >
-                Add
-            </button>
-          </div>
-        </div>
-          
-          {actions.length > 0 && (
-                <div className="commands-list" style={{ 
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '4px',
-                    padding: '0.5rem',
-                    marginBottom: '1rem'
-                }}>
+        <div className="slot-form-group">
+          <label>{label}</label>
+          <div className="action-input-container">
+            <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+              <div style={{ display: 'flex', marginBottom: '0.5rem' }}>
+                <input
+                    type="text"
+                    value={currentAction}
+                    onChange={(e) => setCurrentAction(e.target.value)}
+                    className="form-control"
+                    disabled={onDisable || false}
+                    style={{ flex: 1, marginRight: '0.5rem' }}
+                    placeholder="Enter command"
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddAction(type)}
+                />
+                <button
+                    className="btn btn-primary"
+                    disabled={onDisable || false}
+                    onClick={() => handleAddAction(type)}
+                >
+                  Add
+                </button>
+              </div>
+
+              {actions.length > 0 && (
+                  <div className="commands-list">
                     {actions.map((cmd, index) => (
                         <div key={index} style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '0.5rem',
-                            backgroundColor: index % 2 === 0 ? 'var(--table-row-bg)' : 'var(--table-hover-bg)'
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '0.5rem',
+                          marginBottom: '0.5rem',
+                          backgroundColor: index % 2 === 0 ? 'var(--table-row-bg)' : 'var(--table-hover-bg)'
                         }}>
-                            <input
-                                type="text"
-                                value={cmd}
-                                onChange={(e) => handleActionChange(type, index, e.target.value)}
-                                disabled={onDisable || false}
-                                className="form-control"
-                                style={{ flex: 1, marginRight: '0.5rem' }}
-                            />
-                            <button 
-                                className="action-btn"
-                                onClick={() => handleRemoveAction(type, index)}
-                                disabled={onDisable || false}
-                                style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    color: 'var(--danger-color)',
-                                    fontSize: '1.2rem',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                ×
-                            </button>
+                          <input
+                              type="text"
+                              value={cmd}
+                              onChange={(e) => handleActionChange(type, index, e.target.value)}
+                              disabled={onDisable || false}
+                              className="form-control"
+                              style={{ flex: 1, marginRight: '0.5rem' }}
+                          />
+                          <button
+                              className="action-btn"
+                              onClick={() => handleRemoveAction(type, index)}
+                              disabled={onDisable || false}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                fontSize: '1.2rem',
+                                cursor: 'pointer'
+                              }}
+                          >
+                            ×
+                          </button>
                         </div>
                     ))}
-                </div>
-            )}
+                  </div>
+              )}
+            </div>
+          </div>
         </div>
     );
   };
-
 
   return (
     <div className="slot-form row">
       {/* Left Column */}
       <div className="col-md-6">
-        <div className="form-group">
+        <div className="slot-form-group" >
           <label>Slot Number</label>
           <input
             type="number"
@@ -228,12 +225,38 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
             className="form-control"
             min="0"
             disabled
+            style={onDisable ? {} : {borderColor: 'var(--border-color)'}}
           />
         </div>
 
-        <div className="form-group">
+        <div className="slot-form-group">
+          <label>Display Name</label>
+          <input
+              type="text"
+              name="display_name"
+              value={localSlot.display_name || ''}
+              onChange={handleInputChange}
+              disabled={onDisable || false}
+              className="form-control"
+              placeholder="Item display name"
+          />
+        </div>
+
+        <div className="slot-form-group">
+          <label>Lore</label>
+          <textarea
+              value={loreText}
+              onChange={(e) => setLoreText(e.target.value)}
+              className="form-control"
+              disabled={onDisable || false}
+              placeholder="Enter lore lines (one per line)"
+              rows={4}
+          />
+        </div>
+
+        <div className="slot-form-group">
           <label>Material</label>
-          <div className="input-group">
+          <div className="slot-input-group">
             <input
               name="material"
               value={localSlot.material}
@@ -242,8 +265,8 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
               disabled={onDisable || false}
             >
             </input>
-            <div className="input-group-append">
-              <span className="input-group-text">
+            <div className="slot-input-group-append">
+              <span className="slot-input-group-text">
                 <img 
                   src={`https://mc.nerothe.com/img/1.21.4/minecraft_${(localSlot.material || 'STONE').toLowerCase()}.png`} 
                   alt={localSlot.material}
@@ -256,36 +279,7 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
             </div>
           </div>
         </div>
-
-        <div className="form-group">
-          <label>Display Name</label>
-          <input
-            type="text"
-            name="display_name"
-            value={localSlot.display_name || ''}
-            onChange={handleInputChange}
-            disabled={onDisable || false}
-            className="form-control"
-            placeholder="Item display name"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Lore</label>
-          <textarea
-            value={loreText}
-            onChange={(e) => setLoreText(e.target.value)}
-            className="form-control"
-            disabled={onDisable || false}
-            placeholder="Enter lore lines (one per line)"
-            rows={4}
-          />
-          <small className="form-text text-muted">
-            Enter one lore line per line
-          </small>
-        </div>
-
-        <div className="form-group">
+        <div className="slot-form-group">
           <label>Custom Model Data</label>
           <input
             type="number"
@@ -299,25 +293,25 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
           />
         </div>
 
-        <div className="form-check mb-3">
+        <div className="slot-form-check mb-3">
+          <label>
+            Enchanted
+          </label>
           <input
             type="checkbox"
             name="enchanted"
             checked={localSlot.enchanted || false}
             onChange={handleInputChange}
-            className="form-check-input"
+            className="slot-form-check-input"
             disabled={onDisable || false}
             id="enchantedCheck"
           />
-          <label className="form-check-label" htmlFor="enchantedCheck">
-            Enchanted
-          </label>
         </div>
       </div>
 
       {/* Right Column */}
       <div className="col-md-6">
-        <div className="form-group">
+        <div className="slot-form-group">
           <label>Match Type</label>
           <select
             name="matchtype"
@@ -331,19 +325,20 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
           </select>
         </div>
 
-        <div className="form-check mb-3">
+        <div className="slot-form-check mb-3">
+          <label>
+            Visibility
+          </label>
           <input
             type="checkbox"
             name="visible"
             checked={localSlot.visible || false}
             onChange={handleInputChange}
-            className="form-check-input"
+            className="slot-form-check-input"
             disabled={onDisable}
             id="visibilityCheck"
           />
-          <label className="form-check-label" htmlFor="visibilityCheck">
-            Vsibility
-          </label>
+
         </div>
 
         {renderActionSection('right')}
