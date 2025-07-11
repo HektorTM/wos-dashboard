@@ -533,6 +533,7 @@ const ProjectMetaBox: React.FC<ProjectMetaBoxProps> = ({ id, project, onMemberUp
               <option value="stat">Stat</option>
               <option value="unlockable">Unlockable</option>
               <option value="warp">Warp</option>
+              <option value="spell">Spell</option>
             </select>
 
             <label>Item ID</label>
