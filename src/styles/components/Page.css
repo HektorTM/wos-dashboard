@@ -128,7 +128,7 @@ html, body, #root {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--danger);
+  color: var(--text-color);
   font-size: 1.25rem;
   padding: 0.5rem;
   transition: var(--transition);
@@ -136,6 +136,7 @@ html, body, #root {
 
 .action-btn:hover {
   transform: scale(1.1);
+  color: var(--danger);
 }
 
 .badge {
@@ -162,7 +163,7 @@ html, body, #root {
   border-radius: 25px;
   padding: 0.5rem 1rem;
   text-decoration: none;
-  color: var(--text-color);
+  color: white;
   transition: var(--transition);
 }
 
@@ -196,7 +197,7 @@ html, body, #root {
 .form-control:disabled {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--danger);
   border-radius: 4px;
   background-color: var(--input-bg);
   color: var(--text-color);
@@ -206,19 +207,30 @@ html, body, #root {
   outline: none;
   background-color: var(--input-bg);
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
 }
 
 textarea.form-control {
   min-height: 100px;
   resize: vertical;
+  color: var(--text-color);
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+}
+
+text.form-control {
+  color: var(--text-color);
+}
+
+textarea.form-control::placeholder {
+    color: var(--text-color);
+  font-size: smaller;
 }
 
 
 textarea.form-control:focus {
   outline: none;
   color: var(--text-color);
-  background-color: var(--input-bg);
+  background-color: var(--bg-color);
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
 }
@@ -310,39 +322,9 @@ textarea.form-control:disabled {
 }
 
 
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
 
-.modal-container {
-  margin-bottom: 20rem;
-  background-color: var(--card-bg);
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  border: 1px solid var(--border-color);
-}
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
+
 
 .modal-header h3 {
   margin: 0;
@@ -390,29 +372,23 @@ textarea.form-control:disabled {
 
 /* Add to your CSS */
 .commands-list {
+  gap: 0.5rem;
   max-height: 200px;
-  overflow-y: auto;
+  color: var(--text-color);
+
 }
 
 .commands-list div {
   transition: background-color 0.2s ease;
 }
 
-.commands-list div:hover {
-  background-color: var(--hover-bg) !important;
-}
-
-.action-btn {
-  background: none;
-  border: none;
-  color: var(--danger);
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 0 0.5rem;
-}
-
-.action-btn:hover {
-  color: var(--danger-dark);
+.commands-list input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 .pagination {

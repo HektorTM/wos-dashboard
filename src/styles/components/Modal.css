@@ -11,7 +11,31 @@
     align-items: center;
     z-index: 1000;
   }
-  
+
+.modal-content {
+  background: var(--bg-color) !important; /* Your custom color */
+  color: #ffffff; /* Light text for contrast */
+  padding: 20px;
+  border: 1px solid;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-container {
+  margin-bottom: 20rem;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+}
+
   /* Fixed modal content with explicit background */
   .modal-content {
     background: var(--bg-color) !important; /* Your custom color */
@@ -29,13 +53,14 @@
   .modal-content * {
     color: inherit;
   }
-  
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
   
   .modal-close {
     background: none;
