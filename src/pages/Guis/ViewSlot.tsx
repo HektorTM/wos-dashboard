@@ -12,6 +12,7 @@ import ConditionList from '../../components/ConditionDataList';
 import { noParamCond } from '../../components/NoParameterConditions';
 import SlotMetaBox from '../../components/metaboxes/SlotMetaBox.tsx';
 import {createPageMeta, fetchLocked} from '../../helpers/PageMeta';
+import SlotModal from "../../components/SlotModal.tsx";
 
 interface Condition {
   type: string;
@@ -521,12 +522,11 @@ const ViewSlot = () => {
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
       <h3>Slot Configuration</h3>
       <button 
-        className="inter-create-button"
+        className="create-button"
         disabled={locked}
         onClick={() => handleAddClick()}
-        style={{ marginLeft: '1rem' }}
       >
-        +
+        Add new
       </button>
     </div>
   );
@@ -727,7 +727,7 @@ const ViewSlot = () => {
         </div>
       </div>
 
-      <Modal 
+      <SlotModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         title={`${modalMode === 'create' ? 'Add New' : 'Edit'}`}
@@ -746,7 +746,7 @@ const ViewSlot = () => {
 
         }} onChange={setNewItem} onDisable={locked}></SlotForm>
 
-        <div className="modal-actions">
+        <div className="slot-modal-actions">
           <button 
             className="btn btn-secondary"
             onClick={() => setShowModal(false)}
@@ -758,11 +758,11 @@ const ViewSlot = () => {
             disabled={locked}
             onClick={() => handleModalSubmit()}
           >
-            {currentCondition ? 'Update' : 'Add'}
+            {modalMode === 'create' ? 'Create' : 'Update'}
           </button>
         </div>
 
-      </Modal>
+      </SlotModal>
 
       {/* Condition Modal */}
       <Modal 
