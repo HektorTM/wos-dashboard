@@ -22,9 +22,9 @@ router.put('/:id', async (req, res) => {
         updates.push('name = ?');
         values.push(name);
     }
-    if (publicState !== null) {
+    if (publicState !== undefined) {
         updates.push('public = ?');
-        values.push(publicState ? 1 : 0);
+        values.push(publicState ? 1 : 0); // Convert boolean to integer
     }
     if (notes) {
         updates.push('notes = ?');

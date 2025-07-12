@@ -35,7 +35,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateProjectPopupProps) => 
       id: id,
       name: name,
       uuid: authUser?.uuid,
-      public: publicState,
+      publicState: publicState ? 1 : 0,
   };
 
     try {
@@ -54,7 +54,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateProjectPopupProps) => 
           id: id,
           name: name,
           uuid: `${authUser?.uuid}`,
-          public: publicState ? true : false,
+          public: publicState,
         });
         setCreated(id);
       } else {
