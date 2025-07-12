@@ -387,7 +387,7 @@ const ProjectMetaBox: React.FC<ProjectMetaBoxProps> = ({ id, project, onMemberUp
                     <button onClick={openMemberModal} className="meta-page-button">
                       Manage Members
                     </button>
-                ) : isMember() && project?.public ? (
+                ) : isMember() || project?.public ? (
                     <button onClick={handleLeaveProject} className="meta-page-button">
                       Leave Project
                     </button>
