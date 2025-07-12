@@ -5,8 +5,8 @@ import DeleteButton from '../../components/buttons/DeleteButton.tsx';
 import EditButton from '../../components/buttons/EditButton.tsx';
 import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
 import { deletePageMeta } from '../../helpers/PageMeta';
-import CreateStatPopup from './CreateCooldownPopUp'; // Adjust the import path as needed
 import TitleComp from '../../components/TitleComponent';
+import CreateCooldownPopup from "./CreateCooldownPopUp";
 
 type Cooldown = {
   id: string;
@@ -134,7 +134,7 @@ const CooldownTab = () => {
       )}
 
       {showCreatePopup && (
-        <CreateStatPopup 
+        <CreateCooldownPopup
           onClose={() => setShowCreatePopup(false)}
           onCreate={handleCooldownCreated}
         />
