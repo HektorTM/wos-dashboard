@@ -10,12 +10,10 @@ import UserList from './pages/User/UserList';
 import EditUser from './pages/User/ViewUser';
 import CreateUser from './pages/User/CreateUser';
 import CurrencyTab from './pages/Currency/CurrencyTab';
-import CreateCurrency from './pages/Currency/CreateCurrency';
 import EditCurrency from './pages/Currency/ViewCurrency';
 import UnlockableTab from './pages/Unlockables/UnlockableTab';
 import ViewUnlockable from './pages/Unlockables/ViewUnlockable';
 import CosmeticTab from './pages/Cosmetics/CosmeticTab';
-import CreateCosmetic from './pages/Cosmetics/CreateCosmetic';
 import CitemTab from './pages/Citems/CitemTab';
 import SearchResults from './pages/Search';
 import Login from './pages/Login';
@@ -82,9 +80,7 @@ const App = () => {
                 <Route path="/account" element={<ProtectedRouteNoPerm><AccountPage></AccountPage></ProtectedRouteNoPerm>} />
 
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
-                <Route path="/create/currency" element={<ProtectedRoute requiredPermission='CURRENCY_CREATE'><CreateCurrency /></ProtectedRoute>}/>
-                <Route path="/create/cosmetic" element={<ProtectedRoute requiredPermission='COSMETIC_CREATE'><CreateCosmetic /></ProtectedRoute>} />
-                
+
                 <Route path="/view/user/:id" element={<ProtectedRoute requiredPermission='ADMIN'><EditUser /></ProtectedRoute>} />
                 <Route path="/view/currency/:id" element={<ProtectedRoute requiredPermission='CURRENCY_EDIT'><EditCurrency /></ProtectedRoute>} />
                 <Route path="/view/cosmetic/:id" element={<ProtectedRoute requiredPermission='COSMETIC_EDIT'><ViewCosmetic/></ProtectedRoute>} />
