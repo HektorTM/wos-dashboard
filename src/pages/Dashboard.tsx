@@ -10,7 +10,7 @@ type ActivityLog = {
   type: string;
   target_id: string;
   username: string;
-  action: 'Created' | 'Edited' | 'Deleted' | 'Locked' | 'Unlocked';
+  action: 'Created' | 'Edited' | 'Deleted' | 'Locked' | 'Unlocked' | 'Approved' | 'Denied';
   timestamp: string;
 };
 
@@ -172,6 +172,8 @@ const Dashboard = () => {
                     {log.action === 'Deleted' && '🗑️'}
                     {log.action === 'Locked' && '🔒'}
                     {log.action === 'Unlocked' && '🔓'}
+                    {log.action === 'Approved' && '✅'}
+                    {log.action === 'Denied' && '❌'}
                   </div>
                   <div className="activity-details">
                     <p>

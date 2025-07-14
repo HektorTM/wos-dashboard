@@ -1,7 +1,7 @@
 // hooks/usePermission.ts
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { PermissionKey } from '../utils/permissions';
+import { PermissionKey } from './permissions.ts';
 
 export const usePermission = () => {
   const { authUser } = useAuth();

@@ -1,64 +1,82 @@
 export type PermissionKey = 
     | 'ADMIN'
     | 'ALWAYS_ACTIVE'
+
     | 'CITEM_VIEW'
     | 'CITEM_EDIT'
     | 'CITEM_DELETE'
+
     | 'RECIPE_VIEW'
     | 'RECIPE_EDIT'
     | 'RECIPE_DELETE'
+    | 'RECIPE_CREATE'
+
     | 'COOLDOWN_VIEW'
     | 'COOLDOWN_CREATE'
     | 'COOLDOWN_EDIT'
     | 'COOLDOWN_DELETE'
+
     | 'COSMETIC_VIEW'
     | 'COSMETIC_CREATE'
     | 'COSMETIC_EDIT'
     | 'COSMETIC_DELETE'
+
     | 'CURRENCY_VIEW'
     | 'CURRENCY_CREATE'
     | 'CURRENCY_EDIT'
     | 'CURRENCY_DELETE'
+
     | 'GUI_VIEW'
     | 'GUI_CREATE'
     | 'GUI_EDIT'
     | 'GUI_DELETE'
+
     | 'INTERACTION_VIEW'
     | 'INTERACTION_CREATE'
     | 'INTERACTION_EDIT'
     | 'INTERACTION_DELETE'
+
     | 'LOOTTABLE_VIEW'
     | 'LOOTTABLE_CREATE'
     | 'LOOTTABLE_EDIT'
     | 'LOOTTABLE_DELETE'
+
     | 'PROFESSION_VIEW'
     | 'PROFESSION_CREATE'
     | 'PROFESSION_EDIT'
     | 'PROFESSION_DELETE'
+
     | 'STATS_VIEW'
     | 'STATS_CREATE'
     | 'STATS_EDIT'
     | 'STATS_DELETE'
+
     | 'UNLOCKABLE_VIEW'
     | 'UNLOCKABLE_CREATE'
     | 'UNLOCKABLE_EDIT'
     | 'UNLOCKABLE_DELETE'
+
     | 'CHANNEL_VIEW'
     | 'CHANNEL_CREATE'
     | 'CHANNEL_EDIT'
     | 'CHANNEL_DELETE'
+
     | 'FISHING_VIEW'
     | 'FISHING_CREATE'
     | 'FISHING_EDIT'
     | 'FISHING_DELETE'
-    | 'COOLDOWN_VIEW'
-    | 'COOLDOWN_CREATE'
-    | 'COOLDOWN_EDIT'
-    | 'COOLDOWN_DELETE'
+
     | 'PLAYER_VIEW'
+
     | 'UNLOCK'
+
+    | 'REQUEST_APPROVE'
+    | 'REQUEST_DENY'
+    | 'REQUEST_VIEW'
+
     | 'WARP_DELETE'
     | 'CHANGELOG_CREATE'
+
     | 'ADMIN_PROJECT_EDIT'
     | 'ADMIN_PROJECT_DELETE'
 
@@ -312,6 +330,18 @@ export const PERMISSIONS: Permission[] = [
         label: 'Unlock Items'
     },
     {
+        key: 'REQUEST_APPROVE',
+        label: 'Approve Requests'
+    },
+    {
+        key: 'REQUEST_DENY',
+        label: 'Deny Requests'
+    },
+    {
+        key: 'REQUEST_VIEW',
+        label: 'View Requests'
+    },
+    {
         key: 'WARP_DELETE',
         label: 'Delete Warps'
     },
@@ -342,6 +372,14 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
         permissions: [
             { key: "UNLOCK", label: "Unlock Items"},
             { key: 'CHANGELOG_CREATE', label: 'Create Changelogs'}
+        ]
+    },
+    {
+        group: "Requests",
+        permissions: [
+            { key: "REQUEST_APPROVE", label: "Approve Requests" },
+            { key: 'REQUEST_DENY', label: 'Deny Requests' },
+            { key: 'REQUEST_VIEW', label: 'View Requests' }
         ]
     },
     {

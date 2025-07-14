@@ -5,10 +5,12 @@ import { getStaffUserByUUID, parseTime, toUpperCase } from '../../utils/parser.t
 import { useNavigate } from 'react-router-dom';
 import { usePermission } from '../../utils/usePermission.ts';
 import Modal from '../Modal.tsx';
+import {PermissionKey} from "../../utils/permissions.ts";
 
 interface PageMetaBoxProps {
   type: string;
   id: string;
+  deletePerm?: PermissionKey;
 }
 
 interface PageData {
@@ -19,7 +21,7 @@ interface PageData {
   edited_at?: string;
 }
 
-const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
+const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
   const [data, setData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -29,17 +31,78 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
   const [editorName, setEditorName] = useState<string | null>(null);
   const { authUser } = useAuth();
   const { hasPermission } = usePermission();
+
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestDescription, setRequestDescription] = useState('');
+    const [requestType, setRequestType] = useState('');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  const openRequestModal = () => setShowRequestModal(true);
+  const openRequestModal = (rType:string) => {
+    setRequestType(rType);
+    setShowRequestModal(true)
+  };
   const closeRequestModal = () => {
     setShowRequestModal(false);
     setRequestDescription('');
     setSubmitError('');
   };
+
+  const handleDelete = async () => {
+    if (deletePerm == undefined || !hasPermission(deletePerm)) {
+      alert('You do not have permission to delete this item.');
+      return;
+    }
+
+
+    if (!window.confirm(`Are you sure you want to delete this ${toUpperCase(type)}?`)) {
+      return;
+    }
+
+    let destination = type;
+    if (destination === "currency") {
+      destination = "currencies";
+    } else if (destination === "fish") {
+      destination = "fishies";
+    } else {
+      destination = destination+"s";
+    }
+
+    try {
+      console.log('Deleting item:', type, id);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/page-data/${type}/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (res.ok) {
+        console.log('Item deleted successfully');
+      } else {
+        const errorData = await res.json();
+        console.error('Delete failed:', errorData);
+        alert(`Failed to delete ${toUpperCase(type)}: ${errorData.error}`);
+        return;
+      }
+
+      const res2 = await fetch(`${import.meta.env.VITE_API_URL}/api/${destination}/${id}?uuid=${authUser?.uuid}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+        if (!res2.ok) {
+            const errorData = await res2.json();
+            console.error('Delete failed:', errorData);
+            alert(`Failed to delete ${toUpperCase(type)}: ${errorData.error}`);
+            return;
+        }
+      alert(`${toUpperCase(type)} deleted successfully!`);
+      await backToList()
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Failed to delete item');
+    }
+  }
 
   const handleRequestSubmit = async () => {
     if (!requestDescription.trim()) {
@@ -54,7 +117,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          request_type: 'UNLOCK',
+          request_type: requestType,
           type,
           id,
           uuid: authUser?.uuid,
@@ -135,7 +198,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
       if (hasPermission('UNLOCK')) {
         toggleLock();
       } else {
-        openRequestModal();
+        openRequestModal('UNLOCK');
       }
     } else {
       toggleLock();
@@ -194,6 +257,11 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
             <button onClick={backToList} disabled={toggling} className="meta-page-button">
               Back to List 
             </button>
+            <button
+              onClick= {deletePerm != undefined && hasPermission(deletePerm) ? handleDelete : () => openRequestModal('DELETE')}
+              disabled={toggling} className="meta-page-button" style={{color: 'var(--danger)'}}>
+              Delete {toUpperCase(type?.toString())}
+            </button>
           </>
         )}
       </div>
@@ -201,20 +269,20 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id }) => {
       <Modal
         isOpen={showRequestModal}
         onClose={closeRequestModal}
-        title="Request Page Unlock"
+        title={`${requestType.charAt(0).toUpperCase() + requestType.toLowerCase().substring(1,requestType.length)} Request `}
       >
         <div className="form-group">
           <p>
-            <strong>Requesting unlock for:</strong> {type} / {id}
+            <strong>{`Requesting ${requestType.toLowerCase()} for:`}</strong> {type} / {id}
           </p>
           
-          <label>Reason for Unlock Request</label>
+          <label>Reason for {`${requestType.charAt(0).toUpperCase() + requestType.toLowerCase().substring(1, requestType.length)} Request `}</label>
           <textarea
             className="form-control"
             rows={4}
             value={requestDescription}
             onChange={(e) => setRequestDescription(e.target.value)}
-            placeholder="Explain why you need to unlock this page..."
+            placeholder={`Explain why you need to ${requestType.toLowerCase()} this item...`}
           />
           
           {submitError && <p className="text-danger">{submitError}</p>}
