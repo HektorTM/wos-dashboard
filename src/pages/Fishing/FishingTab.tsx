@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import EditButton from '../../components/buttons/EditButton.tsx';
-import DeleteButton from '../../components/buttons/DeleteButton.tsx';
-import { deletePageItem } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateUnlockablePopUp from './CreateFishPopUp';
 import TitleComp from '../../components/TitleComponent';
+import {usePermission} from "../../utils/usePermission.ts";
+import {useNavigate} from "react-router-dom";
 
 type Fish = {
   id: string;
@@ -18,11 +15,12 @@ type Fish = {
 
 const FishingTab = () => {
   const { theme } = useTheme();
-  const { authUser } = useAuth();
   const [fishies, setFishies] = useState<Fish[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { hasPermission } = usePermission();
+    const navigate = useNavigate();
 
   const [showCreatePopup, setShowCreatePopup] = useState(false);
 
@@ -47,22 +45,17 @@ const FishingTab = () => {
     fetchFishies();
   }, []);
 
+  const handleClick = (id:string) => {
+    if (hasPermission('FISHING_EDIT')) {
+      navigate(`/view/fish/${id}`);
+    } else {
+      return;
+    }
+  };
+
   const handleFishCreated = (newFish: Fish) => {
     setFishies([...fishies, newFish]);
   }
-
-  const deleteFish = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this Fish?')) return;
-    
-    try {
-      deletePageItem('fishies', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('fish', `${id}`, `${authUser?.uuid}`);
-      setFishies(fishies.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Failed to delete fish. Please try again.');
-    }
-  };
 
   const filteredFishies = fishies.filter(u =>
     u.id.toLowerCase().includes(search.toLowerCase())
@@ -82,12 +75,14 @@ const FishingTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
+        {hasPermission('FISHING_CREATE') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
           + Create Fish
         </button>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -107,21 +102,16 @@ const FishingTab = () => {
                 <th style={{padding: '4px 8px'}}>Citem ID</th>
                 <th style={{padding: '4px 8px'}}>Catch Interaction</th>
                 <th style={{padding: '4px 8px'}}>Regions</th>
-                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredFishies.map((fish) => (
-                <tr key={fish.id} style={{height: '32px'}}>
+                <tr key={fish.id} style={{height: '32px'}} onClick={() => handleClick(fish.id)}>
                   <td style={{padding: '4px 8px'}}>{fish.id}</td>
                   <td style={{padding: '4px 8px'}}>{fish.rarity}</td>
                   <td style={{padding: '4px 8px'}}>{fish.citem_id}</td>
                   <td style={{padding: '4px 8px'}}>{fish.catch_interaction}</td>
                   <td style={{padding: '4px 8px'}}>{fish.regions}</td>
-                  <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='FISHING_EDIT' nav={`/view/fish/${fish.id}`}></EditButton>
-                    <DeleteButton perm='FISHING_DELETE' onClick={() => deleteFish(fish.id)}></DeleteButton>
-                  </td>
                 </tr>
               ))}
               {filteredFishies.length === 0 && (

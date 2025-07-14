@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import DeleteButton from '../../components/buttons/DeleteButton.tsx';
-import EditButton from '../../components/buttons/EditButton.tsx';
-import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
+import { fetchType } from '../../helpers/FetchPageItem';
 import CreateCosmeticPopup from './CreateCosmeticPopUp';
 import { parseMinecraftColorCodes } from '../../utils/parser';
 import TitleComp from '../../components/TitleComponent';
 import ForwardPopup from '../../components/ForwardModal';
+import {useNavigate} from "react-router-dom";
+import {usePermission} from "../../utils/usePermission.ts";
 
 type Cosmetic = {
   type: string;
@@ -23,7 +21,8 @@ const CurrencyTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { authUser } = useAuth();
+  const navigate = useNavigate();
+  const {hasPermission} = usePermission();
   
   const [showForwardPopup, setShowForwardPopup] = useState(false);
   const [showCreatePopup, setShowCreatePopup] = useState(false);
@@ -50,18 +49,13 @@ const CurrencyTab = () => {
     setCosmetics([...cosmetics, newCosmetic]);
   }
 
-  const deleteCosmetic = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this Cosmetic?')) return;
-
-    try {
-      deletePageItem('cosmetics', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('cosmetic', `${id}`, `${authUser?.uuid}`);
-      setCosmetics(cosmetics.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Failed to delete cosmetic. Please try again.');
-    }
-  };
+    const handleClick = (id:string) => {
+        if (hasPermission('COSMETIC_EDIT')) {
+          navigate(`/view/cosmetic/${id}`);
+        } else {
+          return;
+        }
+    };
 
   const filteredCosmetics = cosmetics.filter((c) =>
     [c.type, c.id, c.display, c.description].some((field) =>
@@ -83,12 +77,14 @@ const CurrencyTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
+        { hasPermission('COSMETIC_CREATE') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
           + Create Cosmetic
         </button>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -107,20 +103,15 @@ const CurrencyTab = () => {
                 <th style={{padding: '4px 8px'}}>ID</th>
                 <th style={{padding: '4px 8px'}}>Display</th>
                 <th style={{padding: '4px 8px'}}>Description</th>
-                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCosmetics.map((cosmetic) => (
-                <tr key={cosmetic.id} style={{height: '32px'}}>
+                <tr key={cosmetic.id} style={{height: '32px'}} onClick={() => handleClick(cosmetic.id)}>
                   <td style={{padding: '4px 8px'}}>{cosmetic.type}</td>
                   <td style={{padding: '4px 8px'}}>{cosmetic.id}</td>
                   <td style={{padding: '4px 8px'}}>{parseMinecraftColorCodes(cosmetic.display)}</td>
                   <td style={{padding: '4px 8px'}}>{parseMinecraftColorCodes(cosmetic.description)}</td>
-                  <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='COSMETIC_EDIT' nav={`/view/cosmetic/${cosmetic.id}`} ></EditButton>
-                    <DeleteButton perm='COSMETIC_DELETE' onClick={() => deleteCosmetic(cosmetic.id)}></DeleteButton>
-                  </td>
                 </tr>
               ))}
               {filteredCosmetics.length === 0 && (

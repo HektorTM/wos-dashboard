@@ -88,7 +88,7 @@ const ViewUnlockable = () => {
         className="form-meta-container"
         style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}
       >
-        <PageMetaBox type="unlockable" id={id!} />
+        <PageMetaBox type="unlockable" id={id!} deletePerm='UNLOCKABLE_DELETE' />
         <div style={{ flex: 3 }}>
           {error && <div className="error-message">{error}</div>}
           {locked && (

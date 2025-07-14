@@ -94,8 +94,7 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   const {uuid} = req.query;
   try {
-    await db.query('DELETE FROM fishing WHERE id = ?', [id]);
-    const [result] = await db.query('DELETE FROM unlockables WHERE id = ?', [id]);
+    const [result] = await db.query('DELETE FROM fishing WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Fish not found' });

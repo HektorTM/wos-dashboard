@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import EditButton from '../../components/buttons/EditButton.tsx';
-import DeleteButton from '../../components/buttons/DeleteButton.tsx';
-import { deletePageItem } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateInteractionPopUp from './CreateInteractionPopUp';
 import TitleComp from '../../components/TitleComponent';
+import {usePermission} from "../../utils/usePermission.ts";
+import {useNavigate} from "react-router-dom";
 
 type Interaction = {
   id: string;
@@ -14,11 +11,12 @@ type Interaction = {
 
 const InteractionTab = () => {
   const { theme } = useTheme();
-  const { authUser } = useAuth();
   const [interactions, setInteractions] = useState<Interaction[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { hasPermission } = usePermission();
+  const navigate = useNavigate();
 
   const [showCreatePopup, setShowCreatePopup] = useState(false);
 
@@ -43,22 +41,17 @@ const InteractionTab = () => {
     fetchInteractions();
   }, []);
 
+  const handleClick = (id:string) => {
+    if (hasPermission('INTERACTION_EDIT')) {
+      navigate(`/view/interaction/${id}`);
+    } else {
+      return;
+    }
+  };
+
   const handleInteractionCreated = (newInteraction: Interaction) => {
     setInteractions([...interactions, newInteraction]);
   }
-
-  const deleteInteraction = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this Interaction?')) return;
-    
-    try {
-      deletePageItem('interactions', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('interaction', `${id}`, `${authUser?.uuid}`);
-      setInteractions(interactions.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Failed to delete interaction. Please try again.');
-    }
-  };
 
   const filteredInteractions = interactions.filter(u =>
     u.id.toLowerCase().includes(search.toLowerCase())
@@ -78,12 +71,14 @@ const InteractionTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
+        {hasPermission('INTERACTION_CREATE') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
           + Create Interaction
         </button>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -99,17 +94,12 @@ const InteractionTab = () => {
             <thead>
               <tr style={{height: '32px'}}>
                 <th style={{padding: '4px 8px'}}>ID</th>
-                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredInteractions.map((interaction) => (
-                <tr key={interaction.id} style={{height: '32px'}}>
+                <tr key={interaction.id} style={{height: '32px'}} onClick={() => handleClick(interaction.id)}>
                   <td style={{padding: '4px 8px'}}>{interaction.id}</td>
-                  <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='INTERACTION_EDIT' nav={`/view/interaction/${interaction.id}`}></EditButton>
-                    <DeleteButton perm='INTERACTION_DELETE' onClick={() => deleteInteraction(interaction.id)}></DeleteButton>
-                  </td>
                 </tr>
               ))}
               {filteredInteractions.length === 0 && (

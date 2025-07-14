@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import EditButton from '../../components/buttons/EditButton.tsx';
-import DeleteButton from '../../components/buttons/DeleteButton.tsx';
-import { deletePageItem } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
 import CreateUnlockablePopUp from './CreateUnlockablePopUp';
 import TitleComp from '../../components/TitleComponent';
+import {useNavigate} from "react-router-dom";
+import {usePermission} from "../../utils/usePermission.ts";
 
 type Unlockable = {
   id: string;
@@ -15,11 +12,12 @@ type Unlockable = {
 
 const UnlockableTab = () => {
   const { theme } = useTheme();
-  const { authUser } = useAuth();
   const [unlockables, setUnlockables] = useState<Unlockable[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { hasPermission } = usePermission();
+  const navigate = useNavigate();
 
   const [showCreatePopup, setShowCreatePopup] = useState(false);
 
@@ -44,22 +42,17 @@ const UnlockableTab = () => {
     fetchUnlockables();
   }, []);
 
+  const handleClick = (id:string) => {
+    if (hasPermission('UNLOCKABLE_EDIT')) {
+      navigate(`/view/unlockable/${id}`);
+    } else {
+      return;
+    }
+  };
+
   const handleUnlockableCreated = (newUnlockable: Unlockable) => {
     setUnlockables([...unlockables, newUnlockable]);
   }
-
-  const deleteUnlockable = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this Unlockable?')) return;
-    
-    try {
-      deletePageItem('unlockables', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('unlockable', `${id}`, `${authUser?.uuid}`);
-      setUnlockables(unlockables.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Failed to delete unlockable. Please try again.');
-    }
-  };
 
   const filteredUnlockables = unlockables.filter(u =>
     u.id.toLowerCase().includes(search.toLowerCase())
@@ -79,12 +72,14 @@ const UnlockableTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
+        {hasPermission('UNLOCKABLE_CREATE') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
           + Create Unlockable
         </button>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -101,18 +96,13 @@ const UnlockableTab = () => {
               <tr style={{height: '32px'}}>
                 <th style={{padding: '4px 8px'}}>ID</th>
                 <th style={{padding: '4px 8px'}}>Type</th>
-                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUnlockables.map((unlockable) => (
-                <tr key={unlockable.id} style={{height: '32px'}}>
+                <tr key={unlockable.id} style={{height: '32px'}} onClick={() => handleClick(unlockable.id)}>
                   <td style={{padding: '4px 8px'}}>{unlockable.id}</td>
                   <td style={{padding: '4px 8px'}}>{unlockable.temp ? 'Temporary' : 'Permanent'}</td>
-                  <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='UNLOCKABLE_EDIT' nav={`/view/unlockable/${unlockable.id}`}></EditButton>
-                    <DeleteButton perm='UNLOCKABLE_DELETE' onClick={() => deleteUnlockable(unlockable.id)}></DeleteButton>
-                  </td>
                 </tr>
               ))}
               {filteredUnlockables.length === 0 && (

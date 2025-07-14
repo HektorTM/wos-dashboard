@@ -92,7 +92,7 @@ const ViewCooldown = () => {
                 className="form-meta-container"
                 style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}
             >
-                <PageMetaBox type="cooldown" id={id!} />
+                <PageMetaBox type="cooldown" id={id!} deletePerm='COOLDOWN_DELETE' />
                 <div style={{ flex: 3 }}>
                     {error && <div className="error-message">{error}</div>}
                     {locked && (

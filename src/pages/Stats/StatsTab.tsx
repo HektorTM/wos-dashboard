@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import DeleteButton from '../../components/buttons/DeleteButton.tsx';
-import EditButton from '../../components/buttons/EditButton.tsx';
-import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
+import { fetchType } from '../../helpers/FetchPageItem';
 import CreateStatPopup from './CreateStatPopUp'; // Adjust the import path as needed
 import TitleComp from '../../components/TitleComponent';
+import {usePermission} from "../../utils/usePermission.ts";
+import {useNavigate} from "react-router-dom";
 
 type Stat = {
   id: string;
@@ -20,7 +18,8 @@ const StatsTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { authUser } = useAuth();
+  const { hasPermission } = usePermission();
+  const navigate = useNavigate();
   
   // State for the popup
   const [showCreatePopup, setShowCreatePopup] = useState(false);
@@ -45,21 +44,13 @@ const StatsTab = () => {
     setStats([...stats, newStat]);
   }
 
-  const deleteStat = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this Stat?')) return;
-
-    try {
-      deletePageItem('stats', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('stat', `${id}`, `${authUser?.uuid}`);
-      setStats(stats.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Failed to delete stat. Please try again.');
+  const handleClick = (id:string) => {
+    if (hasPermission('STATS_EDIT')) {
+      navigate(`/view/stat/${id}`);
+    } else {
+      return;
     }
   };
-
-
-
   const filteredStats = stats.filter((c) =>
     [c.id].some((field) =>
       String(field || '').toLowerCase().includes(search.toLowerCase())
@@ -80,12 +71,14 @@ const StatsTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
+        {hasPermission('STATS_CREATE') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
           + Create Stat
         </button>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -103,19 +96,14 @@ const StatsTab = () => {
                 <th style={{padding: '4px 8px'}}>ID</th>
                 <th style={{padding: '4px 8px'}}>Maximum</th>
                 <th style={{padding: '4px 8px'}}>Capped?</th>
-                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredStats.map((stat) => (
-                <tr key={stat.id} style={{height: '32px'}}>
+                <tr key={stat.id} style={{height: '32px'}} onClick={() => handleClick(stat.id)}>
                   <td style={{padding: '4px 8px'}}>{stat.id}</td>
                   <td style={{padding: '4px 8px'}}>{stat.max}</td>
                   <td style={{padding: '4px 8px'}}>{stat.capped ? '✅' : '❌'}</td>
-                  <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='STATS_EDIT' nav={`/view/stat/${stat.id}`} />
-                    <DeleteButton perm='STATS_DELETE' onClick={() => deleteStat(stat.id)} />
-                  </td>
                 </tr>
               ))}
               {filteredStats.length === 0 && (

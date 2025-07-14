@@ -1160,7 +1160,7 @@ const ViewInteraction = () => {
       <TitleComp title={`Interaction | ${id}`}></TitleComp>
       <div className="content-wrapper" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
         <div className="meta-box-wrapper" style={{ width: '350px' }}>
-          <PageMetaBox type="interaction" id={id!} />
+          <PageMetaBox type="interaction" id={id!} deletePerm='INTERACTION_DELETE' />
         </div>
         
         

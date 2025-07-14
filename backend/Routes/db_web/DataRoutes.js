@@ -113,6 +113,34 @@ router.put('/:type/:id/lock', async (req, res) => {
   }
 });
 
+router.put('/:type/:id/unlock', async (req, res) => {
+  const { type, id } = req.params;
+  const { uuid } = req.query;
+
+  try {
+    const [result] = await db.query(`
+      UPDATE page_data
+      SET locked = 0, edited_by = ?, edited_at = CURRENT_TIMESTAMP
+      WHERE type = ? AND id = ?
+    `, [ uuid, type, id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Page not found' });
+    }
+
+    await logActivity({
+      type,
+      target_id: id,
+      user: uuid,
+      action: 'Unlocked',
+    });
+
+    res.status(200).json({ message: `Page successfully unlocked` });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update lock state' });
+  }
+});
+
 // 6. Delete
 router.delete('/:type/:id', async (req, res) => {
   const { type, id } = req.params;

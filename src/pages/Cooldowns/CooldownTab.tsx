@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import DeleteButton from '../../components/buttons/DeleteButton.tsx';
-import EditButton from '../../components/buttons/EditButton.tsx';
-import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
+import { fetchType } from '../../helpers/FetchPageItem';
+
 import TitleComp from '../../components/TitleComponent';
 import CreateCooldownPopup from "./CreateCooldownPopUp";
+import {usePermission} from "../../utils/usePermission.ts";
+import {useNavigate} from "react-router-dom";
 
 type Cooldown = {
   id: string;
@@ -21,7 +20,8 @@ const CooldownTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { authUser } = useAuth();
+  const { hasPermission } = usePermission();
+  const navigate = useNavigate();
   
   // State for the popup
   const [showCreatePopup, setShowCreatePopup] = useState(false);
@@ -42,24 +42,17 @@ const CooldownTab = () => {
     fetchCooldowns();
   }, []);
 
-  const handleCooldownCreated = (newCooldown: Cooldown) => {
-    setCooldowns([...cooldowns, newCooldown]);
-  }
-
-  const deleteCooldown = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this Cooldown?')) return;
-
-    try {
-      deletePageItem('cooldowns', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('cooldown', `${id}`, `${authUser?.uuid}`);
-      setCooldowns(cooldowns.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Failed to delete cooldown. Please try again.');
+  const handleClick = (id:string) => {
+    if (hasPermission('COOLDOWN_EDIT')) {
+      navigate(`/view/cooldown/${id}`);
+    } else {
+      return;
     }
   };
 
-
+  const handleCooldownCreated = (newCooldown: Cooldown) => {
+    setCooldowns([...cooldowns, newCooldown]);
+  }
 
   const filteredCooldowns = cooldowns.filter((c) =>
     [c.id].some((field) =>
@@ -81,12 +74,14 @@ const CooldownTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        <button 
-          onClick={() => setShowCreatePopup(true)} 
+        { hasPermission('COOLDOWN_CREATE') && (
+        <button
+          onClick={() => setShowCreatePopup(true)}
           className="create-button"
         >
           + Create Cooldown
         </button>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -105,20 +100,15 @@ const CooldownTab = () => {
                 <th style={{padding: '4px 8px'}}>duration</th>
                 <th style={{padding: '4px 8px'}}>Start Interaction</th>
                 <th style={{padding: '4px 8px'}}>End Interaction</th>
-                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCooldowns.map((cd) => (
-                <tr key={cd.id} style={{height: '32px'}}>
+                <tr key={cd.id} style={{height: '32px'}} onClick={() => handleClick(cd.id)}>
                   <td style={{padding: '4px 8px'}}>{cd.id}</td>
                   <td style={{padding: '4px 8px'}}>{cd.duration}</td>
                   <td style={{padding: '4px 8px'}}>{cd.start_interaction}</td>
                   <td style={{padding: '4px 8px'}}>{cd.end_interaction}</td>
-                  <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='COOLDOWN_EDIT' nav={`/view/cooldown/${cd.id}`} />
-                    <DeleteButton perm='COOLDOWN_DELETE' onClick={() => deleteCooldown(cd.id)} />
-                  </td>
                 </tr>
               ))}
               {filteredCooldowns.length === 0 && (

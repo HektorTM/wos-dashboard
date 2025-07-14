@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import DeleteButton from '../../components/buttons/DeleteButton.tsx';
-import EditButton from '../../components/buttons/EditButton.tsx';
-import { deletePageItem, fetchType } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
+import { fetchType } from '../../helpers/FetchPageItem';
 import CreateCurrencyPopup from './CreateCurrencyPopUp';
 import TitleComp from '../../components/TitleComponent';
+import {usePermission} from "../../utils/usePermission.ts";
+import {useNavigate} from "react-router-dom";
 
 type Currency = {
   id: string;
@@ -23,7 +21,8 @@ const CurrencyTab = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { authUser } = useAuth();
+  const { hasPermission } = usePermission();
+  const navigate = useNavigate();
 
   const [showCreatePopup, setShowCreatePopup] = useState(false);
 
@@ -43,22 +42,17 @@ const CurrencyTab = () => {
     fetchCurrencies();
   }, []);
 
+  const handleClick = (id:string) => {
+    if (hasPermission('CURRENCY_EDIT')) {
+      navigate(`/view/currency/${id}`);
+    } else {
+      return;
+    }
+  };
+
   const handleCurrencyCreated = (newCurrency: Currency) => {
     setCurrencies([...currencies, newCurrency]);
   }
-
-  const deleteCurrency = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this currency?')) return;
-
-    try {
-      deletePageItem('currencies', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('currency', `${id}`, `${authUser?.uuid}`);
-      setCurrencies(currencies.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Failed to delete currency. Please try again.');
-    }
-  };
 
   const filteredCurrencies = currencies.filter((c) =>
     [c.id, c.name, c.short_name].some((field) =>
@@ -80,12 +74,14 @@ const CurrencyTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
+        {hasPermission('CURRENCY_CREATE') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
           + Create Currency
         </button>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -106,22 +102,17 @@ const CurrencyTab = () => {
                 <th style={{padding: '4px 8px'}}>Short Name</th>
                 <th style={{padding: '4px 8px'}}>Color</th>
                 <th style={{padding: '4px 8px'}}>Hidden if Zero</th>
-                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCurrencies.map((currency) => (
-                <tr key={currency.id} style={{height: '32px'}}>
+                <tr key={currency.id} style={{height: '32px'}} onClick={() => handleClick(currency.id)}>
                   <td style={{padding: '4px 8px'}}>{currency.icon}</td>
                   <td style={{padding: '4px 8px'}}>{currency.id}</td>
                   <td style={{padding: '4px 8px'}}>{currency.name}</td>
                   <td style={{padding: '4px 8px'}}>{currency.short_name}</td>
                   <td style={{padding: '4px 8px'}}>{currency.color}</td>
                   <td style={{padding: '4px 8px'}}>{currency.hidden_if_zero ? '✅' : '❌'}</td>
-                  <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='CURRENCY_EDIT' nav={`/view/currency/${currency.id}`} ></EditButton>
-                    <DeleteButton perm='CURRENCY_DELETE' onClick={() => deleteCurrency(currency.id)}></DeleteButton>
-                  </td>
                 </tr>
               ))}
               {filteredCurrencies.length === 0 && (
