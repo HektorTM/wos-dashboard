@@ -12,10 +12,15 @@ const ViewUser = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { authUser } = useAuth();
+  const PROTECTED_UUID = '28c63f6552cc47f08246b16f2176da23';
 
   // Fetch user data
   useEffect(() => {
     const fetchUser = async () => {
+      if ((id === PROTECTED_UUID && authUser?.uuid !== PROTECTED_UUID) || authUser?.uuid === id) {
+        navigate("/users");
+      }
+
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
           method: 'GET',
