@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
+import {useNavigate} from "react-router-dom";
 
 type Gui = {
   id: string;
@@ -23,6 +24,8 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const [created, setCreated] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +54,7 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
           title,
           size
         });
-        onClose();
+        setCreated(id);
       } else {
         setError(`Error: ${result.error}`);
       }
@@ -62,6 +65,10 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
       setLoading(false);
     }
   };
+
+  const goTo = (id: string) => {
+    navigate(`/view/gui/${id}`);
+  }
 
   return (
     <div className="modal-overlay">
@@ -80,6 +87,7 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          {!created && (
           <div className="form-group">
             <label>ID</label>
             <input
@@ -90,7 +98,8 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
               disabled={loading}
             />
           </div>
-
+          )}
+          {!created && (
           <div className="form-group">
             <label>Title</label>
             <input
@@ -101,7 +110,8 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
               disabled={loading}
             />
           </div>
-
+          )}
+          {!created && (
           <div className='form-group'>
             <label>Size</label>
             <input
@@ -113,8 +123,8 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
               required
               disabled={loading}
             ></input>
-
           </div>
+          )}
 
           <div className="modal-actions">
             <button
@@ -125,6 +135,7 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
             >
               Cancel
             </button>
+            {!created ? (
             <button
               type="submit"
               className="btn btn-primary"
@@ -138,6 +149,11 @@ const CreateGuiPopup = ({ onClose, onCreate }: CreateGuiPopupProps) => {
                 'Create GUI'
               )}
             </button>
+            ) : (
+                <button onClick={() => goTo(id)} className='btn btn-outline-success'>
+                  Go To {id}
+                </button>
+            )}
           </div>
         </form>
       </div>

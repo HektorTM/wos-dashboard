@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
+import {useNavigate} from "react-router-dom";
 
 type Unlockable = {
   id: string;
@@ -21,6 +22,8 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
   const [temp, setTemp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const [created, setCreated] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +50,7 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
           id,
           temp: temp ? 1 : 0
         });
-        onClose();
+        setCreated(id);
       } else {
         setError(`Error: ${result.error}`);
       }
@@ -58,6 +61,10 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
       setLoading(false);
     }
   };
+
+  const goTo = (id: string) => {
+    navigate(`/view/unlockable/${id}`);
+  }
 
   return (
     <div className="modal-overlay">
@@ -76,6 +83,7 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          {!created && (
           <div className="form-group">
             <label>ID</label>
             <input
@@ -86,7 +94,8 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
               disabled={loading}
             />
           </div>
-
+          )}
+          {!created && (
           <div className="form-group checkbox-group">
             <label htmlFor="temp">Temporary</label><input
               type="checkbox"
@@ -96,6 +105,8 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
               disabled={loading}
             />
           </div>
+          )}
+
 
           <div className="modal-actions">
             <button
@@ -106,6 +117,7 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
             >
               Cancel
             </button>
+            {!created ? (
             <button
               type="submit"
               className="btn btn-primary"
@@ -119,6 +131,11 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
                 'Create Unlockable'
               )}
             </button>
+            ) : (
+                <button onClick={() => goTo(id)} className='btn btn-outline-success'>
+                  Go To {id}
+                </button>
+            )}
           </div>
         </form>
       </div>

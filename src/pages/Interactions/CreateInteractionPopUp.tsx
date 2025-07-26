@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
+import {useNavigate} from "react-router-dom";
 
 type Interaction = {
   id: string;
@@ -19,6 +20,8 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
   const [id, setId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const [created, setCreated] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +46,7 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
         onCreate({
           id
         });
-        onClose();
+        setCreated(id);
       } else {
         setError(`Error: ${result.error}`);
       }
@@ -54,6 +57,11 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
       setLoading(false);
     }
   };
+
+
+  const goTo = (id: string) => {
+    navigate(`/view/interaction/${id}`);
+  }
 
   return (
     <div className="modal-overlay">
@@ -72,6 +80,7 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          {!created && (
           <div className="form-group">
             <label>ID</label>
             <input
@@ -82,6 +91,7 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
               disabled={loading}
             />
           </div>
+          )}
 
           <div className="modal-actions">
             <button
@@ -92,6 +102,7 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
             >
               Cancel
             </button>
+            {!created ? (
             <button
               type="submit"
               className="btn btn-primary"
@@ -105,6 +116,12 @@ const CreateInteractionPopup = ({ onClose, onCreate }: CreateInteractionPopupPro
                 'Create Interaction'
               )}
             </button>
+            ) : (
+              <button onClick={() => goTo(id)} className='btn btn-outline-success'>
+                Go To {id}
+              </button>
+
+            )}
           </div>
         </form>
       </div>

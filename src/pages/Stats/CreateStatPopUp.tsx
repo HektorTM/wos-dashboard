@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
+import {useNavigate} from "react-router-dom";
 
 type Stat = {
   id: string;
@@ -23,6 +24,8 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
   const [capped, setCapped] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const [created, setCreated] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +54,7 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
           max,
           capped: capped ? 1 : 0
         })
-        onClose();
+        setCreated(id);
       } else {
         setError(`Error: ${result.error}`);
       }
@@ -62,6 +65,10 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
       setLoading(false);
     }
   };
+
+  const goTo = (id: string) => {
+    navigate(`/view/stat/${id}`);
+  }
 
   return (
     <div className="modal-overlay">
@@ -80,6 +87,7 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          {!created && (
           <div className="form-group">
             <label>ID</label>
             <input
@@ -90,7 +98,8 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
               disabled={loading}
             />
           </div>
-
+          )}
+          {!created && (
           <div className="form-group">
             <label>Maximum Value</label>
             <input
@@ -101,7 +110,8 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
               disabled={loading}
             />
           </div>
-
+          )}
+          {!created && (
           <div className="form-group checkbox-group">
             <label htmlFor="capped">Capped</label><input
               type="checkbox"
@@ -111,7 +121,7 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
               disabled={loading}
             />
           </div>
-
+          )}
           <div className="modal-actions">
             <button
               type="button"
@@ -121,6 +131,7 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
             >
               Cancel
             </button>
+            {!created ? (
             <button
               type="submit"
               className="btn btn-primary"
@@ -134,6 +145,11 @@ const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
                 'Create Stat'
               )}
             </button>
+            ) : (
+              <button onClick={() => goTo(id)} className='btn btn-outline-success'>
+                Go To {id}
+              </button>
+            )}
           </div>
         </form>
       </div>
