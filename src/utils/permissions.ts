@@ -66,6 +66,11 @@ export type PermissionKey =
     | 'FISHING_EDIT'
     | 'FISHING_DELETE'
 
+    | 'TIME_VIEW'
+    | 'TIME_CREATE'
+    | 'TIME_EDIT'
+    | 'TIME_DELETE'
+
     | 'PLAYER_VIEW'
 
     | 'UNLOCK'
@@ -305,7 +310,7 @@ export const PERMISSIONS: Permission[] = [
         key: 'FISHING_DELETE',
         label: 'Delete Fish',
     },
-        {
+    {
         key: 'COOLDOWN_VIEW',
         label: 'View Cooldowns',
     },
@@ -321,6 +326,24 @@ export const PERMISSIONS: Permission[] = [
         key: 'COOLDOWN_DELETE',
         label: 'Delete Cooldowns',
     },
+
+    {
+        key: 'TIME_VIEW',
+        label: 'View Time Events',
+    },
+    {
+        key: 'TIME_CREATE',
+        label: 'Create Time Events',
+    },
+    {
+        key: 'TIME_EDIT',
+        label: 'Edit Time Events',
+    },
+    {
+        key: 'TIME_DELETE',
+        label: 'Delete Time Events',
+    },
+
     {
         key: 'PLAYER_VIEW',
         label: 'View Players'
@@ -508,6 +531,17 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
             { key: "COOLDOWN_DELETE", label: "Delete Cooldowns" },
         ],
     },
+
+    {
+        group: "Time Events",
+        permissions: [
+            { key: "TIME_VIEW", label: "View Time Events" },
+            { key: "TIME_CREATE", label: "Create Time Events"},
+            { key: "TIME_EDIT", label: "Edit Time Events" },
+            { key: "TIME_DELETE", label: "Delete Time Events" },
+        ],
+    },
+
     {
         group: "Projects",
         permissions: [

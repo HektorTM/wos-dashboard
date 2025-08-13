@@ -13,51 +13,59 @@ export const parseMinecraftColorCodes = (input: string): JSX.Element[] => {
     'c': '#FF5555', 'd': '#FF55FF', 'e': '#FFFF55', 'f': '#FFFFFF',
   };
 
-  while (i < input.length) {
-    if (input[i] === '§' || input[i] === '&') {
-      // Flush current text
-      if (currentText) {
-        result.push(
+  const flushText = () => {
+    if (currentText) {
+      result.push(
           <span style={{ color: currentColor }} key={result.length}>
-            {currentText}
-          </span>
-        );
-        currentText = '';
-      }
+          {currentText}
+        </span>
+      );
+      currentText = '';
+    }
+  };
 
-      // Check for hex format §x§R§R§G§G§B§B or &x&R&R&G&G&B&B
-      const prefix = input[i];
-      if (input[i + 1] === 'x' && i + 13 < input.length) {
-        const hex = input.slice(i + 2, i + 14).split(prefix).join('');
+  while (i < input.length) {
+    const char = input[i];
+
+    // §x or &x hex color
+    if ((char === '§' || char === '&') && input[i + 1] === 'x' && i + 13 < input.length) {
+      flushText();
+      const prefix = char;
+      const hex = input.slice(i + 2, i + 14).split(prefix).join('');
+      if (/^[0-9A-Fa-f]{6}$/.test(hex)) {
         currentColor = `#${hex}`;
-        i += 14;
+      }
+      i += 14;
+      continue;
+    }
+
+    // Legacy codes
+    if ((char === '§' || char === '&') && i + 1 < input.length) {
+      const code = input[i + 1].toLowerCase();
+      if (legacyColorMap[code]) {
+        flushText();
+        currentColor = legacyColorMap[code];
+        i += 2;
         continue;
       }
-
-      // Legacy format
-      const code = input[i + 1];
-      if (legacyColorMap[code]) {
-        currentColor = legacyColorMap[code];
-      }
-
-      i += 2;
-    } else {
-      currentText += input[i];
-      i++;
     }
+
+    // NEW: detect inline hex codes like #56dae9
+    if (char === '#' && /^[0-9A-Fa-f]{6}/.test(input.slice(i + 1, i + 7))) {
+      flushText();
+      currentColor = `#${input.slice(i + 1, i + 7)}`;
+      i += 7;
+      continue;
+    }
+
+    currentText += char;
+    i++;
   }
 
-  // Push final chunk
-  if (currentText) {
-    result.push(
-      <span style={{ color: currentColor }} key={result.length}>
-        {currentText}
-      </span>
-    );
-  }
-
+  flushText();
   return result;
 };
+
 
 export const parseID = (id: string) => {
   return String(id)

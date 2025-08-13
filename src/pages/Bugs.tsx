@@ -37,6 +37,7 @@ const BugReportPage = () => {
   const [isLoadingIssues, setIsLoadingIssues] = useState(true);
   const [selectedRepoFilter, setSelectedRepoFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState('');
   const issuesPerPage = 10;
 
   const REPOSITORIES: Repository[] = [
@@ -124,16 +125,33 @@ const BugReportPage = () => {
     }
   };
 
+  const filteredIssues = issues.filter((c) =>
+      [c.title].some((field) =>
+          String(field || '').toLowerCase().includes(search.toLowerCase())
+      )
+  );
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
+    fetchOpenIssues();
   };
 
   return (
     <div className={`page-container ${theme}`}>
       <TitleComp title={`Bug Reports | Staff Portal`}></TitleComp>
       <div className="page-header">
+
         <h2>Bug Reports</h2>
-        <button 
+        <div className="page-search">
+          <input
+              type="text"
+              placeholder="Search by ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="search-icon">🔍</span>
+        </div>
+        <button
           className="create-button" 
           onClick={openModal}
           style={{ marginLeft: 'auto' }}
@@ -180,63 +198,66 @@ const BugReportPage = () => {
         </div>
       ) : (
         <div className="issues-container">
-          {issues.length === 0 ? (
-            <div className="no-issues">No open issues found</div>
-          ) : (
-            <>
-              <table className="issues-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Repository</th>
-                    <th>Title</th>
-                    <th>Created</th>
-                    <th>Status</th>
+          <>
+            <table className="issues-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Repository</th>
+                  <th>Title</th>
+                  <th>Created</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredIssues.map((issue) => (
+                  <tr key={issue.id}>
+                    <td>#{issue.number}</td>
+                    <td>{issue.repo_name}</td>
+                    <td>
+                      <a
+                        href={issue.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="issue-link"
+                      >
+                        {issue.title}
+                      </a>
+                    </td>
+                    <td>{new Date(issue.created_at).toLocaleDateString()}</td>
+                    <td>
+                      <span className={`issue-status ${issue.state}`}>
+                        {issue.state}
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {issues.map((issue) => (
-                    <tr key={issue.id}>
-                      <td>#{issue.number}</td>
-                      <td>{issue.repo_name}</td>
-                      <td>
-                        <a 
-                          href={issue.html_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="issue-link"
-                        >
-                          {issue.title}
-                        </a>
-                      </td>
-                      <td>{new Date(issue.created_at).toLocaleDateString()}</td>
-                      <td>
-                        <span className={`issue-status ${issue.state}`}>
-                          {issue.state}
-                        </span>
+                ))}
+                {filteredIssues.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="no-results">
+                        {search ? 'No matching issues found' : 'No issues available'}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              <div className="pagination">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-                <span>Page {currentPage}</span>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={issues.length < issuesPerPage}
-                >
-                  Next
-                </button>
-              </div>
-            </>
-          )}
+                )}
+              </tbody>
+            </table>
+
+            <div className="pagination">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span>Page {currentPage}</span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={issues.length < issuesPerPage}
+              >
+                Next
+              </button>
+            </div>
+          </>
         </div>
       )}
 

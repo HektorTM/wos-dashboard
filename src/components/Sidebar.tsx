@@ -71,6 +71,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
         { id: 'loottables', title: 'Loottables', href: '/#', permission: 'LOOTTABLE_VIEW', disabled: true },
         { id: 'recipes', title: 'Recipes', href: '#', permission: 'RECIPE_VIEW', disabled: true},
         { id: 'stats', title: 'Stats', href: '/stats', permission: 'STATS_VIEW' },
+        { id: 'timeevents', title: 'Time Events', href: '/timeevents', permission: 'TIME_VIEW'},
         { id: 'unlockables', title: 'Unlockables', href: '/unlockables', permission: 'UNLOCKABLE_VIEW' },
       ],
     },

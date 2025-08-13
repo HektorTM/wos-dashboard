@@ -29,6 +29,7 @@ const GuiRoutes = require('./Routes/db_server/GuiRoutes');
 const WarpRoutes = require('./Routes/db_server/WarpRoutes');
 const ChangelogRoutes = require('./Routes/db_web/ChangelogRoutes');
 const ProjectRoutes = require('./Routes/db_web/ProjectRoutes');
+const TimeEventRoutes = require('./Routes/db_server/TimeEventRoutes');
 
 require('./utils/initTables');
 
@@ -96,6 +97,7 @@ app.use('/api/guis', GuiRoutes);
 app.use('/api/warps', WarpRoutes);
 app.use('/api/changelogs', ChangelogRoutes);
 app.use('/api/projects', ProjectRoutes);
+app.use('/api/timeevents', TimeEventRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 

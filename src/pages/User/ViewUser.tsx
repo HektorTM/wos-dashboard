@@ -17,7 +17,7 @@ const ViewUser = () => {
   // Fetch user data
   useEffect(() => {
     const fetchUser = async () => {
-      if ((id === PROTECTED_UUID && authUser?.uuid !== PROTECTED_UUID) || authUser?.uuid === id) {
+      if (id === PROTECTED_UUID && authUser?.uuid !== PROTECTED_UUID) {
         navigate("/users");
       }
 
