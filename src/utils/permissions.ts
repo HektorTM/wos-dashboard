@@ -101,7 +101,7 @@ export interface PermissionGroup {
 export const PERMISSIONS: Permission[] = [
     {
         key: 'ADMIN',
-        label: 'Access User Administration',
+        label: 'Access Admin Administration',
     },
     {
         key: 'ALWAYS_ACTIVE',
@@ -386,7 +386,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     {
         group: "Admin",
         permissions: [
-            { key: "ADMIN", label: "Access User Administration" },
+            { key: "ADMIN", label: "Access Admin Administration" },
             { key: "ALWAYS_ACTIVE", label: "Always Active" },
         ],
     },

@@ -44,7 +44,7 @@ router.post('/register', async (req, res) => {
 
   const existing = await getUserByUUID(uuid);
   if (existing) {
-    return res.status(409).json({ error: 'User already exists' });
+    return res.status(409).json({ error: 'Admin already exists' });
   }
 
   const username = await fetchUsername(uuid);
@@ -67,7 +67,7 @@ router.post('/register', async (req, res) => {
       action: 'Created',
     });
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({ message: 'Admin registered successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Database error: ' + err.message });
   }
@@ -82,7 +82,7 @@ router.post('/login', async (req, res) => {
   }
 
   const user = await getUserByUUID(resolvedUUID);
-  if (!user) return res.status(404).json({ error: 'User not found' });
+  if (!user) return res.status(404).json({ error: 'Admin not found' });
 
   if (!user.is_active) {
     return res.status(403).json({ error: 'Account is deactivated. Please contact admin.' });
@@ -130,7 +130,7 @@ router.put('/:uuid', async (req, res) => {
 
   const user = await getUserByUUID(uuid);
   if (!user) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(404).json({ error: 'Admin not found' });
   }
 
   try {
@@ -151,7 +151,7 @@ router.put('/:uuid', async (req, res) => {
       action: 'Edited',
     });
 
-    res.status(200).json({ message: 'User updated successfully' });
+    res.status(200).json({ message: 'Admin updated successfully' });
   } catch (err) {
     console.error('Update failed:', err);
     res.status(500).json({ error: 'Failed to update user' });
@@ -164,7 +164,7 @@ router.use(requireAuth);
 router.get('/permissions/:uuid', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT permissions FROM users WHERE uuid = ?', [req.params.uuid]);
-    if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    if (rows.length === 0) return res.status(404).json({ error: 'Admin not found' });
 
     let permissions;
     try {
@@ -186,7 +186,7 @@ router.post('/:uuid/reactivate', async (req, res) => {
   const { username } = req.body;
 
   const user = await getUserByUUID(uuid);
-  if (!user) return res.status(404).json({ error: 'User not found' });
+  if (!user) return res.status(404).json({ error: 'Admin not found' });
 
   try {
     await db.query('UPDATE users SET is_active = 1 WHERE uuid = ?', [uuid]);
@@ -198,7 +198,7 @@ router.post('/:uuid/reactivate', async (req, res) => {
       action: 'Reactivated',
     });
 
-    res.status(200).json({ message: 'User reactivated' });
+    res.status(200).json({ message: 'Admin reactivated' });
   } catch (err) {
     console.error('Failed to reactivate user:', err);
     res.status(500).json({ error: 'Failed to reactivate user' });
@@ -214,7 +214,7 @@ router.get('/me', async (req, res) => {
   try {
     const user = await getUserByUUID(req.session.user.uuid);
     if (!user) {
-      return res.status(404).json({error: 'User not found'});
+      return res.status(404).json({error: 'Admin not found'});
     }
 
     res.json({ user: {
@@ -244,8 +244,8 @@ router.get('/', async (req, res) => {
 // --- Get user by UUID ---
 router.get('/:uuid', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT uuid, username, permissions, is_active FROM users WHERE uuid = ?', [req.params.uuid]);
-    if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    const [rows] = await db.query('SELECT uuid, username, is_active FROM users WHERE uuid = ?', [req.params.uuid]);
+    if (rows.length === 0) return res.status(404).json({ error: 'Admin not found' });
 
     const user = rows[0];
     user.permissions = JSON.parse(user.permissions || '[]');
@@ -266,7 +266,7 @@ router.get('/:uuid/username', async (req, res) => {
     );
     
     if (rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Admin not found' });
     }
     
     res.json({ username: rows[0].username }); // Ensure proper format
@@ -285,7 +285,7 @@ router.delete('/:uuid', async (req, res) => {
     const [result] = await db.query('DELETE FROM users WHERE uuid = ?', [uuid]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Admin not found' });
     }
 
     await logActivity({
@@ -295,7 +295,7 @@ router.delete('/:uuid', async (req, res) => {
       action: 'Deleted',
     });
 
-    res.status(200).json({ message: 'User deleted successfully' });
+    res.status(200).json({ message: 'Admin deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -321,7 +321,7 @@ router.post('/change-password', async (req, res) => {
   try {
     const user = await getUserByUUID(req.session.user.uuid);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Admin not found' });
     }
 
     // Verify current password

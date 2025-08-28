@@ -151,7 +151,7 @@ router.post('/:id/join', async (req, res) => {
         // Check if the user is already a member
         const [memberRows] = await db.query('SELECT 1 FROM project_members WHERE id = ? AND uuid = ?', [id, uuid]);
         if (memberRows.length > 0) {
-            return res.status(400).json({ error: 'User is already a member of this project' });
+            return res.status(400).json({ error: 'Admin is already a member of this project' });
         }
 
         // Add the user to the project members
@@ -177,7 +177,7 @@ router.post('/:id/leave', async (req, res) => {
         // Check if the user is a member
         const [memberRows] = await db.query('SELECT 1 FROM project_members WHERE id = ? AND uuid = ?', [id, uuid]);
         if (memberRows.length === 0) {
-            return res.status(400).json({ error: 'User is not a member of this project' });
+            return res.status(400).json({ error: 'Admin is not a member of this project' });
         }
 
         // Remove the user from the project members

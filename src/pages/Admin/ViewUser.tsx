@@ -87,7 +87,7 @@ const ViewUser = () => {
       });
 
       if (res.ok) {
-        alert('User updated!');
+        alert('Admin updated!');
         navigate('/users');
       } else {
         alert('Error updating user');
@@ -108,7 +108,7 @@ const ViewUser = () => {
         credentials: 'include',
       });
       if (res.ok) {
-        alert('User reactivated!');
+        alert('Admin reactivated!');
         setUser((prevUser) => ({ ...prevUser!, is_active: true }));
       } else {
         alert('Failed to reactivate user');

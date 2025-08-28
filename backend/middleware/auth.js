@@ -20,7 +20,7 @@ async function requireAuth(req, res, next) {
       req.session.destroy();
       return res.status(401).json({ 
         error: 'Invalid Session', 
-        message: 'User account no longer exists.'
+        message: 'Admin account no longer exists.'
       });
     }
 

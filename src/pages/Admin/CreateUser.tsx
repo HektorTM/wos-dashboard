@@ -37,7 +37,7 @@ const CreateUser = () => {
       });
 
       if (res.ok) {
-        alert('User created successfully!');
+        alert('Admin created successfully!');
         navigate('/users');
       } else {
         const error = await res.json();

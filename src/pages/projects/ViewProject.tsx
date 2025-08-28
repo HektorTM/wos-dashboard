@@ -71,7 +71,7 @@ const ViewProject = () => {
                     } catch (err) {
                         console.error(err);
                     }
-                    return { ...member, username: 'Unknown User' };
+                    return { ...member, username: 'Unknown Admin' };
                 })
             );
 
@@ -89,7 +89,7 @@ const ViewProject = () => {
                     } catch (err) {
                         console.error(err);
                     }
-                    return { ...item, added_by_username: 'Unknown User' };
+                    return { ...item, added_by_username: 'Unknown Admin' };
                 })
             );
 

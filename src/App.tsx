@@ -6,9 +6,9 @@ import AuthLayout from './components/AuthLayout';
 import './styles/App.css';
 import ChannelTab from './pages/Channels/ChannelTab';
 import Dashboard from './pages/Dashboard';
-import UserList from './pages/User/UserList';
-import EditUser from './pages/User/ViewUser';
-import CreateUser from './pages/User/CreateUser';
+import UserList from './pages/Admin/UserList';
+import EditUser from './pages/Admin/ViewUser';
+import CreateUser from './pages/Admin/CreateUser';
 import CurrencyTab from './pages/Currency/CurrencyTab';
 import EditCurrency from './pages/Currency/ViewCurrency';
 import UnlockableTab from './pages/Unlockables/UnlockableTab';
@@ -31,7 +31,7 @@ import FishingTab from './pages/Fishing/FishingTab';
 import ViewFish from './pages/Fishing/ViewFish';
 import RequestTab from './pages/Requests/RequestTab';
 import BugReportPage from './pages/Bugs';
-import AccountPage from './pages/User/AccountPage';
+import AccountPage from './pages/Admin/AccountPage';
 import CooldownTab from './pages/Cooldowns/CooldownTab';
 import ViewCooldown from './pages/Cooldowns/ViewCooldown';
 import GuiTab from './pages/Guis/GuiTab';
@@ -42,8 +42,9 @@ import ProjectsTab from "./pages/projects/ProjectsTab.tsx";
 import ViewProject from "./pages/projects/ViewProject.tsx";
 import TimeTab from './pages/time/TimeTab';
 import ViewTime from './pages/time/ViewTime.tsx';
+import AdminPermissionsPage from "./pages/Admin/ViewAdmin.tsx";
 
-
+import Yellowstone from "./pages/yellowstone.tsx";
 
 const App = () => {
   return (
@@ -96,9 +97,10 @@ const App = () => {
                 <Route path="/view/gui/:id/:slotNumber" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewSlot></ViewSlot></ProtectedRoute>} />
                 <Route path="/view/project/:id" element={<ProtectedRouteNoPerm><ViewProject /></ProtectedRouteNoPerm>} />
                 <Route path="/view/timeevent/:id" element={<ProtectedRoute requiredPermission='TIME_EDIT'><ViewTime /></ProtectedRoute>} />
-                
-
+                <Route path="/admin" element={<AdminPermissionsPage></AdminPermissionsPage>} />
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />
+
+                <Route path="/yellowstone" element={<Yellowstone></Yellowstone>} />
             </Route>
           </Routes>
         </AuthProvider>

@@ -37,6 +37,7 @@ router.get('/:uuid', async (req, res) => {
             return res.status(404).json({ error: 'Player not found' });
         }
         const [data] = await db.query('SELECT * FROM playerdata WHERE uuid = ?', [uuid]);
+        const [permissions] = await db.query('SELECT id, permission, value, server, world FROM luckperms_user_permissions WHERE uuid = ?', [uuid]);
         const [nicknames] = await db.query('SELECT * FROM nicknames WHERE uuid = ?', [uuid]);
         const [unlockables] = await db.query('SELECT * FROM playerdata_unlockables WHERE uuid = ?', [uuid]);
         const [stats] = await db.query('SELECT * FROM playerdata_stats WHERE uuid = ?', [uuid]);
@@ -46,6 +47,7 @@ router.get('/:uuid', async (req, res) => {
 
         res.json({
             data,
+            permissions,
             nicknames,
             unlockables,
             stats,

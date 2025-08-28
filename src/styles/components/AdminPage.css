@@ -1,0 +1,120 @@
+/* --- Cards --- */
+.page-container .card {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.page-container .card-header {
+    background-color: var(--table-header-bg) !important;
+    color: var(--text-color) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* --- List group (players / groups) --- */
+.page-container .list-group {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.page-container .list-group-item {
+    background-color: var(--table-row-bg) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+    transition: background-color .15s ease;
+}
+
+.page-container .list-group-item:hover {
+    background-color: var(--hover-bg) !important;
+}
+
+.page-container .list-group-item.active {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+}
+
+/* --- Buttons --- */
+.page-container .btn {
+    color: var(--text-color);
+}
+
+.page-container .btn-outline-primary {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+.page-container .btn-outline-primary:hover {
+    background-color: var(--primary) !important;
+    color: #fff !important;
+    border-color: var(--primary) !important;
+}
+
+.page-container .btn-outline-danger {
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+}
+.page-container .btn-outline-danger:hover {
+    background-color: var(--danger) !important;
+    color: #fff !important;
+    border-color: var(--danger) !important;
+}
+
+/* --- Inputs / search / forms --- */
+.page-container .form-control {
+    background-color: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+.page-container .form-control:focus {
+    outline: none;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+}
+.page-container .form-control::placeholder {
+    color: var(--text-muted) !important;
+}
+
+/* --- Alerts --- */
+.page-container .alert {
+    border-color: var(--border-color);
+    color: var(--text-color);
+    background-color: var(--hover-bg);
+}
+.page-container .alert-danger {
+    color: var(--danger);
+    background-color: var(--danger-bg);
+    border-color: var(--danger);
+}
+
+/* --- Table-like elements inside cards (if any) --- */
+.page-container .table,
+.page-container .page-table {
+    color: var(--text-color);
+}
+.page-container .table th,
+.page-container .page-table th {
+    background-color: var(--table-header-bg);
+    color: var(--text-color);
+    border-bottom: 2px solid var(--border-color);
+}
+.page-container .table td,
+.page-container .page-table td {
+    background-color: var(--table-row-bg);
+    color: var(--text-color);
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- Misc / helpers --- */
+.page-container .text-muted { color: var(--text-muted) !important; }
+.page-container .small { color: var(--text-muted); }
+.page-container a { color: var(--primary); }
+.page-container a:hover { color: var(--primary-dark); }
+
+/* --- Collapsible caret alignment --- */
+.page-container .card-header strong {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+}
