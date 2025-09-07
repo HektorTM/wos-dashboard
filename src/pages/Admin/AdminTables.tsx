@@ -1,3 +1,4 @@
+import PermissionList from "../../components/PermissionDataList.tsx";
 import {GroupPermission, UserPermission} from "./ViewAdmin.tsx";
 import React from "react";
 
@@ -26,11 +27,12 @@ export const TableUserPerms: React.FC<{
     return (
         <>
             <form className="d-flex gap-2 mb-3" onSubmit={addPermissionToUser}>
-                <input className="form-control" placeholder="permission.node" value={newUserPerm} onChange={(e)=>setNewUserPerm(e.target.value)} />
+                <input className="form-control" list='permission_nodes' placeholder="permission.node" value={newUserPerm} onChange={(e)=>setNewUserPerm(e.target.value)} />
+                <PermissionList></PermissionList>
                 <button className="btn btn-primary" type="submit">Add Permission</button>
             </form>
 
-            <div className="mb-2 fw-semibold">Group Memberships</div>
+            <div className="mb-2 fw-semibold"> Group Memberships</div>
             <form className="d-flex gap-2 mb-2" onSubmit={addUserToGroup}>
                 <input className="form-control" placeholder="group name" value={newUserGroup} onChange={(e)=>setNewUserGroup(e.target.value)} list="groupList" />
                 <datalist id="groupList">{groupNames.map(n => <option key={n} value={n} />)}</datalist>

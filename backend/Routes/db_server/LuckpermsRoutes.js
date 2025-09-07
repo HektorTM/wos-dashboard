@@ -196,5 +196,14 @@ router.delete('/user/:uuid/group', async (req, res) => {
     }
 });
 
+router.get('/', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM permission_list');
+        res.status(200).json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 module.exports = router;

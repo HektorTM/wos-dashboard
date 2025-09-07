@@ -31,6 +31,7 @@ const ChangelogRoutes = require('./Routes/db_web/ChangelogRoutes');
 const ProjectRoutes = require('./Routes/db_web/ProjectRoutes');
 const TimeEventRoutes = require('./Routes/db_server/TimeEventRoutes');
 const LuckpermsRoutes = require('./Routes/db_server/LuckpermsRoutes');
+const stacktraceRoutes = require('./Routes/db_server/StacktraceRoutes');
 
 require('./utils/initTables');
 
@@ -75,6 +76,7 @@ app.use(cors({
 
 app.use('/api/users', UserRoutes);
 app.use('/api/mc-user', MinecraftRoutes);
+app.use('/api/stacktrace', stacktraceRoutes);
 
 if (process.env.IP !== 'localhost') {
   app.use('/api', requireAuth);
@@ -102,6 +104,7 @@ app.use('/api/changelogs', ChangelogRoutes);
 app.use('/api/projects', ProjectRoutes);
 app.use('/api/timeevents', TimeEventRoutes);
 app.use('/api/permissions', LuckpermsRoutes);
+
 
 app.use('/api/activity', ActivityRoutes);
 

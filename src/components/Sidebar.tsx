@@ -135,7 +135,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
     navigate('/account');
   };
   const userpage = () => {
-    navigate('/users');
+    navigate('/admin');
   };
 
 return (
