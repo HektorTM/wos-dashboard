@@ -55,6 +55,11 @@ app.use(express.json());
 
 app.set('trust proxy', 1);
 
+app.use(cors({
+  origin: ['https://admin.worldofsorcery.com', 'https://dev.worldofsorcery.com', 'https://worldofsorcery.com', 'http://localhost:5173'],
+  credentials: true,
+}));
+
 app.use(session({
   secret: process.env.SECRET, // Use env variable in production
   resave: false,
@@ -69,10 +74,7 @@ app.use(session({
 }));
 
 
-app.use(cors({
-  origin: ['https://admin.worldofsorcery.com', 'https://dev.worldofsorcery.com', 'https://worldofsorcery.com', 'http://localhost:5173'],
-  credentials: true,
-}));
+
 
 app.use('/api/users', UserRoutes);
 app.use('/api/mc-user', MinecraftRoutes);
