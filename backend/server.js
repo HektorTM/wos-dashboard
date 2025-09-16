@@ -36,7 +36,7 @@ const stacktraceRoutes = require('./Routes/db_server/StacktraceRoutes');
 require('./utils/initTables');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const mysqlOptions = {
   host: process.env.MYSQL_HOST,
