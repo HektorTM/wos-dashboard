@@ -43,7 +43,7 @@ const UnlockableTab = () => {
   }, []);
 
   const handleClick = (id:string) => {
-    if (hasPermission('UNLOCKABLE_EDIT')) {
+    if (hasPermission('portal.unlockables.modify')) {
       navigate(`/view/unlockable/${id}`);
     } else {
       return;
@@ -72,7 +72,7 @@ const UnlockableTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        {hasPermission('UNLOCKABLE_CREATE') && (
+        {hasPermission('portal.unlockables.create') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"

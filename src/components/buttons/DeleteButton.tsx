@@ -1,10 +1,9 @@
 import React from "react";
-import { PermissionKey } from '../../utils/permissions.ts';
 import { usePermission } from "../../utils/usePermission.ts";
 
 type DeleteButtonProps = {
 
-    perm?: PermissionKey;
+    perm?: string;
     onClick: () => void;
     loading?: boolean;
 };

@@ -43,7 +43,7 @@ const CooldownTab = () => {
   }, []);
 
   const handleClick = (id:string) => {
-    if (hasPermission('COOLDOWN_EDIT')) {
+    if (hasPermission('portal.cooldowns.modify')) {
       navigate(`/view/cooldown/${id}`);
     } else {
       return;
@@ -74,7 +74,7 @@ const CooldownTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        { hasPermission('COOLDOWN_CREATE') && (
+        { hasPermission('portal.cooldowns.create') && (
         <button
           onClick={() => setShowCreatePopup(true)}
           className="create-button"

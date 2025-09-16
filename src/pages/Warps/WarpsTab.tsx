@@ -95,7 +95,7 @@ const WarpsTab = () => {
                   <td>{warp.id}</td>
                   <td>{warp.location}</td>
                   <td>
-                    <DeleteButton perm='WARP_DELETE' onClick={() => deleteWarp(warp.id)} />
+                    <DeleteButton perm='portal.warps.delete' onClick={() => deleteWarp(warp.id)} />
                   </td>
                 </tr>
               ))}

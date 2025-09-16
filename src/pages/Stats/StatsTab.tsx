@@ -45,7 +45,7 @@ const StatsTab = () => {
   }
 
   const handleClick = (id:string) => {
-    if (hasPermission('STATS_EDIT')) {
+    if (hasPermission('portal.stats.modify')) {
       navigate(`/view/stat/${id}`);
     } else {
       return;
@@ -71,7 +71,7 @@ const StatsTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        {hasPermission('STATS_CREATE') && (
+        {hasPermission('portal.stats.create') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"

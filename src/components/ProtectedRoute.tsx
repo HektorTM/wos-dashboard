@@ -2,12 +2,11 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePermission } from '../utils/usePermission';
-import { PermissionKey } from '../utils/permissions';
 import React from 'react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredPermission?: PermissionKey;
+  requiredPermission?: string;
 }
 
 interface ProtectedRouteNoPermProps {

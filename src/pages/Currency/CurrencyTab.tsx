@@ -43,7 +43,7 @@ const CurrencyTab = () => {
   }, []);
 
   const handleClick = (id:string) => {
-    if (hasPermission('CURRENCY_EDIT')) {
+    if (hasPermission('portal.currencies.modify')) {
       navigate(`/view/currency/${id}`);
     } else {
       return;
@@ -74,7 +74,7 @@ const CurrencyTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        {hasPermission('CURRENCY_CREATE') && (
+        {hasPermission('portal.currencies.create') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"

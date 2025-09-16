@@ -14,6 +14,33 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { uuid } = req.query; // if you need it
+
+    try {
+        // ... perform delete, check affected rows
+        await db.query('DELETE FROM gui_slots WHERE gui_id = ?', [id]);
+        await db.query('DELETE FROM conditions WHERE type = "guislot" AND type_id LIKE ?', [`${id}:%`]);
+        const [result] = await db.query('DELETE FROM guis WHERE id = ?', [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'GUI not found' });
+        }
+        await logActivity({
+            type: 'GUI',
+            target_id: id,
+            user: uuid,
+            action: 'Deleted',
+        });
+
+        return res.status(200).json({ ok: true });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: 'Internal error' });
+    }
+});
+
 // Get GUI by ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;

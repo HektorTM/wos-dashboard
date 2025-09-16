@@ -91,7 +91,7 @@ const ViewCurrency = () => {
                 className="form-meta-container"
                 style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}
             >
-                <PageMetaBox type="cosmetic" id={id!} deletePerm='COSMETIC_DELETE' />
+                <PageMetaBox type="cosmetic" id={id!} deletePerm='portal.cosmetics.delete' />
                 <div style={{ flex: 3 }}>
                     {error && <div className="error-message">{error}</div>}
                     {locked && (

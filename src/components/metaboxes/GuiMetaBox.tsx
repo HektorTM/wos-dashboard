@@ -38,6 +38,7 @@ const GuiMetaBox: React.FC<GuiMetaBoxProps> = ({ id, gui }) => {
   const { authUser } = useAuth();
   const { hasPermission } = usePermission();
   const [showRequestModal, setShowRequestModal] = useState(false);
+  const [requestType, setRequestType] = useState('');
   const [showGuiModal, setShowGuiModal] = useState(false);
   const [requestDescription, setRequestDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,7 +61,10 @@ const GuiMetaBox: React.FC<GuiMetaBoxProps> = ({ id, gui }) => {
     });
   }, [gui]);
 
-  const openRequestModal = () => setShowRequestModal(true);
+  const openRequestModal = (rType:string) => {
+    setRequestType(rType);
+    setShowRequestModal(true)
+  };
   const closeRequestModal = () => {
     setShowRequestModal(false);
     setRequestDescription('');
@@ -101,6 +105,31 @@ const GuiMetaBox: React.FC<GuiMetaBoxProps> = ({ id, gui }) => {
       setIsSavingGui(false);
     }
   };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this GUI?')) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/guis/${id}?uuid=${authUser?.uuid}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error('Delete failed:', errorData);
+        alert(`Failed to delete GUI: ${errorData.error}`);
+        return;
+      }
+
+      alert('GUI deleted successfully!');
+      backToList();
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Failed to delete GUI');
+    }
+  }
 
   const handleRequestSubmit = async () => {
     if (!requestDescription.trim()) {
@@ -186,7 +215,7 @@ const GuiMetaBox: React.FC<GuiMetaBoxProps> = ({ id, gui }) => {
       if (hasPermission('UNLOCK')) {
         await toggleLock();
       } else {
-        openRequestModal();
+        openRequestModal('UNLOCK');
       }
     } else {
       await toggleLock();
@@ -249,44 +278,49 @@ const GuiMetaBox: React.FC<GuiMetaBoxProps> = ({ id, gui }) => {
             <button onClick={backToList} disabled={toggling} className="meta-page-button">
               Back to List 
             </button>
+            <button
+                onClick= {hasPermission('portal.gui.delete') ? handleDelete : () => openRequestModal('DELETE')}
+                disabled={toggling} className="meta-page-button" style={{color: 'var(--danger)'}}>
+              Delete GUI
+            </button>
           </>
         )}
       </div>
 
       <Modal
-        isOpen={showRequestModal}
-        onClose={closeRequestModal}
-        title="Request Page Unlock"
+          isOpen={showRequestModal}
+          onClose={closeRequestModal}
+          title={`${requestType.charAt(0).toUpperCase() + requestType.toLowerCase().substring(1,requestType.length)} Request `}
       >
         <div className="form-group">
           <p>
-            <strong>Requesting unlock for:</strong> gui / {id}
+            <strong>{`Requesting ${requestType.toLowerCase()} for:`}</strong> GUI / {id}
           </p>
-          
-          <label>Reason for Unlock Request</label>
+
+          <label>Reason for {`${requestType.charAt(0).toUpperCase() + requestType.toLowerCase().substring(1, requestType.length)} Request `}</label>
           <textarea
-            className="form-control"
-            rows={4}
-            value={requestDescription}
-            onChange={(e) => setRequestDescription(e.target.value)}
-            placeholder="Explain why you need to unlock this page..."
+              className="form-control"
+              rows={4}
+              value={requestDescription}
+              onChange={(e) => setRequestDescription(e.target.value)}
+              placeholder={`Explain why you need to ${requestType.toLowerCase()} this item...`}
           />
-          
+
           {submitError && <p className="text-danger">{submitError}</p>}
         </div>
-        
+
         <div className="modal-actions">
-          <button 
-            className="btn btn-secondary"
-            onClick={closeRequestModal}
-            disabled={isSubmitting}
+          <button
+              className="btn btn-secondary"
+              onClick={closeRequestModal}
+              disabled={isSubmitting}
           >
             Cancel
           </button>
-          <button 
-            className="btn btn-primary"
-            onClick={handleRequestSubmit}
-            disabled={isSubmitting}
+          <button
+              className="btn btn-primary"
+              onClick={handleRequestSubmit}
+              disabled={isSubmitting}
           >
             {isSubmitting ? 'Submitting...' : 'Submit Request'}
           </button>

@@ -89,7 +89,8 @@ export const TableGroupPerms: React.FC<{
 }> = ({ rows, addPermissionToGroup, newGroupPerm, setNewGroupPerm, removePermissionFromGroup }) => (
     <>
         <form className="d-flex gap-2 mb-3" onSubmit={addPermissionToGroup}>
-            <input className="form-control" placeholder="permission.node" value={newGroupPerm} onChange={(e)=>setNewGroupPerm(`${e.target.value}`)} />
+            <input className="form-control" list="permission_nodes" placeholder="permission.node" value={newGroupPerm} onChange={(e)=>setNewGroupPerm(`${e.target.value}`)} />
+            <PermissionList></PermissionList>
             <button className="btn btn-primary" type="submit">Add Permission</button>
         </form>
         <div className="table-responsive">

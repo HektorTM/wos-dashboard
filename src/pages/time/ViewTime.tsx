@@ -96,7 +96,7 @@ const ViewTime = () => {
         className="form-meta-container"
         style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}
       >
-        <PageMetaBox type="timeevent" id={id!} deletePerm='TIME_DELETE' />
+        <PageMetaBox type="timeevent" id={id!} deletePerm='portal.timeevents.delete' />
         <div style={{ flex: 3 }}>
           {error && <div className="error-message">{error}</div>}
           {locked && (

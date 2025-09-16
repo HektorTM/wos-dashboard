@@ -20,7 +20,7 @@ const FishingTab = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { hasPermission } = usePermission();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [showCreatePopup, setShowCreatePopup] = useState(false);
 
@@ -46,7 +46,7 @@ const FishingTab = () => {
   }, []);
 
   const handleClick = (id:string) => {
-    if (hasPermission('FISHING_EDIT')) {
+    if (hasPermission('portal.fishing.modify')) {
       navigate(`/view/fish/${id}`);
     } else {
       return;
@@ -75,7 +75,7 @@ const FishingTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        {hasPermission('FISHING_CREATE') && (
+        {hasPermission('portal.fishing.create') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"

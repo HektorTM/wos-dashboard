@@ -50,7 +50,7 @@ const CurrencyTab = () => {
   }
 
     const handleClick = (id:string) => {
-        if (hasPermission('COSMETIC_EDIT')) {
+        if (hasPermission('portal.cosmetics.modify')) {
           navigate(`/view/cosmetic/${id}`);
         } else {
           return;
@@ -77,7 +77,7 @@ const CurrencyTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        { hasPermission('COSMETIC_CREATE') && (
+        { hasPermission('portal.cosmetics.create') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"

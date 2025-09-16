@@ -42,7 +42,7 @@ const InteractionTab = () => {
   }, []);
 
   const handleClick = (id:string) => {
-    if (hasPermission('INTERACTION_EDIT')) {
+    if (hasPermission('portal.interactions.modify')) {
       navigate(`/view/interaction/${id}`);
     } else {
       return;
@@ -71,7 +71,7 @@ const InteractionTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        {hasPermission('INTERACTION_CREATE') && (
+        {hasPermission('portal.interactions.create') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"

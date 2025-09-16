@@ -208,7 +208,7 @@ const AdminPermissionsPage: React.FC = () => {
 
     const removePermissionFromUser = async (perm: string) => {
         if (!selectedUUID) return;
-        if (window.confirm(`Remove permission '${perm}' from this User?`)) return;
+        if (!window.confirm(`Remove permission '${perm}' from this User?`)) return;
         try {
             const res = await fetch(`${base}/api/permissions/user/${selectedUUID}/permission`, {
                 method: 'DELETE', credentials: 'include', headers: { 'Content-Type': 'application/json' },
@@ -235,7 +235,7 @@ const AdminPermissionsPage: React.FC = () => {
 
     const removeUserFromGroup = async (group: string) => {
         if (!selectedUUID) return;
-        if (window.confirm(`Remove Group '${group}' from this User?`)) return;
+        if (!window.confirm(`Remove Group '${group}' from this User?`)) return;
         try {
             const res = await fetch(`${base}/api/permissions/user/${selectedUUID}/group`, {
                 method: 'DELETE', credentials: 'include', headers: { 'Content-Type': 'application/json' },
@@ -284,7 +284,7 @@ const AdminPermissionsPage: React.FC = () => {
 
     const removePermissionFromGroup = async (perm: string) => {
         if (!selectedGroup) return;
-        if (window.confirm(`Remove permission '${perm}' from group '${selectedGroup}'?`)) return;
+        if (!window.confirm(`Remove permission '${perm}' from group '${selectedGroup}'?`)) return;
         try {
             const res = await fetch(`${base}/api/permissions/group/${encodeURIComponent(selectedGroup)}/permission`, {
                 method: 'DELETE', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ permission: perm })

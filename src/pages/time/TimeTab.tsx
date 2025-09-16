@@ -47,7 +47,7 @@ const TimeTab = () => {
   }, []);
 
   const handleClick = (id:string) => {
-    if (hasPermission('TIME_EDIT')) {
+    if (hasPermission('portal.timeevents.modify')) {
       navigate(`/view/timeevent/${id}`);
     } else {
       return;
@@ -78,7 +78,7 @@ const TimeTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
-        {hasPermission('TIME_CREATE') && (
+        {hasPermission('portal.timeevents.create') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"

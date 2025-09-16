@@ -5,12 +5,11 @@ import { getStaffUserByUUID, parseTime, toUpperCase } from '../../utils/parser.t
 import { useNavigate } from 'react-router-dom';
 import { usePermission } from '../../utils/usePermission.ts';
 import Modal from '../Modal.tsx';
-import {PermissionKey} from "../../utils/permissions.ts";
 
 interface PageMetaBoxProps {
   type: string;
   id: string;
-  deletePerm?: PermissionKey;
+  deletePerm?: string;
 }
 
 interface PageData {

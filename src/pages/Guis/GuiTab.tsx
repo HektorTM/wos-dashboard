@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
-import EditButton from '../../components/buttons/EditButton.tsx';
-import DeleteButton from '../../components/buttons/DeleteButton.tsx';
-import { deletePageItem } from '../../helpers/FetchPageItem';
-import { deletePageMeta } from '../../helpers/PageMeta';
 import TitleComp from '../../components/TitleComponent';
 import CreateGuiPopup from './CreateGuiPopUp';
+import {usePermission} from "../../utils/usePermission.ts";
+import {useNavigate} from "react-router-dom";
 
 type Gui = {
   id: string;
@@ -14,11 +11,12 @@ type Gui = {
 
 const GuiTab = () => {
   const { theme } = useTheme();
-  const { authUser } = useAuth();
   const [guis, setGuis] = useState<Gui[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { hasPermission } = usePermission();
+  const navigate = useNavigate();
 
   const [showCreatePopup, setShowCreatePopup] = useState(false);
 
@@ -43,22 +41,17 @@ const GuiTab = () => {
     fetchGuis();
   }, []);
 
+  const handleClick = (id: string) => {
+    if (hasPermission('portal.guis.modify')) {
+      navigate(`/view/gui/${id}`);
+    } else {
+      return
+    }
+  }
+
   const handleGuiCreated = (newGui: Gui) => {
     setGuis([...guis, newGui]);
   }
-
-  const deleteGui = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this GUI?')) return;
-    
-    try {
-      deletePageItem('guis', `${id}`, `${authUser?.uuid}`);
-      deletePageMeta('gui', `${id}`, `${authUser?.uuid}`);
-      setGuis(guis.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error(err);
-      setError('Failed to delete GUI. Please try again.');
-    }
-  };
 
   const filteredGuis = guis.filter(u =>
     u.id.toLowerCase().includes(search.toLowerCase())
@@ -78,12 +71,14 @@ const GuiTab = () => {
           />
           <span className="search-icon">🔍</span>
         </div>
+        {hasPermission('portal.guis.create') && (
         <button 
           onClick={() => setShowCreatePopup(true)} 
           className="create-button"
         >
           + Create GUI
         </button>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -99,17 +94,12 @@ const GuiTab = () => {
             <thead>
               <tr style={{height: '32px'}}>
                 <th style={{padding: '4px 8px'}}>ID</th>
-                <th style={{padding: '4px 8px'}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredGuis.map((gui) => (
-                <tr key={gui.id} style={{height: '32px'}}>
+                <tr key={gui.id} style={{height: '32px'}} onClick={() => handleClick(gui.id)}>
                   <td style={{padding: '4px 8px'}}>{gui.id}</td>
-                  <td style={{padding: '4px 8px'}}>
-                    <EditButton perm='GUI_EDIT' nav={`/view/gui/${gui.id}`}></EditButton>
-                    <DeleteButton perm='GUI_DELETE' onClick={() => deleteGui(gui.id)}></DeleteButton>
-                  </td>
                 </tr>
               ))}
               {filteredGuis.length === 0 && (

@@ -6,7 +6,6 @@ import {FaArrowLeft, FaChevronLeft, FaChevronRight, FaHome, FaSearch, FaShieldAl
 import { PiGameControllerBold } from 'react-icons/pi';
 import { RiPuzzle2Line } from 'react-icons/ri';
 import PermissionLink from './PermissionLink';
-import { PermissionKey } from '../utils/permissions';
 import { usePermission } from '../utils/usePermission';
 
 interface SidebarProps {
@@ -26,7 +25,7 @@ interface SubItem {
   title: string;
   href: string;
   disabled?: boolean | false;
-  permission?: PermissionKey;
+  permission?: string;
 }
 const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
   const { theme, toggleTheme } = useTheme();
@@ -60,19 +59,19 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
       title: 'Game Design',
       icon: <PiGameControllerBold />,
       subItems: [
-        { id: 'channels', title: 'Channels', href: '/channels', permission: 'CHANNEL_VIEW'},
-        { id: 'citems', title: 'Citems', href: '/citems', permission: 'CITEM_VIEW'},
-        { id: 'cooldowns', title: 'Cooldowns', href: '/cooldowns', permission: 'COOLDOWN_VIEW' },
-        { id: 'cosmetics', title: 'Cosmetics', href: '/cosmetics', permission: 'COSMETIC_VIEW' },
-        { id: 'currencies', title: 'Currencies', href: '/currencies', permission: 'CURRENCY_VIEW'},
-        { id: 'fishing', title: 'Fishing', href: '/fishing', permission: 'FISHING_VIEW' },
-        { id: 'guis', title: 'GUIs', href: '/guis', permission: 'GUI_VIEW' },
-        { id: 'interactions', title: 'Interactions', href: '/interactions', permission: 'INTERACTION_VIEW' },
-        { id: 'loottables', title: 'Loottables', href: '/#', permission: 'LOOTTABLE_VIEW', disabled: true },
-        { id: 'recipes', title: 'Recipes', href: '#', permission: 'RECIPE_VIEW', disabled: true},
-        { id: 'stats', title: 'Stats', href: '/stats', permission: 'STATS_VIEW' },
-        { id: 'timeevents', title: 'Time Events', href: '/timeevents', permission: 'TIME_VIEW'},
-        { id: 'unlockables', title: 'Unlockables', href: '/unlockables', permission: 'UNLOCKABLE_VIEW' },
+        { id: 'channels', title: 'Channels', href: '/channels', permission: 'portal.channels.view'},
+        { id: 'citems', title: 'Citems', href: '/citems', permission: 'portal.citems.view'},
+        { id: 'cooldowns', title: 'Cooldowns', href: '/cooldowns', permission: 'portal.cooldowns.view' },
+        { id: 'cosmetics', title: 'Cosmetics', href: '/cosmetics', permission: 'portal.cosmetics.view' },
+        { id: 'currencies', title: 'Currencies', href: '/currencies', permission: 'portal.currencies.view'},
+        { id: 'fishing', title: 'Fishing', href: '/fishing', permission: 'portal.fishing.view' },
+        { id: 'guis', title: 'GUIs', href: '/guis', permission: 'portal.guis.view' },
+        { id: 'interactions', title: 'Interactions', href: '/interactions', permission: 'portal.interactions.view' },
+        { id: 'loottables', title: 'Loottables', href: '/#', permission: 'portal.loottables.view', disabled: true },
+        { id: 'recipes', title: 'Recipes', href: '#', permission: 'portal.recipes.view', disabled: true},
+        { id: 'stats', title: 'Stats', href: '/stats', permission: 'portal.stats.view' },
+        { id: 'timeevents', title: 'Time Events', href: '/timeevents', permission: 'portal.timeevents.view'},
+        { id: 'unlockables', title: 'Unlockables', href: '/unlockables', permission: 'portal.unlockables.view' },
       ],
     },
     {
@@ -216,7 +215,7 @@ return (
         </div>
       </div>
       <div className='sidebar-footer'>
-        {hasPermission('ADMIN') && (
+        {hasPermission('portal.permissions.users.view') && (
           <button className="admin-btn" onClick={userpage}>
             <svg viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>

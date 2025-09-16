@@ -94,7 +94,7 @@ const ViewFish = () => {
         className="form-meta-container"
         style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}
       >
-        <PageMetaBox type="fish" id={id!} deletePerm='FISHING_DELETE' />
+        <PageMetaBox type="fish" id={id!} deletePerm='portal.fishing.delete' />
         <div style={{ flex: 3 }}>
           {error && <div className="error-message">{error}</div>}
           {locked && (

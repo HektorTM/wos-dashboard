@@ -62,22 +62,22 @@ const App = () => {
                 <Route path="/" element={<Navigate to="/dashboard" />} />
                 <Route path="/dashboard" element={ <Dashboard />} />
                 <Route path="/search" element={<SearchResults />} />
-                <Route path="/citems" element={<ProtectedRoute requiredPermission='CITEM_VIEW'><CitemTab /></ProtectedRoute>} />
+                <Route path="/citems" element={<ProtectedRoute requiredPermission='portal.citems.view'><CitemTab /></ProtectedRoute>} />
                 <Route path="/users" element={<ProtectedRoute requiredPermission='ADMIN'><UserList /></ProtectedRoute>} />
-                <Route path="/currencies" element={<ProtectedRoute requiredPermission='CURRENCY_VIEW'><CurrencyTab /></ProtectedRoute>} />
-                <Route path="/unlockables" element={<ProtectedRoute requiredPermission='UNLOCKABLE_VIEW'><UnlockableTab /></ProtectedRoute>} />
-                <Route path="/cosmetics" element={<ProtectedRoute requiredPermission='COSMETIC_VIEW'><CosmeticTab /></ProtectedRoute>} />
-                <Route path="/channels" element={<ProtectedRoute requiredPermission='CHANNEL_VIEW'><ChannelTab /></ProtectedRoute>} />
-                <Route path="/stats" element={<ProtectedRoute requiredPermission='STATS_VIEW'><StatsTab /></ProtectedRoute>} />
-                <Route path="/recipes" element={<ProtectedRoute requiredPermission='RECIPE_VIEW'><RecipeTab /></ProtectedRoute>} />
-                <Route path="/interactions" element={<ProtectedRoute requiredPermission='INTERACTION_VIEW'><InteractionTab /></ProtectedRoute>} />
+                <Route path="/currencies" element={<ProtectedRoute requiredPermission='portal.currencies.view'><CurrencyTab /></ProtectedRoute>} />
+                <Route path="/unlockables" element={<ProtectedRoute requiredPermission='portal.unlockables.view'><UnlockableTab /></ProtectedRoute>} />
+                <Route path="/cosmetics" element={<ProtectedRoute requiredPermission='portal.cosmetics.view'><CosmeticTab /></ProtectedRoute>} />
+                <Route path="/channels" element={<ProtectedRoute requiredPermission='portal.channels.view'><ChannelTab /></ProtectedRoute>} />
+                <Route path="/stats" element={<ProtectedRoute requiredPermission='portal.stats.view'><StatsTab /></ProtectedRoute>} />
+                <Route path="/recipes" element={<ProtectedRoute requiredPermission='portal.recipes.view'><RecipeTab /></ProtectedRoute>} />
+                <Route path="/interactions" element={<ProtectedRoute requiredPermission='portal.interactions.view'><InteractionTab /></ProtectedRoute>} />
                 <Route path="/players" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><PlayerTab></PlayerTab></ProtectedRoute>} />
-                <Route path="/fishing" element={<ProtectedRoute requiredPermission='FISHING_VIEW'><FishingTab></FishingTab></ProtectedRoute>} />
-                <Route path="/cooldowns" element={<ProtectedRoute requiredPermission='COOLDOWN_VIEW'><CooldownTab></CooldownTab></ProtectedRoute>} />
-                <Route path="/guis" element={<ProtectedRoute requiredPermission='GUI_VIEW'><GuiTab></GuiTab></ProtectedRoute>} />
+                <Route path="/fishing" element={<ProtectedRoute requiredPermission='portal.fishing.view'><FishingTab></FishingTab></ProtectedRoute>} />
+                <Route path="/cooldowns" element={<ProtectedRoute requiredPermission='portal.cooldowns.view'><CooldownTab></CooldownTab></ProtectedRoute>} />
+                <Route path="/guis" element={<ProtectedRoute requiredPermission='portal.guis.view'><GuiTab></GuiTab></ProtectedRoute>} />
                 <Route path="/warps" element={<ProtectedRouteNoPerm><WarpsTab></WarpsTab></ProtectedRouteNoPerm>} />
                 <Route path="/projects" element={<ProtectedRouteNoPerm><ProjectsTab /></ProtectedRouteNoPerm>} />
-                <Route path="/timeevents" element={<ProtectedRoute requiredPermission='TIME_VIEW'><TimeTab /></ProtectedRoute>} />
+                <Route path="/timeevents" element={<ProtectedRoute requiredPermission='portal.timeevents.view'><TimeTab /></ProtectedRoute>} />
 
                 <Route path="/requests" element={<ProtectedRouteNoPerm><RequestTab></RequestTab></ProtectedRouteNoPerm>} />
                 <Route path="/bugs" element={<ProtectedRouteNoPerm><BugReportPage></BugReportPage></ProtectedRouteNoPerm>} />
@@ -86,19 +86,19 @@ const App = () => {
                 <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
 
                 <Route path="/view/user/:id" element={<ProtectedRoute requiredPermission='ADMIN'><EditUser /></ProtectedRoute>} />
-                <Route path="/view/currency/:id" element={<ProtectedRoute requiredPermission='CURRENCY_EDIT'><EditCurrency /></ProtectedRoute>} />
-                <Route path="/view/cosmetic/:id" element={<ProtectedRoute requiredPermission='COSMETIC_EDIT'><ViewCosmetic/></ProtectedRoute>} />
-                <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='UNLOCKABLE_EDIT'><ViewUnlockable /></ProtectedRoute>} />  
-                <Route path="/view/interaction/:id" element={<ProtectedRoute requiredPermission='INTERACTION_EDIT'><ViewInteraction /></ProtectedRoute>} /> 
+                <Route path="/view/currency/:id" element={<ProtectedRoute requiredPermission='portal.currencies.modify'><EditCurrency /></ProtectedRoute>} />
+                <Route path="/view/cosmetic/:id" element={<ProtectedRoute requiredPermission='portal.cosmetics.modify'><ViewCosmetic/></ProtectedRoute>} />
+                <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='portal.unlockables.modify'><ViewUnlockable /></ProtectedRoute>} />
+                <Route path="/view/interaction/:id" element={<ProtectedRoute requiredPermission='portal.interactions.modify'><ViewInteraction /></ProtectedRoute>} />
                 <Route path="/view/player/:uuid" element={<ProtectedRoute requiredPermission='PLAYER_VIEW'><ViewPlayer></ViewPlayer></ProtectedRoute>} />
-                <Route path="/view/fish/:id" element={<ProtectedRoute requiredPermission='FISHING_EDIT'><ViewFish></ViewFish></ProtectedRoute>} />
-                <Route path="/view/cooldown/:id" element={<ProtectedRoute requiredPermission='COOLDOWN_EDIT'><ViewCooldown></ViewCooldown></ProtectedRoute>} />
-                <Route path="/view/gui/:id" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewGui></ViewGui></ProtectedRoute>} />
-                <Route path="/view/gui/:id/:slotNumber" element={<ProtectedRoute requiredPermission='GUI_EDIT'><ViewSlot></ViewSlot></ProtectedRoute>} />
+                <Route path="/view/fish/:id" element={<ProtectedRoute requiredPermission='portal.fishing.modify'><ViewFish></ViewFish></ProtectedRoute>} />
+                <Route path="/view/cooldown/:id" element={<ProtectedRoute requiredPermission='portal.cooldowns.modify'><ViewCooldown></ViewCooldown></ProtectedRoute>} />
+                <Route path="/view/gui/:id" element={<ProtectedRoute requiredPermission='portal.currencies.modify'><ViewGui></ViewGui></ProtectedRoute>} />
+                <Route path="/view/gui/:id/:slotNumber" element={<ProtectedRoute requiredPermission='portal.guis.modify'><ViewSlot></ViewSlot></ProtectedRoute>} />
                 <Route path="/view/project/:id" element={<ProtectedRouteNoPerm><ViewProject /></ProtectedRouteNoPerm>} />
-                <Route path="/view/timeevent/:id" element={<ProtectedRoute requiredPermission='TIME_EDIT'><ViewTime /></ProtectedRoute>} />
+                <Route path="/view/timeevent/:id" element={<ProtectedRoute requiredPermission='portal.timeevents.modify'><ViewTime /></ProtectedRoute>} />
                 <Route path="/admin" element={<AdminPermissionsPage></AdminPermissionsPage>} />
-                <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='STATS_EDIT'><ViewStat /></ProtectedRoute>} />
+                <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='portal.stats.modify'><ViewStat /></ProtectedRoute>} />
 
                 <Route path="/yellowstone" element={<Yellowstone></Yellowstone>} />
             </Route>

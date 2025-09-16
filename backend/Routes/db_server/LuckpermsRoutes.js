@@ -132,6 +132,53 @@ router.get('/user/:uuid', async (req, res) => {
     }
 });
 
+// GET /admin/luckperms/user/:uuid/permissions
+router.get('/user/:uuid/permissions', async (req, res) => {
+    const { uuid } = req.params;
+
+    try {
+        // 1) Groups the user is in
+        const [groupRows] = await db.query(
+            `SELECT REPLACE(permission, 'group.', '') AS name
+             FROM luckperms_user_permissions
+             WHERE uuid = ? AND value = 1 AND permission LIKE 'group.%'`,
+            [uuid]
+        );
+        const groups = groupRows.map(r => r.name);
+
+        // 2) Direct user permissions (exclude group.*)
+        const [userPermRows] = await db.query(
+            `SELECT permission
+             FROM luckperms_user_permissions
+             WHERE uuid = ? AND value = 1 AND permission NOT LIKE 'group.%'`,
+            [uuid]
+        );
+        const userPermissions = userPermRows.map(r => r.permission);
+
+        // 3) Group permissions
+        let groupPermissions = [];
+        if (groups.length > 0) {
+            const placeholders = groups.map(() => '?').join(',');
+            const [gpRows] = await db.query(
+                `SELECT permission
+                 FROM luckperms_group_permissions
+                 WHERE value = 1 AND name IN (${placeholders})`,
+                groups
+            );
+            groupPermissions = gpRows.map(r => r.permission);
+        }
+
+        // 4) Combine all into one list (deduplicated)
+        const allPermissions = Array.from(new Set([...userPermissions, ...groupPermissions]));
+
+        res.status(200).json(allPermissions);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 router.post('/user/:uuid/permission', async (req, res) => {
     const { uuid } = req.params;
     const { permission } = req.body;

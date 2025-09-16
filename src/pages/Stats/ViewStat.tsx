@@ -91,7 +91,7 @@ const ViewStat = () => {
                 className="form-meta-container"
                 style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}
             >
-                <PageMetaBox type="stat" id={id!} deletePerm='STATS_DELETE'/>
+                <PageMetaBox type="stat" id={id!} deletePerm='portal.stats.delete'/>
                 <div style={{ flex: 3 }}>
                     {error && <div className="error-message">{error}</div>}
                     {locked && (
