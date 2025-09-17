@@ -84,6 +84,8 @@ if (process.env.IP !== 'localhost') {
   app.use('/api', requireAuth);
 }
 
+app.use('/api', requireAuth);
+
 app.use('/api/currencies', currencyRoutes);
 app.use('/api/unlockables', UnlockableRoutes);
 app.use('/api/citems', CitemRoutes);

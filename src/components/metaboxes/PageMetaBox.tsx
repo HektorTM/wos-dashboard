@@ -194,7 +194,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
 
   const handleLock = async () => {
     if (data?.locked) {
-      if (hasPermission('UNLOCK')) {
+      if (hasPermission('portal.unlock')) {
         toggleLock();
       } else {
         openRequestModal('UNLOCK');

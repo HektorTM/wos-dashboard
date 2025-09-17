@@ -6,7 +6,7 @@ const logActivity = require('../../utils/LogActivity');
 // 1. Get all currencies
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM citems');
+    const [rows] = await db.query('SELECT * FROM items');
     res.status(200).json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -18,7 +18,7 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.query('SELECT * FROM citems WHERE id = ?', [id]);
+    const [rows] = await db.query('SELECT web_data FROM items WHERE id = ?', [id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Citem not found' });
     }
@@ -33,7 +33,7 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [result] = await db.query('DELETE FROM citems WHERE id = ?', [id]);
+    const [result] = await db.query('DELETE FROM items WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Citem not found' });

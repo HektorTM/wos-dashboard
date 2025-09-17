@@ -60,9 +60,11 @@ router.get('/issues', async (req, res) => {
     // Define all repositories you want to query when 'all' is selected
     const allRepos = [
       { owner: 'HektorTM', repo: 'wos-dashboard' },
-      { owner: 'HektorTM', repo: 'WoSSystems' },
-      { owner: 'HektorTM', repo: 'WoSCore' },
-      { owner: 'HektorTM', repo: 'WoSEssentials'}
+      { owner: 'WorldOfSorcery', repo: 'Systems' },
+      { owner: 'WorldOfSorcery', repo: 'Core' },
+      { owner: 'WorldOfSorcery', repo: 'Essentials'},
+      { owner: 'WorldOfSorcery', repo: 'Friends'},
+      { owner: 'WorldOfSorcery', repo: 'PvP'}
     ];
 
     // If a specific repo is selected, filter to just that one

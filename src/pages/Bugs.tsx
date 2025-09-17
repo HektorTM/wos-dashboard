@@ -42,9 +42,11 @@ const BugReportPage = () => {
 
   const REPOSITORIES: Repository[] = [
     { name: "Web | Admin Portal", value: "HektorTM/wos-dashboard" },
-    { name: "Plugin | Systems", value: "HektorTM/WoSSystems" },
-    { name: "Plugin | Core", value: "HektorTM/WoSCore" },
-    { name: "Plugin | Essentials", value: "HektorTM/WoSEssentials"}
+    { name: "Plugin | Systems", value: "WorldOfSorcery/Systems" },
+    { name: "Plugin | Core", value: "WorldOfSorcery/Core" },
+    { name: "Plugin | Essentials", value: "WorldOfSorcery/Essentials"},
+    { name: "Plugin | Friends", value: "WorldOfSorcery/Friends"},
+    { name: "Plugin | PvP", value: "WorldOfSorcery/PvP"}
   ];
 
   useEffect(() => {
