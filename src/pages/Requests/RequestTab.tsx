@@ -111,7 +111,7 @@ const RequestTab = () => {
   }
 
   const showRequestModal = (request: Request) => {
-    if (!hasPermission('REQUEST_APPROVE') && !hasPermission('REQUEST_DENY')) {
+    if (!hasPermission('portal.request.approve') && !hasPermission('portal.request.deny')) {
         return;
     }
     setCurrentRequest(request);

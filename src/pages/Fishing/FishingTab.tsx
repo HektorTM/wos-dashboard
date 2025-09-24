@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useTheme } from '../../context/ThemeContext';
-import CreateUnlockablePopUp from './CreateFishPopUp';
-import TitleComp from '../../components/TitleComponent';
-import {usePermission} from "../../utils/usePermission.ts";
+import {Suspense, } from 'react';
 import {useNavigate} from "react-router-dom";
+import {GenericListPage} from "../../components/TabComponent.tsx";
+import CreateFishPopup from "./CreateFishPopUp.tsx";
 
 type Fish = {
   id: string;
@@ -13,128 +11,34 @@ type Fish = {
   regions: string;
 }
 
-const FishingTab = () => {
-  const { theme } = useTheme();
-  const [fishies, setFishies] = useState<Fish[]>([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const { hasPermission } = usePermission();
+export default function DialogsPage() {
   const navigate = useNavigate();
 
-  const [showCreatePopup, setShowCreatePopup] = useState(false);
-
-  useEffect(() => {
-    const fetchFishies = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/fishies`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!res.ok) throw new Error('Failed to load fishies');
-        const data = await res.json();
-        setFishies(data);
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load fishies. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFishies();
-  }, []);
-
-  const handleClick = (id:string) => {
-    if (hasPermission('portal.fishing.modify')) {
-      navigate(`/view/fish/${id}`);
-    } else {
-      return;
-    }
-  };
-
-  const handleFishCreated = (newFish: Fish) => {
-    setFishies([...fishies, newFish]);
-  }
-
-  const filteredFishies = fishies.filter(u =>
-    u.id.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
-    <div className={`page-container ${theme}`}>
-      <TitleComp title={`Fishing | Staff Portal`}></TitleComp>
-      <div className="page-header">
-        <h2>Fishing</h2>
-        <div className="page-search">
-          <input
-            type="text"
-            placeholder="Search unlockables..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <span className="search-icon">🔍</span>
-        </div>
-        {hasPermission('portal.fishing.create') && (
-        <button 
-          onClick={() => setShowCreatePopup(true)} 
-          className="create-button"
-        >
-          + Create Fish
-        </button>
-        )}
-      </div>
-
-      {error && <div className="error-message">{error}</div>}
-
-      {loading ? (
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Loading fishes...</p>
-        </div>
-      ) : (
-        <div className="page-table-container">
-          <table className="page-table">
-            <thead>
-              <tr style={{height: '32px'}}>
-                <th style={{padding: '4px 8px'}}>ID</th>
-                <th style={{padding: '4px 8px'}}>Rarity</th>
-                <th style={{padding: '4px 8px'}}>Citem ID</th>
-                <th style={{padding: '4px 8px'}}>Catch Interaction</th>
-                <th style={{padding: '4px 8px'}}>Regions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredFishies.map((fish) => (
-                <tr key={fish.id} style={{height: '32px'}} onClick={() => handleClick(fish.id)}>
-                  <td style={{padding: '4px 8px'}}>{fish.id}</td>
-                  <td style={{padding: '4px 8px'}}>{fish.rarity}</td>
-                  <td style={{padding: '4px 8px'}}>{fish.citem_id}</td>
-                  <td style={{padding: '4px 8px'}}>{fish.catch_interaction}</td>
-                  <td style={{padding: '4px 8px'}}>{fish.regions}</td>
-                </tr>
-              ))}
-              {filteredFishies.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="no-results">
-                    {search ? 'No matching fish found' : 'No fish available'}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {showCreatePopup && (
-        <CreateUnlockablePopUp 
-          onClose={() => setShowCreatePopup(false)}
-          onCreate={handleFishCreated}
-        />
-      )}
-
-    </div>
+      <GenericListPage<Fish>
+          title="Fishing"
+          endpoint={`${import.meta.env.VITE_API_URL}/api/fishies`}
+          requestInit={{ credentials: 'include' }}
+          getId={(d) => d.id}
+          columns={[
+            { key: 'id', header: 'Identifier', cell: (d) => d.id },
+            { key: 'rarity', header: 'Rarity', cell: (d) => d.rarity },
+            { key: 'itemid', header: 'Citem ID', cell: (d) => d.citem_id },
+            { key: 'catchinteraction', header: 'Catch Interaction', cell: (d) => d.catch_interaction },
+            { key: 'regions', header: 'Regions', cell: (d) => d.regions },
+          ]}
+          searchAccessors={[(d) => d.id, (d) => d.citem_id]}
+          searchPlaceholder="Search Fish..."
+          onRowClick={(d) => navigate(`/view/fish/${d.id}`)}
+          rowClickPermission="portal.fishing.modify"
+          createPermission="portal.fishing.create"
+          CreatePopup={ (props) => (
+              <Suspense fallback={<div>Loading popup...</div>}>
+                <CreateFishPopup {...props} />
+              </Suspense>
+          )}
+          emptyState="No Fish available"
+          emptyStateFiltered="No matching Fish found"
+      />
   );
-};
-
-export default FishingTab;
+}
