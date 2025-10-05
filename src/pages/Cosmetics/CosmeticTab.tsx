@@ -15,8 +15,8 @@ export default function CosmeticsPage() {
 
   return (
       <GenericListPage<Cosmetic>
-          title="Dialogs"
-          endpoint={`${import.meta.env.VITE_API_URL}/api/dialogs`}
+          title="Cosmetics"
+          endpoint={`${import.meta.env.VITE_API_URL}/api/cosmetics`}
           requestInit={{ credentials: 'include' }}
           getId={(d) => d.id}
           columns={[
