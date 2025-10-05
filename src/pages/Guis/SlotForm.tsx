@@ -6,7 +6,10 @@ interface SlotFormProps {
     material?: string;
     display_name?: string;
     lore?: string;
-    custom_model_data?: number | null;
+    model?: string | null;
+    color?: string | null;
+    amount?: number | null;
+    tooltip?: string | null;
     enchanted?: boolean | null;
     right_click?: string;
     left_click?: string;
@@ -280,18 +283,58 @@ const SlotForm = ({ slot, onChange, onDisable }: SlotFormProps) => {
           </div>
         </div>
         <div className="slot-form-group">
-          <label>Custom Model Data</label>
-          <input
-            type="number"
-            name="custom_model_data"
-            value={localSlot.custom_model_data || ''}
-            onChange={handleNumberInputChange}
-            className="form-control"
-            disabled={onDisable || false}
-            placeholder="Leave empty for none"
-            min="0"
-          />
+            <label>Amount</label>
+            <div className="slot-input-group">
+                <input
+                    name="amount"
+                    type="number"
+                    value={localSlot.amount || 1}
+                    defaultValue={1}
+                    min={1}
+                    max={64}
+                    onChange={handleNumberInputChange}
+                    className="form-control"
+                    disabled={onDisable || false}
+                >
+                </input>
+            </div>
         </div>
+
+        <div className="slot-form-group" >
+            <label>Model / Color</label>
+            <input
+                style={{flexDirection: 'row', gap: '1rem'}}
+                type="text"
+                name="model"
+                value={localSlot.model || ''}
+                onChange={handleInputChange}
+                className="form-control"
+                disabled={onDisable || false}
+                placeholder="Leave empty for none"
+            />
+            <input
+            style={{height: '2.7rem'}}
+            type="color"
+            name="color"
+            className="form-control"
+            value={localSlot.color || ''}
+            onChange={(e) => setLocalSlot({...localSlot, color: e.target.value || null})}
+            disabled={onDisable || false}
+            placeholder="#ffffff"/>
+
+        </div>
+          <div className="slot-form-group">
+            <label>Tooltip</label>
+            <input
+                type="text"
+                name="tooltip"
+                value={localSlot.tooltip}
+                onChange={handleInputChange}
+                className="form-control"
+                disabled={onDisable || false}
+                placeholder="'hidden' or a tooltip ID"
+            />
+          </div>
 
         <div className="slot-form-check mb-3">
           <label>
