@@ -61,6 +61,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
       subItems: [
         { id: 'channels', title: 'Channels', href: '/channels', permission: 'portal.channels.view'},
         { id: 'citems', title: 'Citems', href: '/citems', permission: 'portal.citems.view'},
+        { id: 'constants', title: 'Constants', href: '/constants', permission: 'portal.constants.view'},
         { id: 'cooldowns', title: 'Cooldowns', href: '/cooldowns', permission: 'portal.cooldowns.view' },
         { id: 'cosmetics', title: 'Cosmetics', href: '/cosmetics', permission: 'portal.cosmetics.view' },
         { id: 'currencies', title: 'Currencies', href: '/currencies', permission: 'portal.currencies.view'},

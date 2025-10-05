@@ -48,6 +48,7 @@ import ViewDialog from './pages/Dialogs/ViewDialog.tsx';
 import ConstantTab from './pages/Constants/ConstantTab';
 
 import Yellowstone from "./pages/yellowstone.tsx";
+import ViewConstant from "./pages/Constants/ViewConstant.tsx";
 
 const App = () => {
   return (
@@ -105,6 +106,7 @@ const App = () => {
                 <Route path="/admin" element={<AdminPermissionsPage></AdminPermissionsPage>} />
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='portal.stats.modify'><ViewStat /></ProtectedRoute>} />
                 <Route path="/view/dialog/:id" element={<ProtectedRoute requiredPermission='portal.dialogs.modify'><ViewDialog /></ProtectedRoute>} />
+                <Route path="/view/constant/:id" element={<ProtectedRoute requiredPermission='portal.constants.modify'><ViewConstant /></ProtectedRoute>} />
 
 
                 <Route path="/yellowstone" element={<Yellowstone></Yellowstone>} />
