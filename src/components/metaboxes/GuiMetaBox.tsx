@@ -4,14 +4,8 @@ import { getStaffUserByUUID, parseTime, toUpperCase } from '../../utils/parser.t
 import { useNavigate } from 'react-router-dom';
 import { usePermission } from '../../utils/usePermission.ts';
 import Modal from '../Modal.tsx';
+import {Gui} from "../../types/Gui.tsx";
 
-interface Gui {
-  id: string;
-  size: number;
-  title: string;
-  open_actions: string[] | string;
-  close_actions: string[] | string;
-}
 
 interface GuiMetaBoxProps {
   id: string;
@@ -212,7 +206,7 @@ const GuiMetaBox: React.FC<GuiMetaBoxProps> = ({ id, gui }) => {
 
   const handleLock = async () => {
     if (pageData?.locked) {
-      if (hasPermission('UNLOCK')) {
+      if (hasPermission('portal.unlock')) {
         await toggleLock();
       } else {
         openRequestModal('UNLOCK');
@@ -279,7 +273,7 @@ const GuiMetaBox: React.FC<GuiMetaBoxProps> = ({ id, gui }) => {
               Back to List 
             </button>
             <button
-                onClick= {hasPermission('portal.gui.delete') ? handleDelete : () => openRequestModal('DELETE')}
+                onClick= {hasPermission('portal.guis.delete') ? handleDelete : () => openRequestModal('DELETE')}
                 disabled={toggling} className="meta-page-button" style={{color: 'var(--danger)'}}>
               Delete GUI
             </button>

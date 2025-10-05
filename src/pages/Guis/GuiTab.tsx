@@ -21,7 +21,7 @@ export default function GuiPage() {
           ]}
           searchAccessors={[(d) => d.id, (d) => d.id]}
           searchPlaceholder="Search Guis..."
-          onRowClick={(d) => navigate(`/view/guis/${d.id}`)}
+          onRowClick={(d) => navigate(`/view/gui/${d.id}`)}
           rowClickPermission="portal.guis.modify"
           createPermission="portal.guis.create"
           CreatePopup={ (props) => (

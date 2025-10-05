@@ -186,7 +186,10 @@ router.post('/:id/slots/:slotNumber', async (req, res) => {
     material,
     display_name, 
     lore, 
-    custom_model_data,
+    model,
+    color,
+    amount,
+    tooltip,
     enchanted,
     right_click,
     left_click,
@@ -202,10 +205,9 @@ router.post('/:id/slots/:slotNumber', async (req, res) => {
       [id, slotNumber]
     );
     const nextSlotId = (maxIdResult[0].maxId || 0) + 1;
-    console.info(id, slotNumber, nextSlotId, matchtype, material, display_name, lore, custom_model_data, enchanted, right_click, left_click, visible);
     // Insert the new action
     await db.query(
-      'INSERT INTO gui_slots (gui_id, slot, slot_id, matchtype, material, display_name, lore, custom_model_data, enchanted, right_click, left_click, visible) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO gui_slots (gui_id, slot, slot_id, matchtype, material, display_name, lore, model, color, amount, tooltip, enchanted, right_click, left_click, visible) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [
         id, 
         slotNumber, 
@@ -214,7 +216,10 @@ router.post('/:id/slots/:slotNumber', async (req, res) => {
         material, 
         display_name, 
         JSON.stringify(lore),
-        custom_model_data, 
+        model,
+        color,
+        amount,
+        tooltip,
         enchanted ? 1 : 0, 
         JSON.stringify(right_click), 
         JSON.stringify(left_click), 
@@ -240,7 +245,10 @@ router.put('/:id/slots/:slotNumber/:slotId', async (req, res) => {
     material,
     display_name, 
     lore, 
-    custom_model_data,
+    model,
+    color,
+    amount,
+    tooltip,
     enchanted,
     right_click,
     left_click,
@@ -249,13 +257,16 @@ router.put('/:id/slots/:slotNumber/:slotId', async (req, res) => {
 
   try {
     await db.query(
-      'UPDATE gui_slots SET matchtype = ?, material = ?, display_name = ?, lore = ?, custom_model_data = ?, enchanted = ?, right_click = ?, left_click = ?, visible = ? WHERE gui_id = ? AND slot = ? AND slot_id = ?',
+      'UPDATE gui_slots SET matchtype = ?, material = ?, display_name = ?, lore = ?, model = ?, color = ?, amount = ?, tooltip = ?, enchanted = ?, right_click = ?, left_click = ?, visible = ? WHERE gui_id = ? AND slot = ? AND slot_id = ?',
       [
         matchtype, 
         material, 
         display_name, 
         JSON.stringify(lore),
-        custom_model_data, 
+        model,
+        color,
+        amount,
+        tooltip,
         enchanted ? 1 : 0, 
         JSON.stringify(right_click), 
         JSON.stringify(left_click), 
