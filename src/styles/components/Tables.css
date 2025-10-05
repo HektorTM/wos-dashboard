@@ -74,3 +74,11 @@
   .condition-table tbody tr:hover {
     background-color: var(--table-header-bg);
   }
+
+.page-table tr.expander-toggle > td {
+  cursor: pointer;
+  background: rgba(0,0,0,0.02);
+  text-align: center;
+  padding: 2px 6px
+}
+.page-table .expander-toggle:hover { background: rgba(0,0,0,0.04); }

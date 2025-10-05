@@ -64,6 +64,7 @@ const Sidebar = ({isCollapsed, setIsCollapsed}: SidebarProps) => {
         { id: 'cooldowns', title: 'Cooldowns', href: '/cooldowns', permission: 'portal.cooldowns.view' },
         { id: 'cosmetics', title: 'Cosmetics', href: '/cosmetics', permission: 'portal.cosmetics.view' },
         { id: 'currencies', title: 'Currencies', href: '/currencies', permission: 'portal.currencies.view'},
+        { id: 'dialogs', title: 'Dialogs', href: '/dialogs', permission: 'portal.dialogs.view'},
         { id: 'fishing', title: 'Fishing', href: '/fishing', permission: 'portal.fishing.view' },
         { id: 'guis', title: 'GUIs', href: '/guis', permission: 'portal.guis.view' },
         { id: 'interactions', title: 'Interactions', href: '/interactions', permission: 'portal.interactions.view' },
