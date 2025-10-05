@@ -36,7 +36,7 @@ const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('unlockable', `${parseID(id)}`, `${authUser?.uuid}`);
+        await createPageMeta('unlockable', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
           id,
           temp: temp ? 1 : 0
