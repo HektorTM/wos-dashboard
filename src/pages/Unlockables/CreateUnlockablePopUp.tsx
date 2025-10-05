@@ -4,16 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
 import {useNavigate} from "react-router-dom";
-
-type Unlockable = {
-  id: string;
-  temp: number;
-}
-
-type CreateUnlockablePopupProps = {
-  onClose: () => void;
-  onCreate: (newUnlockable: Unlockable) => void;
-};
+import {CreateUnlockablePopupProps} from "../../types/Unlockable.tsx";
 
 const CreateUnlockablePopup = ({ onClose, onCreate }: CreateUnlockablePopupProps) => {
   const { authUser } = useAuth();

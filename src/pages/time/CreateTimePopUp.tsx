@@ -66,7 +66,7 @@ const CreateTimePopUp = ({ onClose, onCreate }: CreateTimeEventPopupProps) => {
 
       const result = await res.json();
       if (res.ok) {
-        createPageMeta('timeevent', `${parseID(id)}`, `${authUser?.uuid}`);
+        await createPageMeta('timeevent', `${parseID(id)}`, `${authUser?.uuid}`);
         onCreate({
           id,
           name,

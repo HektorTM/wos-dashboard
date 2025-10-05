@@ -32,6 +32,7 @@ const ProjectRoutes = require('./Routes/db_web/ProjectRoutes');
 const TimeEventRoutes = require('./Routes/db_server/TimeEventRoutes');
 const LuckpermsRoutes = require('./Routes/db_server/LuckpermsRoutes');
 const stacktraceRoutes = require('./Routes/db_server/StacktraceRoutes');
+const dialogRoutes = require('./Routes/db_server/DialogRoutes');
 
 require('./utils/initTables');
 
@@ -84,7 +85,7 @@ if (process.env.IP !== 'localhost') {
   app.use('/api', requireAuth);
 }
 
-app.use('/api', requireAuth);
+//app.use('/api', requireAuth);
 
 app.use('/api/currencies', currencyRoutes);
 app.use('/api/unlockables', UnlockableRoutes);
@@ -108,7 +109,7 @@ app.use('/api/changelogs', ChangelogRoutes);
 app.use('/api/projects', ProjectRoutes);
 app.use('/api/timeevents', TimeEventRoutes);
 app.use('/api/permissions', LuckpermsRoutes);
-
+app.use('/api/dialogs', dialogRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 

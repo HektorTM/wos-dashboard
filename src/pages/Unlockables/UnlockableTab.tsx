@@ -2,11 +2,7 @@ import {Suspense} from 'react';
 import CreateUnlockablePopUp from './CreateUnlockablePopUp';
 import {useNavigate} from "react-router-dom";
 import {GenericListPage} from "../../components/TabComponent.tsx";
-
-type Unlockable = {
-  id: string;
-  temp: number;
-};
+import {Unlockable} from "../../types/Unlockable.tsx";
 
 export default function UnlockablesPage() {
   const navigate = useNavigate();

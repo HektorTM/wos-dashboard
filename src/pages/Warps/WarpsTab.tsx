@@ -1,12 +1,7 @@
 import {GenericListPage} from "../../components/TabComponent.tsx";
-
-type Warp = {
-  id: string;
-  location: string;
-};
+import {Warp} from "../../types/Warp.tsx";
 
 export default function DialogsPage() {
-
   return (
       <GenericListPage<Warp>
           title="Warps"

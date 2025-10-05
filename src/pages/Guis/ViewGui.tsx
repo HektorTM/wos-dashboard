@@ -5,29 +5,9 @@ import TitleComp from '../../components/TitleComponent';
 import GuiMetaBox from '../../components/metaboxes/GuiMetaBox.tsx';
 import { parseMinecraftColorCodes } from '../../utils/parser';
 import { fetchLocked } from '../../helpers/PageMeta';
+import {Gui, Slot} from "../../types/Gui.tsx";
 
-interface Gui {
-  id: string;
-  size: number;
-  title: string;
-  open_actions: string[];
-  close_actions: string[];
-}
 
-interface Slot {
-  gui_id: string;
-  slot: number;
-  slot_id: number;
-  matchtype: string;
-  material: string;
-  display_name: string;
-  lore: string;
-  custom_model_data: number | null;
-  enchanted: boolean | null;
-  right_click: string;
-  left_click: string;
-  visible: number;
-}
 
 interface ApiResponse {
   gui: Gui[];

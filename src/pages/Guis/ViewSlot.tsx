@@ -32,7 +32,10 @@ interface Slot {
   material: string;
   display_name: string;
   lore: string;
-  custom_model_data: number | null;
+  model: string | null;
+  color: string | null;
+  amount: number | 1;
+  tooltip: string | null;
   enchanted: boolean | null;
   right_click: string;
   left_click: string;
@@ -83,63 +86,64 @@ const ViewSlot = () => {
   const [isMoving, setIsMoving] = useState(false);
 
   useEffect(() => {
-    const fetchSlotData = async () => {
-      try {
-        setLoading(true);
-        // Get all slot instances for this slot number
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/guis/${id}/slots/${slotNr}`,
-          { method: 'GET', credentials: 'include' }
-        );
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`Failed to fetch slot data: ${res.status} ${errorText}`);
-        }
-
-        const data = await res.json();
-        
-        // Data will be an array of all slot instances for this slot number
-        const normalizedSlots = Array.isArray(data) 
-          ? data.map(slot => ({
-              ...slot,
-              conditions: slot.conditions || []
-            }))
-          : [];
-
-        setSlots(normalizedSlots);
-        
-        // Fetch conditions for each slot
-        if (normalizedSlots.length > 0) {
-          await Promise.all(normalizedSlots.map(async (slot) => {
-            try {
-              const condRes = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/conditions/guislot/${id}:${slotNr}:${slot.slot_id}`,
-                { method: 'GET', credentials: 'include' }
-              );
-              const conditions = await condRes.json();
-              
-              setSlots(prev => prev.map(s => 
-                s.slot_id === slot.slot_id 
-                  ? { ...s, conditions: Array.isArray(conditions) ? conditions : [] }
-                  : s
-              ));
-            } catch (err) {
-              console.error(`Failed to fetch conditions for slot ${slot.slot_id}:`, err);
-            }
-          }));
-        }
-      } catch (err) {
-        console.error(err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch slot details');
-        setSlots([]);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchSlotData();
   }, [id, slotNr]);
+
+    const fetchSlotData = async () => {
+        try {
+            setLoading(true);
+            // Get all slot instances for this slot number
+            const res = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/guis/${id}/slots/${slotNr}`,
+                { method: 'GET', credentials: 'include' }
+            );
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Failed to fetch slot data: ${res.status} ${errorText}`);
+            }
+
+            const data = await res.json();
+
+            // Data will be an array of all slot instances for this slot number
+            const normalizedSlots = Array.isArray(data)
+                ? data.map(slot => ({
+                    ...slot,
+                    conditions: slot.conditions || []
+                }))
+                : [];
+
+            setSlots(normalizedSlots);
+
+            // Fetch conditions for each slot
+            if (normalizedSlots.length > 0) {
+                await Promise.all(normalizedSlots.map(async (slot) => {
+                    try {
+                        const condRes = await fetch(
+                            `${import.meta.env.VITE_API_URL}/api/conditions/guislot/${id}:${slotNr}:${slot.slot_id}`,
+                            { method: 'GET', credentials: 'include' }
+                        );
+                        const conditions = await condRes.json();
+
+                        setSlots(prev => prev.map(s =>
+                            s.slot_id === slot.slot_id
+                                ? { ...s, conditions: Array.isArray(conditions) ? conditions : [] }
+                                : s
+                        ));
+                    } catch (err) {
+                        console.error(`Failed to fetch conditions for slot ${slot.slot_id}:`, err);
+                    }
+                }));
+            }
+        } catch (err) {
+            console.error(err);
+            setError(err instanceof Error ? err.message : 'Failed to fetch slot details');
+            setSlots([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
   const fetchLockedValue = async () => {
     try {
@@ -227,7 +231,10 @@ const ViewSlot = () => {
       material: 'STONE',
       display_name: '',
       lore: JSON.stringify([]),
-      custom_model_data: 0,
+      model: '',
+      color: '',
+      amount: 1,
+      tooltip: null,
       enchanted: false,
       right_click: JSON.stringify([]),
       left_click: JSON.stringify([]),
@@ -406,18 +413,8 @@ const ViewSlot = () => {
 
       if (res.ok && res2.ok) {
         // Refresh the data
-        const updatedData = await fetch(`${import.meta.env.VITE_API_URL}/api/guis/${id}/slots/${slotNr}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        const updatedGui = await updatedData.json();
-        if (Array.isArray(updatedGui)) {
-          setSlots(updatedGui);
-        } else if (updatedGui && Array.isArray(updatedGui.slots)) {
-          setSlots(updatedGui.slots);
-        } else {
-          setSlots([]);
-        }
+          await fetchSlotData();
+          setShowModal(false);
       }
     } catch (err) {
       console.error(err);
@@ -448,7 +445,10 @@ const ViewSlot = () => {
         material: newItem?.material || 'STONE',
         display_name: newItem?.display_name || 'new Item',
         lore: JSON.parse(newItem?.lore || '[]'),
-        custom_model_data: newItem?.custom_model_data || 0,
+        model: newItem?.model || null,
+        color: newItem?.color || null,
+        amount: newItem?.amount || 1,
+        tooltip: newItem?.tooltip || null,
         enchanted: newItem?.enchanted ? 1 : 0,
         right_click: JSON.parse(newItem?.right_click || '[]'),
         left_click: JSON.parse(newItem?.left_click || '[]'),
@@ -463,16 +463,8 @@ const ViewSlot = () => {
       });
 
       if (res.ok) {
-        const newSlot = await res.json();
-        setSlots(prev => [
-          ...prev,
-          {
-            ...newSlot,
-            conditions: newSlot.conditions || []
-          }
-        ]);
+          await fetchSlotData();
         setShowModal(false);
-        window.location.reload();
       }
     } catch (err) {
       console.error(err);
@@ -489,7 +481,10 @@ const ViewSlot = () => {
         material: newItem?.material || 'STONE',
         display_name: newItem?.display_name || 'new Item',
         lore: JSON.parse(newItem?.lore || '[]'),
-        custom_model_data: newItem?.custom_model_data || 0,
+        model: newItem?.model || null,
+        color: newItem?.color || null,
+        amount: newItem?.amount || 1,
+        tooltip: newItem?.tooltip || null,
         enchanted: newItem?.enchanted ? 1 : 0,
         right_click: JSON.parse(newItem?.right_click || '[]'),
         left_click: JSON.parse(newItem?.left_click || '[]'),
@@ -504,12 +499,7 @@ const ViewSlot = () => {
       });
 
       if (res.ok) {
-        const updatedSlot = await res.json();
-        setSlots(prev => prev.map(slot => 
-          slot.slot_id === currentItem.slot_id
-            ? { ...updatedSlot, conditions: slot.conditions }
-            : slot
-        ));
+        await fetchSlotData();
         setShowModal(false);
       }
     } catch (err) {
@@ -737,7 +727,10 @@ const ViewSlot = () => {
           material: newItem?.material,
           display_name: newItem?.display_name,
           lore: newItem?.lore,
-          custom_model_data: newItem?.custom_model_data,
+          model: newItem?.model,
+          color: newItem?.color,
+          amount: newItem?.amount,
+          tooltip: newItem?.tooltip,
           enchanted: newItem?.enchanted,
           right_click: newItem?.right_click,
           left_click: newItem?.left_click,

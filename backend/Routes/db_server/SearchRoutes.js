@@ -14,10 +14,10 @@ router.get('/', async (req, res) => {
   const query = `
   SELECT 
     id COLLATE utf8mb4_general_ci AS id, 
-    display_name COLLATE utf8mb4_general_ci AS label, 
+    id COLLATE utf8mb4_general_ci AS label, 
     'citem' AS type 
-  FROM citems 
-  WHERE LOWER(display_name) LIKE ? OR LOWER(id) LIKE ?
+  FROM items 
+  WHERE LOWER(id) LIKE ?
 
   UNION ALL
 

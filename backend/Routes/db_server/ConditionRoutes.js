@@ -129,13 +129,6 @@ router.delete('/:type/:id', async (req, res) => {
       count: result.affectedRows
     });
 
-    logActivity({
-      type: 'Condition',
-      target_id: `${type}/${id}`,
-      user: req.user?.id,
-      action: 'Deleted All'
-    });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete conditions' });

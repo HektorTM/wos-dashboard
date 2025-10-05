@@ -22,7 +22,7 @@ export default function CurrencyPage() {
           requestInit={{ credentials: 'include' }}
           getId={(c) => c.id}
           columns={[
-            { key: 'icon', header: 'Identifier', cell: (d) => d.icon },
+            { key: 'icon', header: 'Icon', cell: (d) => d.icon },
             { key: 'id', header: 'Identifier', cell: (d) => d.id },
             { key: 'name', header: 'Character Name', cell: (d) => d.name },
             { key: 'short-name', header: 'Short Name', cell: (d) => d.short_name },
