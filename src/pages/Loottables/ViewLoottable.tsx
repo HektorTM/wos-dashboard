@@ -251,8 +251,8 @@ const ViewLoottable = () => {
                             <table className="page-table" style={{zIndex: '50', overflow: 'auto'}}>
                                 <thead>
                                 <tr>
-                                    <th>Weight</th>
                                     <th>Type</th>
+                                    <th>Weight</th>
                                     <th>value</th>
                                     <th>parameter</th>
                                     <th>Actions</th>
