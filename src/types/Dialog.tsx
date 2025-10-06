@@ -25,6 +25,5 @@ export interface PageLine {
 export interface DialogAnswer {
     answer_id: number;
     answer_text: string;
-    answer_reply: string;
     answer_action: string;
 }

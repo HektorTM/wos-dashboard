@@ -39,7 +39,7 @@ const ViewLoottable = () => {
             try {
                 setLoading(true);
                 setError('');
-                const items = await fetch(`${base}/items`);
+                const items = await fetch(`${base}/items`, {method: 'GET', credentials: 'include'});
                 const data: Loottableitem[] = await items.json();
                 setLoottableItems(data);
             } catch (e) {

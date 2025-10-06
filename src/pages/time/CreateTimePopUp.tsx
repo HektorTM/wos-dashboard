@@ -143,7 +143,6 @@ const CreateTimePopUp = ({ onClose, onCreate }: CreateTimeEventPopupProps) => {
                   value={message}
                   placeholder="Message displayed in chat"
                   onChange={(e) => setMessage(e.target.value)}
-                  required
                   disabled={loading}
                 />
               </div>

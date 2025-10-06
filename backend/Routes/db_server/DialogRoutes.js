@@ -279,7 +279,7 @@ router.delete('/:id/page/:pageId/line/:lineId', async (req, res) => {
 
 router.post('/:id/answer', async (req, res) => {
     const { id } = req.params;
-    const { answer_text, answer_reply, answer_action } = req.body;
+    const { answer_text, answer_action } = req.body;
 
     const [maxIdResult] = await db.query(
         'SELECT MAX(answer_id) as maxId FROM dialog_answers WHERE dialog_id = ?',
@@ -288,7 +288,7 @@ router.post('/:id/answer', async (req, res) => {
     const nextAnswerId = (maxIdResult[0].maxId || 0) + 1;
 
     try {
-        await db.query('INSERT INTO dialog_answers (dialog_id, answer_id, answer_text, answer_reply, answer_action) VALUES (?,?,?,?,?) ', [id, nextAnswerId, answer_text, answer_reply, answer_action]);
+        await db.query('INSERT INTO dialog_answers (dialog_id, answer_id, answer_text,  answer_action) VALUES (?,?,?,?,?) ', [id, nextAnswerId, answer_text, answer_action]);
         res.status(200).json({message: 'Added Answer'});
     }  catch (err) {
         console.error(err.message);
@@ -309,13 +309,13 @@ router.delete('/:id/answer/:answerId', async (req, res) => {
 
 router.patch('/:id/answer/:answerId', async (req, res) => {
     const { id, answerId } = req.params;
-    const { answer_text, answer_reply, answer_action } = req.body;
+    const { answer_text, answer_action } = req.body;
     if (!answer_text || !answer_action) {
         return res.status(400).json({ error: 'Answer text and Answer action is required.' });
     }
 
     try {
-        await db.query('UPDATE dialog_answers SET answer_text = ?, answer_reply = ?, answer_action = ? WHERE dialog_id = ? AND answer_id = ?', [answer_text, answer_reply ?? null, answer_action, id, answerId]);
+        await db.query('UPDATE dialog_answers SET answer_text = ?, answer_action = ? WHERE dialog_id = ? AND answer_id = ?', [answer_text, answer_action, id, answerId]);
         res.status(200).json({message: 'Updated Answer'});
     } catch (err) {
         console.error(err.message);

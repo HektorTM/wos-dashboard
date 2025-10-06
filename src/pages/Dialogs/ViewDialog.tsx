@@ -24,7 +24,7 @@ const ViewDialog = () => {
     const [error, setError] = useState('');
     const [newPage, setNewPage] = useState<DialogPage>({ page_id: 0, pre_action: '', post_action: '', lines: [] });
     const [newLine, setNewLine] = useState<PageLine>({ line_id: 0, line_text: '' });
-    const [newAnswer, setNewAnswer] = useState<DialogAnswer>({answer_id: 0, answer_text: '', answer_reply: '', answer_action: ''});
+    const [newAnswer, setNewAnswer] = useState<DialogAnswer>({answer_id: 0, answer_text: '', answer_action: ''});
     const [newLinePageId, setNewLinePageId] = useState<number | null>(null);
     const [locked, setLocked] = useState(false);
     const [expanded, setExpanded] = useState<Record<number, boolean>>({});
@@ -184,7 +184,6 @@ const ViewDialog = () => {
         const base = `${API}/api/dialogs/${id}`;
         const body = {
             answer_text: newAnswer?.answer_text,
-            answer_reply: newAnswer?.answer_reply,
             answer_action: newAnswer?.answer_action,
         }
         try {
@@ -203,7 +202,7 @@ const ViewDialog = () => {
             }
             await fetchData();
             setShowModal(false);
-            setNewAnswer({ answer_id: 0, answer_text: '', answer_reply: '', answer_action: '' });
+            setNewAnswer({ answer_id: 0, answer_text: '', answer_action: '' });
             await touchPageMeta('dialog', `${id}`, authUser?.uuid || '');
         } catch (err) {
             console.error(err);
@@ -278,7 +277,6 @@ const ViewDialog = () => {
         const answerId = newAnswer?.answer_id;
         const payload = {
             answer_text: newAnswer?.answer_text,
-            answer_reply: newAnswer?.answer_reply,
             answer_action: newAnswer?.answer_action,
         }
 
@@ -294,7 +292,7 @@ const ViewDialog = () => {
             if (!res.ok) throw new Error(`Failed to edit Answer (${res.status})`);
             await fetchData();
             setShowModal(false);
-            setNewAnswer({answer_id: 0, answer_text: '', answer_reply: '', answer_action: ''});
+            setNewAnswer({answer_id: 0, answer_text: '', answer_action: ''});
             await touchPageMeta('dialog', `${id}`, authUser?.uuid || '');
         } catch (err) {
             console.error(err);
@@ -372,7 +370,7 @@ const ViewDialog = () => {
         openModal('line', 'edit');
     }
     const openAnswerEditModal = (answer: DialogAnswer) => {
-        setNewAnswer({ answer_id: answer.answer_id, answer_text: answer.answer_text, answer_reply: answer.answer_reply, answer_action: answer.answer_action });
+        setNewAnswer({ answer_id: answer.answer_id, answer_text: answer.answer_text, answer_action: answer.answer_action });
         openModal('answer', 'edit');
     }
 
@@ -408,8 +406,7 @@ const ViewDialog = () => {
                         <input
                             disabled={locked}
                             type="text"
-                            maxLength={31}
-                            placeholder="Text to display (31 Characters max)"
+                            placeholder="Text to display (Suggested Characters: ~50, may vary)"
                             value={newLine.line_text}
                             onChange={(e) => setNewLine({...newLine, line_text: e.target.value})}
                             className="form-control"
@@ -424,20 +421,10 @@ const ViewDialog = () => {
                             disabled={locked}
                             type="text"
                             required
-                            maxLength={19}
-                            placeholder="Text to display (19 Characters max)"
+                            placeholder="Text to display (Suggested Characters: ~30, may vary)"
                             value={newAnswer.answer_text}
                             onChange={(e) => setNewAnswer({...newAnswer, answer_text: e.target.value})}
                             className="form-control" />
-                        <label>Answer Reply</label>
-                        <input
-                            disabled={locked}
-                            type="text"
-                            placeholder="Text sent in chat"
-                            value={newAnswer.answer_reply}
-                            onChange={(e) => setNewAnswer({...newAnswer, answer_reply: e.target.value})}
-                            className="form-control"
-                        />
                         <label>Answer Action</label>
                         <input
                             disabled={locked}
@@ -631,8 +618,7 @@ const ViewDialog = () => {
                                 <tr>
                                     <th>ID</th>
                                     <th>Text</th>
-                                    <th>Reply Text</th>
-                                    <th>Answer Actions</th>
+                                    <th>Answer Action</th>
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
@@ -644,7 +630,6 @@ const ViewDialog = () => {
                                         <tr style={{ border: 'none' }}>
                                             <td>{answer.answer_id}</td>
                                             <td>{answer.answer_text}</td>
-                                            <td>{answer.answer_reply}</td>
                                             <td>{answer.answer_action}</td>
                                             <td>{renderAnswerActionButtons(answer)}</td>
                                         </tr>
@@ -688,7 +673,7 @@ const ViewDialog = () => {
                     <button className="btn btn-secondary" onClick={() => {
                         setShowModal(false);
                         setNewPage({ page_id: 0, pre_action: '', post_action: '', lines: [] });
-                        setNewAnswer({answer_id: 0, answer_text: '', answer_reply: '', answer_action: ''});
+                        setNewAnswer({answer_id: 0, answer_text: '', answer_action: ''});
                     } }>Cancel</button>
                     <button className="btn btn-primary" onClick={handleModalSubmit} disabled={locked}>{modalMode === 'add' ? 'Create' : 'Save'}</button>
                 </div>
