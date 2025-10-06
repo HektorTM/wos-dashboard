@@ -4,12 +4,12 @@ import {GenericListPage} from "../../components/TabComponent.tsx";
 import {Loottable} from "../../types/Loottable.tsx";
 import CreateLoottablePopUp from "./CreateLoottablePopUp.tsx";
 
-export default function UnlockablesPage() {
+export default function LoottableTab() {
     const navigate = useNavigate();
 
     return (
         <GenericListPage<Loottable>
-            title="Constants"
+            title="Loot tables"
             endpoint={`${import.meta.env.VITE_API_URL}/api/loottables`}
             requestInit={{ credentials: 'include' }}
             getId={(d) => d.id}

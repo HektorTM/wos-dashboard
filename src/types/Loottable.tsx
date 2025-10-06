@@ -4,7 +4,7 @@ export type Loottable = {
 }
 
 export type Loottableitem = {
-    id: number;
+    item_id: number;
     weight: number;
     type: string;
     value: string;

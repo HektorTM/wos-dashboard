@@ -672,7 +672,7 @@ const ViewDialog = () => {
                 {error && <div className="error-message">{error}</div>}
                 {locked && (
                     <div className="alert alert-warning">
-                        This GUI is locked and cannot be edited.
+                        This Dialog is locked and cannot be edited.
                     </div>
                 )}
                 {renderTabContent()}

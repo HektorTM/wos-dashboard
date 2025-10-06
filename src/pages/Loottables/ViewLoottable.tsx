@@ -21,10 +21,10 @@ const ViewLoottable = () => {
     const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [newItem, setNewItem] = useState<Loottableitem>({id: 0, weight: 0, type: '', value: '', parameter: 0 });
+    const [newItem, setNewItem] = useState<Loottableitem>({item_id: 0, weight: 0, type: '', value: '', parameter: 0 });
     const [locked, setLocked] = useState(false);
     const resetNewItem = () => {
-        setNewItem({ id: 0, weight: 0, type: '', value: '', parameter: 0 });
+        setNewItem({ item_id: 0, weight: 0, type: '', value: '', parameter: 0 });
     }
 
 
@@ -80,10 +80,10 @@ const ViewLoottable = () => {
             weight: newItem.weight,
             type: newItem.type,
             value: newItem.value,
-            parameter: newItem.parameter,
+            parameter: newItem.parameter ?? null,
         }
         try {
-            const res = await fetch(`${base}`, {
+            const res = await fetch(`${base}/item`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -107,12 +107,12 @@ const ViewLoottable = () => {
     }
 
     const handleEdit = async () => {
-        const itemId = newItem?.id;
+        const itemId = newItem?.item_id;
         const payload = {
             weight: newItem.weight,
             type: newItem.type,
             value: newItem.value,
-            parameter: newItem.parameter,
+            parameter: newItem.parameter ?? null,
         }
 
 
@@ -139,7 +139,7 @@ const ViewLoottable = () => {
         if (!window.confirm('Are you sure you want to delete this Item?')) return;
 
         try {
-            const res = await fetch(`${base}/item/${item.id}`, {
+            const res = await fetch(`${base}/item/${item.item_id}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -262,7 +262,7 @@ const ViewLoottable = () => {
                                 <tbody>
                                 {loottableItems.map((item) => (
                                     // group each page as 1-2 rows
-                                    <React.Fragment key={`lt-${item.id}`}>
+                                    <React.Fragment key={`lt-${item.item_id}`}>
                                         <tr style={{ border: 'none' }}>
                                             <td>{item.type}</td>
                                             <td>{item.weight}</td>
@@ -280,7 +280,7 @@ const ViewLoottable = () => {
                         )}
                     </div>
                     ) : (
-                        <p>No Pages configured</p>
+                        <p>No Items configured</p>
                     )}
                 </div>
             </>
@@ -289,7 +289,7 @@ const ViewLoottable = () => {
 
     return (
         <div className={`page-container ${theme}`}>
-            <TitleComp title={`Dialog | ${id}`}/>
+            <TitleComp title={`Loot table | ${id}`}/>
             <div className="content-wrapper" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
                 <div className="meta-box-wrapper" style={{width: '350px'}}>
                     <PageMetaBox id={id!} type="loottable" />
@@ -298,7 +298,7 @@ const ViewLoottable = () => {
                     {error && <div className="error-message">{error}</div>}
                     {locked && (
                         <div className="alert alert-warning">
-                            This GUI is locked and cannot be edited.
+                            This Loot table is locked and cannot be edited.
                         </div>
                     )}
                     {renderTabContent()}
@@ -313,7 +313,7 @@ const ViewLoottable = () => {
                 <div className="modal-actions">
                     <button className="btn btn-secondary" onClick={() => {
                         setShowModal(false);
-                        setNewItem({ id: 0, weight: 0, type: '', value: '', parameter: 0 });
+                        setNewItem({ item_id: 0, weight: 0, type: '', value: '', parameter: 0 });
                     } }>Cancel</button>
                     <button
                         className="btn btn-primary"

@@ -49,6 +49,8 @@ import ConstantTab from './pages/Constants/ConstantTab';
 
 import Yellowstone from "./pages/yellowstone.tsx";
 import ViewConstant from "./pages/Constants/ViewConstant.tsx";
+import LoottableTab from "./pages/Loottables/LoottableTab.tsx";
+import ViewLoottable from "./pages/Loottables/ViewLoottable.tsx";
 
 const App = () => {
   return (
@@ -84,6 +86,7 @@ const App = () => {
                 <Route path="/timeevents" element={<ProtectedRoute requiredPermission='portal.timeevents.view'><TimeTab /></ProtectedRoute>} />
                 <Route path="/dialogs" element={<ProtectedRoute requiredPermission='portal.dialogs.view'><DialogTab /></ProtectedRoute>} />
                 <Route path="/constants" element={<ProtectedRoute requiredPermission='portal.constants.view'><ConstantTab /></ProtectedRoute> } />
+                <Route path="/loottables" element={<ProtectedRoute requiredPermission='portal.loottables.view'><LoottableTab /> </ProtectedRoute> } />
 
                 <Route path="/requests" element={<ProtectedRouteNoPerm><RequestTab></RequestTab></ProtectedRouteNoPerm>} />
                 <Route path="/bugs" element={<ProtectedRouteNoPerm><BugReportPage></BugReportPage></ProtectedRouteNoPerm>} />
@@ -107,6 +110,7 @@ const App = () => {
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='portal.stats.modify'><ViewStat /></ProtectedRoute>} />
                 <Route path="/view/dialog/:id" element={<ProtectedRoute requiredPermission='portal.dialogs.modify'><ViewDialog /></ProtectedRoute>} />
                 <Route path="/view/constant/:id" element={<ProtectedRoute requiredPermission='portal.constants.modify'><ViewConstant /></ProtectedRoute>} />
+                <Route path="/view/loottable/:id" element={<ProtectedRoute requiredPermission='portal.loottables.modify'><ViewLoottable /> </ProtectedRoute> } />
 
 
                 <Route path="/yellowstone" element={<Yellowstone></Yellowstone>} />

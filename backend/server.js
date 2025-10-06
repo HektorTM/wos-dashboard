@@ -34,6 +34,7 @@ const LuckpermsRoutes = require('./Routes/db_server/LuckpermsRoutes');
 const stacktraceRoutes = require('./Routes/db_server/StacktraceRoutes');
 const dialogRoutes = require('./Routes/db_server/DialogRoutes');
 const constantRoutes = require('./Routes/db_server/ConstantRoutes');
+const loottableRoutes = require('./Routes/db_server/LoottablesRoutes');
 
 require('./utils/initTables');
 
@@ -112,6 +113,7 @@ app.use('/api/timeevents', TimeEventRoutes);
 app.use('/api/permissions', LuckpermsRoutes);
 app.use('/api/dialogs', dialogRoutes);
 app.use('/api/constants', constantRoutes);
+app.use('/api/loottables', loottableRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 
