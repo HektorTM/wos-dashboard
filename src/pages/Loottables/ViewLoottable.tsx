@@ -70,9 +70,9 @@ const ViewLoottable = () => {
         setShowModal(true);
     }
 
-    const handleModalSubmit = () => {
-        if (modalMode === 'add') handleAdd();
-        if (modalMode === 'edit') handleEdit();
+    const handleModalSubmit = async () => {
+        if (modalMode === 'add') await handleAdd();
+        if (modalMode === 'edit') await handleEdit();
     }
 
     const handleAdd = async () => {
