@@ -4,25 +4,29 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../../components/Modal';
 import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
-import Spinner from '../../components/Spinner';
 import TitleComp from '../../components/TitleComponent';
-import {Dialog, DialogAnswer, DialogPage, PageLine} from '../../types/Dialog.tsx';
-import DialogMetaBox from "../../components/metaboxes/DialogMetaBox.tsx";
-import {Loottable, Loottableitem} from "../../types/Loottable.tsx";
+import {Loottableitem, LTTypeList} from "../../types/Loottable.tsx";
+import PageMetaBox from "../../components/metaboxes/PageMetaBox.tsx";
+import Spinner from "../../components/Spinner.tsx";
 
-const ViewDialog = () => {
+const ViewLoottable = () => {
     // state should be nullable
     const id = useParams().id;
+    const API = import.meta.env.VITE_API_URL;
+    const base = `${API}/api/loottables/${id}`;
     const { authUser } = useAuth();
     const { theme } = useTheme();
-    const [lootable, setLootable] = useState<Loottable | null>(null);
     const [loottableItems, setLoottableItems] = useState<Loottableitem[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [newItem, setNewItem] = useState<Loottableitem>({ weight: 0, type: '', value: '', parameter: 0 });
+    const [newItem, setNewItem] = useState<Loottableitem>({id: 0, weight: 0, type: '', value: '', parameter: 0 });
     const [locked, setLocked] = useState(false);
+    const resetNewItem = () => {
+        setNewItem({ id: 0, weight: 0, type: '', value: '', parameter: 0 });
+    }
+
 
     useEffect(() => {
         fetchData();
@@ -30,46 +34,17 @@ const ViewDialog = () => {
 
     const fetchData = async () => {
         if (!id) return;
-
-        const API = import.meta.env.VITE_API_URL;
-        const base = `${API}/api/dialogs/${id}`;
-
+        setLoading(true);
         await (async () => {
             try {
                 setLoading(true);
                 setError('');
-
-                const [dRes, pRes, aRes] = await Promise.all([
-                    fetch(base, {credentials: 'include'}),
-                    fetch(`${base}/pages`, {credentials: 'include'}),
-                    fetch(`${base}/answers`, {credentials: 'include'}),
-                ]);
-
-                if (!dRes.ok) throw new Error(`Dialog request failed (${dRes.status})`);
-                if (!pRes.ok) throw new Error(`Pages request failed (${pRes.status})`);
-                if (!aRes.ok) throw new Error(`Answers request failed (${aRes.status})`);
-
-                const d: Dialog = await dRes.json();
-                const rawPages: Array<Omit<DialogPage, 'lines'>> = await pRes.json();
-                const a: DialogAnswer[] = await aRes.json();
-
-                const pagesWithLines: DialogPage[] = await Promise.all(
-                    rawPages.map(async (p) => {
-                        const lRes = await fetch(`${base}/pages/${p.page_id}/lines`, {credentials: 'include'});
-                        if (!lRes.ok) throw new Error(`Lines request failed for page ${p.page_id} (${lRes.status})`);
-                        const lines: PageLine[] = await lRes.json();
-                        return {...p, lines};
-                    })
-                );
-
-
-                setLootable(d);
-                setLoottableItems(pagesWithLines);
-                setAnswers(a);
+                const items = await fetch(`${base}/items`);
+                const data: Loottableitem[] = await items.json();
+                setLoottableItems(data);
             } catch (e) {
                 console.error(e);
-                setError('Failed to fetch dialog details.');
-                setLootable(null);
+                setError('Failed to fetch loottable details.');
                 setLoottableItems([]);
             } finally {
                 setLoading(false);
@@ -81,7 +56,7 @@ const ViewDialog = () => {
         if (!id) return;
         (async () => {
             try {
-                const result = await fetchLocked('dialog', `${id}`);
+                const result = await fetchLocked('loottable', `${id}`);
                 setLocked(result === 1);
             } catch (e) {
                 console.error(e);
@@ -96,18 +71,19 @@ const ViewDialog = () => {
     }
 
     const handleModalSubmit = () => {
-        if (modalMode === 'add') await handleAdd();
-        if (modalMode === 'edit') await handleEdit();
+        if (modalMode === 'add') handleAdd();
+        if (modalMode === 'edit') handleEdit();
     }
 
     const handleAdd = async () => {
-        const API = import.meta.env.VITE_API_URL;
-        const base = `${API}/api/dialogs/${id}`;
         const body = {
-            line_text: newLine?.line_text,
+            weight: newItem.weight,
+            type: newItem.type,
+            value: newItem.value,
+            parameter: newItem.parameter,
         }
         try {
-            const res = await fetch(`${base}/pages/${newLinePageId}/line`, {
+            const res = await fetch(`${base}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -122,59 +98,57 @@ const ViewDialog = () => {
             }
             await fetchData();
             setShowModal(false);
-            setNewItem({ page_id: 0, pre_action: '', post_action: '', lines: [] });
-            await touchPageMeta('dialog', `${id}`, authUser?.uuid || '');
+            resetNewItem();
+            await touchPageMeta('loottable', `${id}`, authUser?.uuid || '');
         } catch (err) {
             console.error(err);
-            setError(`Failed to submit ${modalType} changes.`);
+            setError(`Failed to submit Loottable changes.`);
         }
     }
 
     const handleEdit = async () => {
-        const API = import.meta.env.VITE_API_URL;
-        const base = `${API}/api/dialogs/${id}`;
-        const pageId = newLinePageId;
-        const lineId = newLine?.line_id;
+        const itemId = newItem?.id;
         const payload = {
-            line_text: newLine?.line_text,
+            weight: newItem.weight,
+            type: newItem.type,
+            value: newItem.value,
+            parameter: newItem.parameter,
         }
 
 
         try {
-            const res = await fetch(`${base}/page/${pageId}/lines/${lineId}`, {
+            const res = await fetch(`${base}/item/${itemId}`, {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
 
-            if (!res.ok) throw new Error(`Failed to edit line (${res.status})`);
+            if (!res.ok) throw new Error(`Failed to edit loottable item (${res.status})`);
             await fetchData();
             setShowModal(false);
-            setNewLine({ line_id: 0, line_text: '' });
-            await touchPageMeta('dialog', `${id}`, authUser?.uuid || '');
+            resetNewItem();
+            await touchPageMeta('loottable', `${id}`, authUser?.uuid || '');
         } catch (err) {
             console.error(err);
-            setError(`Failed to save line changes.`);
+            setError(`Failed to save item changes.`);
         }
     }
 
     const handleDelete = async (item: Loottableitem ) => {
-        if (!window.confirm('Are you sure you want to delete this page?')) return;
+        if (!window.confirm('Are you sure you want to delete this Item?')) return;
 
-        const API = import.meta.env.VITE_API_URL;
-        const base = `${API}/api/dialogs/${id}`;
         try {
-            const res = await fetch(`${base}/page/${pageId}?uuid=${authUser?.uuid}`, {
+            const res = await fetch(`${base}/item/${item.id}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
-            if (!res.ok) throw new Error(`Failed to delete page (${res.status})`);
-            setLoottableItems(prev => prev.filter(p => p.page_id !== pageId));
-            await touchPageMeta('dialog', `${id}`, authUser?.uuid || '');
+            if (!res.ok) throw new Error(`Failed to delete loottable item (${res.status})`);
+            await fetchData();
+            await touchPageMeta('loottable', `${id}`, authUser?.uuid || '');
         } catch (err) {
             console.error(err);
-            setError('Failed to delete page.');
+            setError('Failed to delete loottable item.');
         }
     }
 
@@ -215,7 +189,7 @@ const ViewDialog = () => {
                             disabled={locked}
                             placeholder="Value"
                             type="text"
-                            value={newItem.post_action}
+                            value={newItem.value}
                             onChange={(e) => setNewItem({...newItem, value: e.target.value})}
                             className="form-control"
                         />
@@ -228,8 +202,8 @@ const ViewDialog = () => {
                             disabled={locked}
                             placeholder="Citem amount to give"
                             type="text"
-                            value={newItem.post_action}
-                            onChange={(e) => setNewItem({...newItem, post_action: e.target.value})}
+                            value={newItem.parameter}
+                            onChange={(e) => setNewItem({...newItem, parameter: parseInt(e.target.value)})}
                             className="form-control"
                         />
                     </>
@@ -273,6 +247,7 @@ const ViewDialog = () => {
                     {renderTabHeader()}
                     {loottableItems.length > 0 ? (
                         <div className="page-table-container">
+                            {!loading ? (
                             <table className="page-table" style={{zIndex: '50', overflow: 'auto'}}>
                                 <thead>
                                 <tr>
@@ -287,7 +262,7 @@ const ViewDialog = () => {
                                 <tbody>
                                 {loottableItems.map((item) => (
                                     // group each page as 1-2 rows
-                                    <React.Fragment key={`lt-${item.page_id}`}>
+                                    <React.Fragment key={`lt-${item.id}`}>
                                         <tr style={{ border: 'none' }}>
                                             <td>{item.type}</td>
                                             <td>{item.weight}</td>
@@ -299,7 +274,11 @@ const ViewDialog = () => {
                                 ))}
                                 </tbody>
                             </table>
-                        </div>
+
+                        ) : (
+                            <div style={{ flex: 1 }}>{loading ? <Spinner type='Dialog' /> : null}</div>
+                        )}
+                    </div>
                     ) : (
                         <p>No Pages configured</p>
                     )}
@@ -313,7 +292,7 @@ const ViewDialog = () => {
             <TitleComp title={`Dialog | ${id}`}/>
             <div className="content-wrapper" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
                 <div className="meta-box-wrapper" style={{width: '350px'}}>
-                    {lootable ? <DialogMetaBox id={id!} dialog={lootable} /> : <div style={{ flex: 1 }}>{loading ? <Spinner type='Dialog' /> : null}</div>}
+                    <PageMetaBox id={id!} type="loottable" />
                 </div>
                 <div className="tabs-content-wrapper" style={{flex: 1}}>
                     {error && <div className="error-message">{error}</div>}
@@ -328,14 +307,13 @@ const ViewDialog = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={`${modalMode ? modalMode : 'add'} ${modalType == undefined ? modalType : ''}`}
+                title={`${modalMode ? modalMode : 'add'} Loottable Item`}
             >
                 {renderModalForm()}
                 <div className="modal-actions">
                     <button className="btn btn-secondary" onClick={() => {
                         setShowModal(false);
-                        setNewItem({ page_id: 0, pre_action: '', post_action: '', lines: [] });
-                        setNewAnswer({answer_id: 0, answer_text: '', answer_reply: '', answer_action: ''});
+                        setNewItem({ id: 0, weight: 0, type: '', value: '', parameter: 0 });
                     } }>Cancel</button>
                     <button
                         className="btn btn-primary"
@@ -352,4 +330,4 @@ const ViewDialog = () => {
     );
 }
 
-export default ViewDialog;
+export default ViewLoottable;
