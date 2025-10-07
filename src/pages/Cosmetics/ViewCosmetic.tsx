@@ -60,6 +60,7 @@ const ViewCurrency = () => {
             type: cosmetic.type,
             display: cosmetic.display,
             description: cosmetic.description,
+            permission: cosmetic.permission,
             uuid: authUser?.uuid,
         };
 
@@ -144,6 +145,17 @@ const ViewCurrency = () => {
                                         value={cosmetic.description}
                                         onChange={(e) =>
                                             setCosmetic({ ...cosmetic, description: e.target.value })
+                                        }
+                                    />
+                                </div>
+                                <div className="form-group page-input">
+                                    <label>Permission</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={cosmetic.permission}
+                                        onChange={(e) =>
+                                            setCosmetic({ ...cosmetic, permission: e.target.value })
                                         }
                                     />
                                 </div>

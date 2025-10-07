@@ -2,13 +2,9 @@ import {Suspense} from 'react';
 import CreateCosmeticPopup from './CreateCosmeticPopUp';
 import {useNavigate} from "react-router-dom";
 import {GenericListPage} from "../../components/TabComponent.tsx";
+import {Cosmetic} from "../../types/Cosmetic.tsx";
 
-type Cosmetic = {
-  type: string;
-  id: string;
-  display: string;
-  description: string;
-};
+
 
 export default function CosmeticsPage() {
   const navigate = useNavigate();
