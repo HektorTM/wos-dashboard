@@ -288,7 +288,7 @@ router.post('/:id/answer', async (req, res) => {
     const nextAnswerId = (maxIdResult[0].maxId || 0) + 1;
 
     try {
-        await db.query('INSERT INTO dialog_answers (dialog_id, answer_id, answer_text,  answer_action) VALUES (?,?,?,?,?) ', [id, nextAnswerId, answer_text, answer_action ?? null]);
+        await db.query('INSERT INTO dialog_answers (dialog_id, answer_id, answer_text,  answer_action) VALUES (?,?,?,?) ', [id, nextAnswerId, answer_text, answer_action ?? null]);
         res.status(200).json({message: 'Added Answer'});
     }  catch (err) {
         console.error(err.message);
