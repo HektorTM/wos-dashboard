@@ -42,7 +42,7 @@ router.get('/:id', async (req, res) => {
 
 // 3. Create a new cosmetic
 router.post('/', async (req, res) => {
-    const { type, id, display, description } = req.body;
+    const { type, id, display, description, permission } = req.body;
     const { uuid } = req.body;
     
     if (!type || !id || !display || !description) {
@@ -58,9 +58,9 @@ router.post('/', async (req, res) => {
 
         // Insert new cosmetic
         await db.query(`
-            INSERT INTO cosmetics (type, id, display, description)
-            VALUES (?, ?, ?, ?)
-        `, [type, id, display, description]);
+            INSERT INTO cosmetics (type, id, display, description, permission)
+            VALUES (?, ?, ?, ?, ?)
+        `, [type, id, display, description, permission ?? null]);
         
         await logActivity({
             type: type,
@@ -78,7 +78,7 @@ router.post('/', async (req, res) => {
 // 4. Update an existing cosmetic by ID
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { type, display, description } = req.body;
+    const { type, display, description, permission } = req.body;
     const { uuid } = req.body;
 
     if (!display || !description) {
@@ -95,9 +95,9 @@ router.put('/:id', async (req, res) => {
         // Update the cosmetic
         const [result] = await db.query(`
             UPDATE cosmetics
-            SET type = ?, display = ?, description = ?
+            SET type = ?, display = ?, description = ?, permission = ?
             WHERE id = ?
-        `, [type, display, description, id]);
+        `, [type, display, description, permission ?? null, id]);
 
         if (result.affectedRows === 0) {
             return res.status(400).json({ error: 'No changes were made to the cosmetic.' });

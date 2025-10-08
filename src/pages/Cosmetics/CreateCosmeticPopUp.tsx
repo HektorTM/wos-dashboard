@@ -4,18 +4,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
 import { useNavigate } from 'react-router-dom';
+import {CreateCosmeticPopupProps} from "../../types/Cosmetic.tsx";
 
-type Cosmetic = {
-  type: string;
-  id: string;
-  display: string
-  description: string
-}
 
-type CreateCosmeticPopupProps = {
-  onClose: () => void;
-  onCreate: (newCosmetic: Cosmetic) => void;
-};
+
 
 const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) => {
   const navigate = useNavigate();
@@ -25,6 +17,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
   const [id, setId] = useState('');
   const [display, setDisplay] = useState('');
   const [description, setDescription] = useState('');
+  const [permission, setPermission] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [created, setCreated] = useState('');
@@ -37,6 +30,7 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
       id: parseID(id),
       display,
       description,
+      permission,
       uuid: authUser?.uuid,
   };
 
@@ -56,7 +50,8 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
           type,
           id,
           display,
-          description
+          description,
+          permission,
         });
         setCreated(id);
       } else {
@@ -141,6 +136,17 @@ const CreateCosmeticPopup = ({ onClose, onCreate }: CreateCosmeticPopupProps) =>
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
+              disabled={loading}
+            />
+          </div>
+          )}
+          {!created && (
+          <div className="form-group">
+            <label>Permission</label>
+            <input
+              type="text"
+              value={permission}
+              onChange={(e) => setPermission(e.target.value)}
               disabled={loading}
             />
           </div>
