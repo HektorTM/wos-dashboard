@@ -41,12 +41,8 @@ const BugReportPage = () => {
   const issuesPerPage = 10;
 
   const REPOSITORIES: Repository[] = [
-    { name: "Web | Admin Portal", value: "HektorTM/wos-dashboard" },
-    { name: "Plugin | Systems", value: "WorldOfSorcery/Systems" },
-    { name: "Plugin | Core", value: "WorldOfSorcery/Core" },
-    { name: "Plugin | Essentials", value: "WorldOfSorcery/Essentials"},
-    { name: "Plugin | Friends", value: "WorldOfSorcery/Friends"},
-    { name: "Plugin | PvP", value: "WorldOfSorcery/PvP"}
+    { name: "Website", value: "HektorTM/wos-dashboard" },
+    { name: "Minecraft Server", value: "WorldOfSorcery/Systems" }
   ];
 
   useEffect(() => {
@@ -59,6 +55,7 @@ const BugReportPage = () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/bugs/issues?repo=${selectedRepoFilter}&page=${currentPage}&per_page=${issuesPerPage}`,
         {
+          method: 'GET',
           credentials: 'include',
         }
       );
@@ -118,12 +115,13 @@ const BugReportPage = () => {
         </div>
       );
       closeModal();
-      fetchOpenIssues();
+      await fetchOpenIssues();
     } catch (error) {
       console.error('Error submitting bug report:', error);
       toast.error('Failed to submit bug report. Please try again.');
     } finally {
-      setIsSubmitting(false);
+        setIsModalOpen(false);
+        closeModal();
     }
   };
 

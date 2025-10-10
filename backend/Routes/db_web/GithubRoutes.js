@@ -31,7 +31,7 @@ router.post('/issues', async (req, res) => {
   try {
     const [owner, repoName] = repo.split('/');
 
-    const { data } = await octokit.issues.create({
+    const { data: issue } = await octokit.issues.create({
       owner,
       repo: repoName,
       title: title.length > 100 ? `${title.substring(0, 97)}...` : title,
@@ -39,12 +39,36 @@ router.post('/issues', async (req, res) => {
       labels: ['bug']
     });
 
+    const { data: repoInfo } = await octokit.repos.get({owner, repo: repoName});
+    const baseBranch = repoInfo.default_branch;
+
+    const { data: baseRef } = await octokit.git.getRef({
+        owner,
+        repo: repoName,
+        ref: `heads/${baseBranch}`,
+    });
+    const baseSha = baseRef.object.sha;
+
+    const newBranchName = `bug-${issue.number}`;
+    try {
+        await octokit.git.createRef({
+            owner,
+            repo: repoName,
+            ref: `refs/heads/${newBranchName}`,
+            sha: baseSha,
+        })
+    } catch (e) {
+        if (e.status !== 422) throw e;
+    }
+
     res.json({
       id: data.id,
       number: data.number,
       html_url: data.html_url,
       title: data.title,
-      state: data.state
+      state: data.state,
+      branch: newBranchName,
+        branch_url: `https://github.com/${owner}/${repoName}/tree/${newBranchName}`,
     });
   } catch (error) {
     console.error('GitHub API Error:', error);
