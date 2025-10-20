@@ -10,6 +10,8 @@ const CreateConstantPopup = ({ onClose, onCreate }: CreateLoottablePopUpProps) =
     const { authUser } = useAuth();
     const { theme } = useTheme();
     const [id, setId] = useState('');
+    const [amount, setAmount] = useState(0);
+    const [name, setName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -35,7 +37,9 @@ const CreateConstantPopup = ({ onClose, onCreate }: CreateLoottablePopUpProps) =
             if (res.ok) {
                 await createPageMeta('loottable', `${parseID(id)}`, `${authUser?.uuid}`);
                 onCreate({
-                    id: id
+                    id: id,
+                    amount: amount,
+                    name: name || "",
                 });
                 setCreated(id);
             } else {
@@ -82,6 +86,32 @@ const CreateConstantPopup = ({ onClose, onCreate }: CreateLoottablePopUpProps) =
                             />
                         </div>
                     )}
+
+                    {!created && (
+                        <div className="form-group">
+                            <label>Amount</label>
+                            <input
+                                type="number"
+                                value={amount}
+                                onChange={(e) => setAmount(parseInt(e.target.value))}
+                                required
+                                disabled={loading}
+                            />
+                        </div>
+                    )}
+
+                    {!created && (
+                        <div className="form-group">
+                            <label>Name</label>
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                disabled={loading}
+                            />
+                        </div>
+                    )}
+
                     <div className="modal-actions">
                         <button
                             type="button"

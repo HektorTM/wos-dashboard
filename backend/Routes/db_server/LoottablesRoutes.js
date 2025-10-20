@@ -29,9 +29,41 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+router.get('/:id/settings', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [items] = await db.query('SELECT * FROM loottables WHERE id = ?', [id]);
+        if (!items || !items.length) {
+            return res.status(404).json({error: 'Not found'});
+        }
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+        console.log(err.message);
+    }
+});
+
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { amount, name } = req.body;
+
+    if (!amount) {
+        return res.status(400).json({message: 'Amount is required.'});
+    }
+
+    try {
+        await db.query('UPDATE loottables SET amount = ?, name = ? WHERE id = ?', [amount, name || null, id]);
+        res.status(200).json({message: 'Loottable successfully updated'});
+    } catch (error) {
+        console.error(error);
+    }
+
+})
+
 router.post('/', async (req, res) => {
     const { uuid } = req.query;
-    const { id } = req.body;
+    const { id, amount, name } = req.body;
 
     if (!id) {
         return res.status(400).json({ error: 'ID is required.' });
@@ -43,7 +75,7 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'Loottable with this ID already exists' });
         }
 
-        await db.query('INSERT INTO loottables (id) VALUES (?)', [id]);
+        await db.query('INSERT INTO loottables (id, amount, name) VALUES (?, ?, ?)', [id, amount || 0, name || ""]);
 
         await logActivity({
             type: 'loottable',

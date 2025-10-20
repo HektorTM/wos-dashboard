@@ -52,6 +52,9 @@ import ViewConstant from "./pages/Constants/ViewConstant.tsx";
 import LoottableTab from "./pages/Loottables/LoottableTab.tsx";
 import ViewLoottable from "./pages/Loottables/ViewLoottable.tsx";
 
+import GlobalStatsPage from "./pages/Globalstats/GlobalStatsTab.tsx";
+import ViewGlobalStat from "./pages/Globalstats/ViewGlobalStat.tsx";
+
 const App = () => {
   return (
     <ThemeProvider>
@@ -75,6 +78,7 @@ const App = () => {
                 <Route path="/cosmetics" element={<ProtectedRoute requiredPermission='portal.cosmetics.view'><CosmeticTab /></ProtectedRoute>} />
                 <Route path="/channels" element={<ProtectedRoute requiredPermission='portal.channels.view'><ChannelTab /></ProtectedRoute>} />
                 <Route path="/stats" element={<ProtectedRoute requiredPermission='portal.stats.view'><StatsTab /></ProtectedRoute>} />
+                <Route path="/globalstats" element={<ProtectedRoute requiredPermission='portal.globalstats.view'><GlobalStatsPage /></ProtectedRoute>} />
                 <Route path="/recipes" element={<ProtectedRoute requiredPermission='portal.recipes.view'><RecipeTab /></ProtectedRoute>} />
                 <Route path="/interactions" element={<ProtectedRoute requiredPermission='portal.interactions.view'><InteractionTab /></ProtectedRoute>} />
                 <Route path="/players" element={<ProtectedRoute requiredPermission=''><PlayerTab></PlayerTab></ProtectedRoute>} />
@@ -108,6 +112,7 @@ const App = () => {
                 <Route path="/view/timeevent/:id" element={<ProtectedRoute requiredPermission='portal.timeevents.modify'><ViewTime /></ProtectedRoute>} />
                 <Route path="/admin" element={<AdminPermissionsPage></AdminPermissionsPage>} />
                 <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='portal.stats.modify'><ViewStat /></ProtectedRoute>} />
+                <Route path="/view/globalstat/:id" element={<ProtectedRoute requiredPermission='portal.globalstats.modify'><ViewGlobalStat /></ProtectedRoute>} />
                 <Route path="/view/dialog/:id" element={<ProtectedRoute requiredPermission='portal.dialogs.modify'><ViewDialog /></ProtectedRoute>} />
                 <Route path="/view/constant/:id" element={<ProtectedRoute requiredPermission='portal.constants.modify'><ViewConstant /></ProtectedRoute>} />
                 <Route path="/view/loottable/:id" element={<ProtectedRoute requiredPermission='portal.loottables.modify'><ViewLoottable /> </ProtectedRoute> } />

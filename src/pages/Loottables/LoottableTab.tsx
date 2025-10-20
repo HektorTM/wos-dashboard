@@ -15,6 +15,8 @@ export default function LoottableTab() {
             getId={(d) => d.id}
             columns={[
                 { key: 'id', header: 'Identifier', cell: (d) => d.id },
+                { key: 'amount', header: 'Amount', cell: (d) => d.amount },
+                { key: 'name', header: 'Name', cell: (d) => d.name}
             ]}
             searchAccessors={[(d) => d.id]}
             searchPlaceholder="Search loottables..."

@@ -4,17 +4,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
 import {useNavigate} from "react-router-dom";
+import {CreateStatPopupProps} from "../../types/Stat.tsx";
 
-type Stat = {
-  id: string;
-  max: string;
-  capped: number;
-};
 
-type CreateStatPopupProps = {
-  onClose: () => void;
-  onCreate: (newStat: Stat) => void;
-};
 
 const CreateStatPopup = ({ onClose, onCreate }: CreateStatPopupProps) => {
   const { authUser } = useAuth();

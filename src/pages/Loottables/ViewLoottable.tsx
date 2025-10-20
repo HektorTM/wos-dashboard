@@ -5,9 +5,9 @@ import { useTheme } from '../../context/ThemeContext';
 import Modal from '../../components/Modal';
 import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import TitleComp from '../../components/TitleComponent';
-import {Loottableitem, LTTypeList} from "../../types/Loottable.tsx";
-import PageMetaBox from "../../components/metaboxes/PageMetaBox.tsx";
+import {Loottable, Loottableitem, LTTypeList} from "../../types/Loottable.tsx";
 import Spinner from "../../components/Spinner.tsx";
+import LoottableMetaBox from "../../components/metaboxes/LoottableMetaBox.tsx";
 
 const ViewLoottable = () => {
     // state should be nullable
@@ -16,6 +16,7 @@ const ViewLoottable = () => {
     const base = `${API}/api/loottables/${id}`;
     const { authUser } = useAuth();
     const { theme } = useTheme();
+    const [loottable, setLoottable] = useState<Loottable>();
     const [loottableItems, setLoottableItems] = useState<Loottableitem[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
@@ -29,9 +30,33 @@ const ViewLoottable = () => {
 
 
     useEffect(() => {
+        fetchLoottable()
         fetchData();
+
     }, [id]);
 
+    const fetchLoottable = async () => {
+        if (!id) return;
+        setLoading(true);
+
+        try {
+            setError('');
+            const lt = await fetch(`${base}/settings`, {method: 'GET', credentials: 'include'});
+            const raw = await lt.json();
+            const data: Loottable = Array.isArray(raw) ? raw[0] : raw;
+            setLoottable({
+                id,
+                amount: data?.amount ?? 0,
+                name: data?.name ?? "",
+                });
+        } catch (e) {
+            console.error(e);
+            setError("Failed to fetch loottable");
+        } finally {
+            setLoading(false);
+        }
+
+    }
     const fetchData = async () => {
         if (!id) return;
         setLoading(true);
@@ -292,7 +317,11 @@ const ViewLoottable = () => {
             <TitleComp title={`Loot table | ${id}`}/>
             <div className="content-wrapper" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
                 <div className="meta-box-wrapper" style={{width: '350px'}}>
-                    <PageMetaBox id={id!} type="loottable" />
+                    {loottable ? (
+                        <LoottableMetaBox id={id!} loottable={loottable}/>
+                    ) : (
+                        <div className="info-box">Loading...</div>
+                    )}
                 </div>
                 <div className="tabs-content-wrapper" style={{flex: 1}}>
                     {error && <div className="error-message">{error}</div>}

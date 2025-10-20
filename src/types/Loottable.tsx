@@ -1,5 +1,7 @@
 export type Loottable = {
     id: string;
+    amount: number;
+    name?: string;
     items?: Loottableitem[];
 }
 
