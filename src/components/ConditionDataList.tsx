@@ -10,6 +10,9 @@
             <option value="has_stats_greater_than"></option>
             <option value="has_stats_less_than"></option>
             <option value="has_stats_equal_to"></option>
+            <option value="global_stats_greater_than"></option>
+            <option value="global_stats_less_than"></option>
+            <option value="global_stats_equal_to"></option>
             <option value="is_in_region"></option>
             <option value="is_not_in_region"></option>
             <option value="has_active_cooldown"></option>
