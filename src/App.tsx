@@ -18,6 +18,7 @@ import CitemTab from './pages/Citems/CitemTab';
 import SearchResults from './pages/Search';
 import Login from './pages/Login';
 import { ThemeProvider } from './context/ThemeContext';
+import { FlashProvider } from './context/FlashContext.tsx';
 import { ProtectedRoute, ProtectedRouteNoPerm } from './components/ProtectedRoute';
 import ViewCosmetic from './pages/Cosmetics/ViewCosmetic';
 import StatsTab from './pages/Stats/StatsTab';
@@ -59,69 +60,71 @@ const App = () => {
   return (
     <ThemeProvider>
       <Router>
-        <AuthProvider>
-          <Routes>
-            {/* Auth Layout */}
-            <Route element={<AuthLayout />}>
-              <Route path="/login" element={<Login />} />
-            </Route>
-          
-            {/* Main Layout */}
-            <Route element={<MainLayout /> }>
-                <Route path="/" element={<Navigate to="/dashboard" />} />
-                <Route path="/dashboard" element={ <Dashboard />} />
-                <Route path="/search" element={<SearchResults />} />
-                <Route path="/citems" element={<ProtectedRoute requiredPermission='portal.citems.view'><CitemTab /></ProtectedRoute>} />
-                <Route path="/users" element={<ProtectedRoute requiredPermission='ADMIN'><UserList /></ProtectedRoute>} />
-                <Route path="/currencies" element={<ProtectedRoute requiredPermission='portal.currencies.view'><CurrencyTab /></ProtectedRoute>} />
-                <Route path="/unlockables" element={<ProtectedRoute requiredPermission='portal.unlockables.view'><UnlockableTab /></ProtectedRoute>} />
-                <Route path="/cosmetics" element={<ProtectedRoute requiredPermission='portal.cosmetics.view'><CosmeticTab /></ProtectedRoute>} />
-                <Route path="/channels" element={<ProtectedRoute requiredPermission='portal.channels.view'><ChannelTab /></ProtectedRoute>} />
-                <Route path="/stats" element={<ProtectedRoute requiredPermission='portal.stats.view'><StatsTab /></ProtectedRoute>} />
-                <Route path="/globalstats" element={<ProtectedRoute requiredPermission='portal.globalstats.view'><GlobalStatsPage /></ProtectedRoute>} />
-                <Route path="/recipes" element={<ProtectedRoute requiredPermission='portal.recipes.view'><RecipeTab /></ProtectedRoute>} />
-                <Route path="/interactions" element={<ProtectedRoute requiredPermission='portal.interactions.view'><InteractionTab /></ProtectedRoute>} />
-                <Route path="/players" element={<ProtectedRoute requiredPermission=''><PlayerTab></PlayerTab></ProtectedRoute>} />
-                <Route path="/fishing" element={<ProtectedRoute requiredPermission='portal.fishing.view'><FishingTab></FishingTab></ProtectedRoute>} />
-                <Route path="/cooldowns" element={<ProtectedRoute requiredPermission='portal.cooldowns.view'><CooldownTab></CooldownTab></ProtectedRoute>} />
-                <Route path="/guis" element={<ProtectedRoute requiredPermission='portal.guis.view'><GuiTab></GuiTab></ProtectedRoute>} />
-                <Route path="/warps" element={<ProtectedRouteNoPerm><WarpsTab></WarpsTab></ProtectedRouteNoPerm>} />
-                <Route path="/projects" element={<ProtectedRouteNoPerm><ProjectsTab /></ProtectedRouteNoPerm>} />
-                <Route path="/timeevents" element={<ProtectedRoute requiredPermission='portal.timeevents.view'><TimeTab /></ProtectedRoute>} />
-                <Route path="/dialogs" element={<ProtectedRoute requiredPermission='portal.dialogs.view'><DialogTab /></ProtectedRoute>} />
-                <Route path="/constants" element={<ProtectedRoute requiredPermission='portal.constants.view'><ConstantTab /></ProtectedRoute> } />
-                <Route path="/loottables" element={<ProtectedRoute requiredPermission='portal.loottables.view'><LoottableTab /> </ProtectedRoute> } />
+        <FlashProvider>
+            <AuthProvider>
+              <Routes>
+                {/* Auth Layout */}
+                <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<Login />} />
+                </Route>
 
-                <Route path="/requests" element={<ProtectedRouteNoPerm><RequestTab></RequestTab></ProtectedRouteNoPerm>} />
-                <Route path="/bugs" element={<ProtectedRouteNoPerm><BugReportPage></BugReportPage></ProtectedRouteNoPerm>} />
-                <Route path="/account" element={<ProtectedRouteNoPerm><AccountPage></AccountPage></ProtectedRouteNoPerm>} />
+                {/* Main Layout */}
+                <Route element={<MainLayout /> }>
+                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                    <Route path="/dashboard" element={ <Dashboard />} />
+                    <Route path="/search" element={<SearchResults />} />
+                    <Route path="/citems" element={<ProtectedRoute requiredPermission='portal.citems.view'><CitemTab /></ProtectedRoute>} />
+                    <Route path="/users" element={<ProtectedRoute requiredPermission='ADMIN'><UserList /></ProtectedRoute>} />
+                    <Route path="/currencies" element={<ProtectedRoute requiredPermission='portal.currencies.view'><CurrencyTab /></ProtectedRoute>} />
+                    <Route path="/unlockables" element={<ProtectedRoute requiredPermission='portal.unlockables.view'><UnlockableTab /></ProtectedRoute>} />
+                    <Route path="/cosmetics" element={<ProtectedRoute requiredPermission='portal.cosmetics.view'><CosmeticTab /></ProtectedRoute>} />
+                    <Route path="/channels" element={<ProtectedRoute requiredPermission='portal.channels.view'><ChannelTab /></ProtectedRoute>} />
+                    <Route path="/stats" element={<ProtectedRoute requiredPermission='portal.stats.view'><StatsTab /></ProtectedRoute>} />
+                    <Route path="/globalstats" element={<ProtectedRoute requiredPermission='portal.globalstats.view'><GlobalStatsPage /></ProtectedRoute>} />
+                    <Route path="/recipes" element={<ProtectedRoute requiredPermission='portal.recipes.view'><RecipeTab /></ProtectedRoute>} />
+                    <Route path="/interactions" element={<ProtectedRoute requiredPermission='portal.interactions.view'><InteractionTab /></ProtectedRoute>} />
+                    <Route path="/players" element={<ProtectedRoute requiredPermission=''><PlayerTab></PlayerTab></ProtectedRoute>} />
+                    <Route path="/fishing" element={<ProtectedRoute requiredPermission='portal.fishing.view'><FishingTab></FishingTab></ProtectedRoute>} />
+                    <Route path="/cooldowns" element={<ProtectedRoute requiredPermission='portal.cooldowns.view'><CooldownTab></CooldownTab></ProtectedRoute>} />
+                    <Route path="/guis" element={<ProtectedRoute requiredPermission='portal.guis.view'><GuiTab></GuiTab></ProtectedRoute>} />
+                    <Route path="/warps" element={<ProtectedRouteNoPerm><WarpsTab></WarpsTab></ProtectedRouteNoPerm>} />
+                    <Route path="/projects" element={<ProtectedRouteNoPerm><ProjectsTab /></ProtectedRouteNoPerm>} />
+                    <Route path="/timeevents" element={<ProtectedRoute requiredPermission='portal.timeevents.view'><TimeTab /></ProtectedRoute>} />
+                    <Route path="/dialogs" element={<ProtectedRoute requiredPermission='portal.dialogs.view'><DialogTab /></ProtectedRoute>} />
+                    <Route path="/constants" element={<ProtectedRoute requiredPermission='portal.constants.view'><ConstantTab /></ProtectedRoute> } />
+                    <Route path="/loottables" element={<ProtectedRoute requiredPermission='portal.loottables.view'><LoottableTab /> </ProtectedRoute> } />
 
-                <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
+                    <Route path="/requests" element={<ProtectedRouteNoPerm><RequestTab></RequestTab></ProtectedRouteNoPerm>} />
+                    <Route path="/bugs" element={<ProtectedRouteNoPerm><BugReportPage></BugReportPage></ProtectedRouteNoPerm>} />
+                    <Route path="/account" element={<ProtectedRouteNoPerm><AccountPage></AccountPage></ProtectedRouteNoPerm>} />
 
-                <Route path="/view/user/:id" element={<ProtectedRoute requiredPermission='ADMIN'><EditUser /></ProtectedRoute>} />
-                <Route path="/view/currency/:id" element={<ProtectedRoute requiredPermission='portal.currencies.modify'><EditCurrency /></ProtectedRoute>} />
-                <Route path="/view/cosmetic/:id" element={<ProtectedRoute requiredPermission='portal.cosmetics.modify'><ViewCosmetic/></ProtectedRoute>} />
-                <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='portal.unlockables.modify'><ViewUnlockable /></ProtectedRoute>} />
-                <Route path="/view/interaction/:id" element={<ProtectedRoute requiredPermission='portal.interactions.modify'><ViewInteraction /></ProtectedRoute>} />
-                <Route path="/view/player/:uuid" element={<ProtectedRoute requiredPermission=''><ViewPlayer></ViewPlayer></ProtectedRoute>} />
-                <Route path="/view/fish/:id" element={<ProtectedRoute requiredPermission='portal.fishing.modify'><ViewFish></ViewFish></ProtectedRoute>} />
-                <Route path="/view/cooldown/:id" element={<ProtectedRoute requiredPermission='portal.cooldowns.modify'><ViewCooldown></ViewCooldown></ProtectedRoute>} />
-                <Route path="/view/gui/:id" element={<ProtectedRoute requiredPermission='portal.currencies.modify'><ViewGui></ViewGui></ProtectedRoute>} />
-                <Route path="/view/gui/:id/:slotNumber" element={<ProtectedRoute requiredPermission='portal.guis.modify'><ViewSlot></ViewSlot></ProtectedRoute>} />
-                <Route path="/view/project/:id" element={<ProtectedRouteNoPerm><ViewProject /></ProtectedRouteNoPerm>} />
-                <Route path="/view/timeevent/:id" element={<ProtectedRoute requiredPermission='portal.timeevents.modify'><ViewTime /></ProtectedRoute>} />
-                <Route path="/admin" element={<AdminPermissionsPage></AdminPermissionsPage>} />
-                <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='portal.stats.modify'><ViewStat /></ProtectedRoute>} />
-                <Route path="/view/globalstat/:id" element={<ProtectedRoute requiredPermission='portal.globalstats.modify'><ViewGlobalStat /></ProtectedRoute>} />
-                <Route path="/view/dialog/:id" element={<ProtectedRoute requiredPermission='portal.dialogs.modify'><ViewDialog /></ProtectedRoute>} />
-                <Route path="/view/constant/:id" element={<ProtectedRoute requiredPermission='portal.constants.modify'><ViewConstant /></ProtectedRoute>} />
-                <Route path="/view/loottable/:id" element={<ProtectedRoute requiredPermission='portal.loottables.modify'><ViewLoottable /> </ProtectedRoute> } />
+                    <Route path="/create/user" element={<ProtectedRoute requiredPermission='ADMIN'><CreateUser /></ProtectedRoute>} />
+
+                    <Route path="/view/user/:id" element={<ProtectedRoute requiredPermission='ADMIN'><EditUser /></ProtectedRoute>} />
+                    <Route path="/view/currency/:id" element={<ProtectedRoute requiredPermission='portal.currencies.modify'><EditCurrency /></ProtectedRoute>} />
+                    <Route path="/view/cosmetic/:id" element={<ProtectedRoute requiredPermission='portal.cosmetics.modify'><ViewCosmetic/></ProtectedRoute>} />
+                    <Route path="/view/unlockable/:id" element={<ProtectedRoute requiredPermission='portal.unlockables.modify'><ViewUnlockable /></ProtectedRoute>} />
+                    <Route path="/view/interaction/:id" element={<ProtectedRoute requiredPermission='portal.interactions.modify'><ViewInteraction /></ProtectedRoute>} />
+                    <Route path="/view/player/:uuid" element={<ProtectedRoute requiredPermission=''><ViewPlayer></ViewPlayer></ProtectedRoute>} />
+                    <Route path="/view/fish/:id" element={<ProtectedRoute requiredPermission='portal.fishing.modify'><ViewFish></ViewFish></ProtectedRoute>} />
+                    <Route path="/view/cooldown/:id" element={<ProtectedRoute requiredPermission='portal.cooldowns.modify'><ViewCooldown></ViewCooldown></ProtectedRoute>} />
+                    <Route path="/view/gui/:id" element={<ProtectedRoute requiredPermission='portal.currencies.modify'><ViewGui></ViewGui></ProtectedRoute>} />
+                    <Route path="/view/gui/:id/:slotNumber" element={<ProtectedRoute requiredPermission='portal.guis.modify'><ViewSlot></ViewSlot></ProtectedRoute>} />
+                    <Route path="/view/project/:id" element={<ProtectedRouteNoPerm><ViewProject /></ProtectedRouteNoPerm>} />
+                    <Route path="/view/timeevent/:id" element={<ProtectedRoute requiredPermission='portal.timeevents.modify'><ViewTime /></ProtectedRoute>} />
+                    <Route path="/admin" element={<AdminPermissionsPage></AdminPermissionsPage>} />
+                    <Route path="/view/stat/:id" element={<ProtectedRoute requiredPermission='portal.stats.modify'><ViewStat /></ProtectedRoute>} />
+                    <Route path="/view/globalstat/:id" element={<ProtectedRoute requiredPermission='portal.globalstats.modify'><ViewGlobalStat /></ProtectedRoute>} />
+                    <Route path="/view/dialog/:id" element={<ProtectedRoute requiredPermission='portal.dialogs.modify'><ViewDialog /></ProtectedRoute>} />
+                    <Route path="/view/constant/:id" element={<ProtectedRoute requiredPermission='portal.constants.modify'><ViewConstant /></ProtectedRoute>} />
+                    <Route path="/view/loottable/:id" element={<ProtectedRoute requiredPermission='portal.loottables.modify'><ViewLoottable /> </ProtectedRoute> } />
 
 
-                <Route path="/yellowstone" element={<Yellowstone></Yellowstone>} />
-            </Route>
-          </Routes>
-        </AuthProvider>
+                    <Route path="/yellowstone" element={<Yellowstone></Yellowstone>} />
+                </Route>
+              </Routes>
+            </AuthProvider>
+        </FlashProvider>
       </Router>
     </ThemeProvider>
   );

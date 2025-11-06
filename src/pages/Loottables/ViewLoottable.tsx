@@ -8,12 +8,14 @@ import TitleComp from '../../components/TitleComponent';
 import {Loottable, Loottableitem, LTTypeList} from "../../types/Loottable.tsx";
 import Spinner from "../../components/Spinner.tsx";
 import LoottableMetaBox from "../../components/metaboxes/LoottableMetaBox.tsx";
+import {useFlash} from "../../context/FlashContext.tsx";
 
 const ViewLoottable = () => {
     // state should be nullable
     const id = useParams().id;
     const API = import.meta.env.VITE_API_URL;
     const base = `${API}/api/loottables/${id}`;
+    const { addFlash } = useFlash();
     const { authUser } = useAuth();
     const { theme } = useTheme();
     const [loottable, setLoottable] = useState<Loottable>();
@@ -51,7 +53,7 @@ const ViewLoottable = () => {
                 });
         } catch (e) {
             console.error(e);
-            setError("Failed to fetch loottable");
+            addFlash("Failed to fetch loottable", "error");
         } finally {
             setLoading(false);
         }
@@ -69,7 +71,7 @@ const ViewLoottable = () => {
                 setLoottableItems(data);
             } catch (e) {
                 console.error(e);
-                setError('Failed to fetch loottable details.');
+                addFlash("Failed to fetch loottable details", "error");
                 setLoottableItems([]);
             } finally {
                 setLoading(false);
@@ -119,15 +121,17 @@ const ViewLoottable = () => {
 
             if (!res.ok) {
                 const text = await res.text();
+                addFlash("Failed to add Line", "error");
                 throw new Error(`Failed to add line (${res.status}) - ${text}`);
             }
             await fetchData();
+            addFlash("Line added successfully", "success");
             setShowModal(false);
             resetNewItem();
             await touchPageMeta('loottable', `${id}`, authUser?.uuid || '');
         } catch (err) {
             console.error(err);
-            setError(`Failed to submit Loottable changes.`);
+            addFlash("Failed to submit loottable changes", "error");
         }
     }
 
@@ -149,14 +153,18 @@ const ViewLoottable = () => {
                 body: JSON.stringify(payload),
             });
 
-            if (!res.ok) throw new Error(`Failed to edit loottable item (${res.status})`);
+            if (!res.ok) {
+                addFlash("Failed to edit Loottable item", "error");
+                throw new Error(`Failed to edit loottable item (${res.status})`);
+            }
             await fetchData();
             setShowModal(false);
+            addFlash("Item edited successfully", "success");
             resetNewItem();
             await touchPageMeta('loottable', `${id}`, authUser?.uuid || '');
         } catch (err) {
             console.error(err);
-            setError(`Failed to save item changes.`);
+            addFlash("Failed to save item changes.", "error");
         }
     }
 
@@ -168,12 +176,16 @@ const ViewLoottable = () => {
                 method: 'DELETE',
                 credentials: 'include',
             });
-            if (!res.ok) throw new Error(`Failed to delete loottable item (${res.status})`);
+            if (!res.ok) {
+                addFlash("Failed to delete Loottable item", "error");
+                throw new Error(`Failed to delete loottable item (${res.status})`);
+            }
+            addFlash("Line successfully deleted", "success");
             await fetchData();
             await touchPageMeta('loottable', `${id}`, authUser?.uuid || '');
         } catch (err) {
             console.error(err);
-            setError('Failed to delete loottable item.');
+            addFlash("Failed to delete Loottable item", "error");
         }
     }
 
@@ -226,7 +238,7 @@ const ViewLoottable = () => {
                         <input
                             disabled={locked}
                             placeholder="Citem amount to give"
-                            type="text"
+                            type="number"
                             value={newItem.parameter}
                             onChange={(e) => setNewItem({...newItem, parameter: parseInt(e.target.value)})}
                             className="form-control"

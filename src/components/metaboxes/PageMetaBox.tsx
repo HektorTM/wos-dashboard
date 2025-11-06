@@ -5,6 +5,7 @@ import { getStaffUserByUUID, parseTime, toUpperCase } from '../../utils/parser.t
 import { useNavigate } from 'react-router-dom';
 import { usePermission } from '../../utils/usePermission.ts';
 import Modal from '../Modal.tsx';
+import {useFlash} from "../../context/FlashContext.tsx";
 
 interface PageMetaBoxProps {
   type: string;
@@ -23,7 +24,7 @@ interface PageData {
 const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
   const [data, setData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { addFlash } = useFlash();
   const navigate = useNavigate();
   const [toggling, setToggling] = useState(false);
   const [creatorName, setCreatorName] = useState<string | null>(null);
@@ -50,7 +51,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
 
   const handleDelete = async () => {
     if (deletePerm == undefined || !hasPermission(deletePerm)) {
-      alert('You do not have permission to delete this item.');
+      addFlash("Insufficient Permissions.", "error");
       return;
     }
 
@@ -80,7 +81,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
       } else {
         const errorData = await res.json();
         console.error('Delete failed:', errorData);
-        alert(`Failed to delete ${toUpperCase(type)}: ${errorData.error}`);
+        addFlash("Database Error", "error");
         return;
       }
 
@@ -92,14 +93,14 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
         if (!res2.ok) {
             const errorData = await res2.json();
             console.error('Delete failed:', errorData);
-            alert(`Failed to delete ${toUpperCase(type)}: ${errorData.error}`);
+            addFlash("Database Error", "error");
             return;
         }
-      alert(`${toUpperCase(type)} deleted successfully!`);
+      addFlash(`Deleted ${toUpperCase(type)}`, "success");
       await backToList()
     } catch (err) {
       console.error('Delete error:', err);
-      alert('Failed to delete item');
+      addFlash("Connection Error", "error");
     }
   }
 
@@ -124,7 +125,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
         })
       });
 
-      if (!res.ok) throw new Error('Failed to submit request');
+      if (!res.ok) addFlash("Database Error", "error");
 
       await res.json();
       alert('Unlock request submitted successfully!');
@@ -155,7 +156,9 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
         method: 'GET',
         credentials: 'include',
       });
-      if (!res.ok) throw new Error('Failed to load metadata');
+      if (!res.ok) {
+          addFlash("Database Error", "error");
+      }
       const result = await res.json();
       setData(result);
 
@@ -170,7 +173,7 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
       }
     } catch (err) {
       console.error(err);
-      setError('Error loading metadata');
+        addFlash("Connection Error", "error");
     } finally {
       setLoading(false);
     }
@@ -195,12 +198,12 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
   const handleLock = async () => {
     if (data?.locked) {
       if (hasPermission('portal.unlock')) {
-        toggleLock();
+        await toggleLock();
       } else {
         openRequestModal('UNLOCK');
       }
     } else {
-      toggleLock();
+      await toggleLock();
     }
   };
 
@@ -221,9 +224,11 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
 
       await fetchMeta(); // Refresh metadata after lock change
       window.location.reload();
+      const lockedString = data.locked ? `Locked ${type} '${id}'` : `Unlocked ${type} '${id}'`;
+      addFlash(lockedString, "info");
     } catch (err) {
       console.error(err);
-      alert('Could not toggle lock status');
+      addFlash("Connection Error", "error");
     } finally {
       setToggling(false);
     }
@@ -235,7 +240,6 @@ const PageMetaBox: React.FC<PageMetaBoxProps> = ({ type, id, deletePerm }) => {
       <div className="info-box">
         <h4>{toUpperCase(type?.toString())}</h4>
         {loading && <p>Loading...</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
         {data && (
           <>
             <ul style={{ listStyle: 'none', padding: 0 }}>

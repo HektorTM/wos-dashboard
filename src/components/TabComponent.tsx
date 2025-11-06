@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import { useTheme } from '../context/ThemeContext';
+import {useTheme} from '../context/ThemeContext';
 import TitleComp from './TitleComponent';
-import { usePermission } from '../utils/usePermission.ts';
+import {usePermission} from '../utils/usePermission.ts';
 import {parseMinecraftColorCodes} from "../utils/parser.tsx";
 
 
@@ -61,8 +61,8 @@ export function GenericListPage<T>(props: ListPageProps<T>) {
         className,
     } = props;
 
-    const { theme } = useTheme();
-    const { hasPermission } = usePermission();
+    const {theme} = useTheme();
+    const {hasPermission} = usePermission();
 
     const [items, setItems] = useState<T[]>([]);
     const [search, setSearch] = useState('');
@@ -114,7 +114,7 @@ export function GenericListPage<T>(props: ListPageProps<T>) {
 
     return (
         <div className={`page-container ${theme} ${className ?? ''}`.trim()}>
-            <TitleComp title={`${title} | Staff Portal`} />
+            <TitleComp title={`${title} | Staff Portal`}/>
 
             <div className="page-header">
                 <h2>{title}</h2>
@@ -142,16 +142,16 @@ export function GenericListPage<T>(props: ListPageProps<T>) {
 
             {loading ? (
                 <div className="loading-spinner">
-                    <div className="spinner" />
+                    <div className="spinner"/>
                     <p>Loading…</p>
                 </div>
             ) : (
                 <div className="page-table-container">
                     <table className="page-table">
                         <thead>
-                        <tr style={{ height: 32 }}>
+                        <tr style={{height: 32}}>
                             {columns.map((c) => (
-                                <th key={c.key} style={{ padding: '4px 8px', ...(c.thStyle || {}) }}>
+                                <th key={c.key} style={{padding: '4px 8px', ...(c.thStyle || {})}}>
                                     {c.header}
                                 </th>
                             ))}
@@ -164,11 +164,11 @@ export function GenericListPage<T>(props: ListPageProps<T>) {
                             return (
                                 <tr
                                     key={id}
-                                    style={{ height: 32, cursor: clickable ? 'pointer' : 'default' }}
+                                    style={{height: 32, cursor: clickable ? 'pointer' : 'default'}}
                                     onClick={() => clickable && onRowClick?.(item)}
                                 >
                                     {columns.map((c) => (
-                                        <td key={c.key+id} style={{ padding: '4px 8px', ...(c.tdStyle || {}) }}>
+                                        <td key={c.key + id} style={{padding: '4px 8px', ...(c.tdStyle || {})}}>
                                             {c.boolean ? (c.cell(item) ? '✅' : '❌') : parseMinecraftColorCodes(`${c.cell(item)}`)}
                                         </td>
                                     ))}
@@ -191,7 +191,7 @@ export function GenericListPage<T>(props: ListPageProps<T>) {
             )}
 
             {showCreate && CreatePopup && (
-                <CreatePopup onClose={() => setShowCreate(false)} onCreate={handleCreated} />
+                <CreatePopup onClose={() => setShowCreate(false)} onCreate={handleCreated}/>
             )}
         </div>
     );

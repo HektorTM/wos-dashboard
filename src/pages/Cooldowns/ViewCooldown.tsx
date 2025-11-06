@@ -7,15 +7,16 @@ import { fetchLocked, touchPageMeta } from '../../helpers/PageMeta';
 import { fetchPageItem } from '../../helpers/FetchPageItem';
 import Spinner from '../../components/Spinner';
 import TitleComp from '../../components/TitleComponent';
+import {useFlash} from "../../context/FlashContext.tsx";
 
 const ViewCooldown = () => {
     const { authUser } = useAuth();
     const { id } = useParams();
+    const { addFlash } = useFlash();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [cooldown, setCooldown] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const { theme } = useTheme();
-    const [error, setError] = useState('');
     const [locked, setLocked] = useState(false);
 
     useEffect(() => {
@@ -26,7 +27,7 @@ const ViewCooldown = () => {
 
             } catch (err) {
                 console.error(err);
-                setError('Failed to fetch cooldown');
+                addFlash("Connection Error", "error");
             } finally {
                 setLoading(false);
             }
@@ -49,6 +50,7 @@ const ViewCooldown = () => {
 
         } catch (err) {
             console.error(err);
+            addFlash("Connection Error", "error");
         }
     }
     fetchLockedValue();
@@ -73,15 +75,15 @@ const ViewCooldown = () => {
             });
 
             if (res.ok) {
-                touchPageMeta('cooldown', `${id}`, `${authUser?.uuid}`);
-                alert('Cooldown updated!');
+                await touchPageMeta('cooldown', `${id}`, `${authUser?.uuid}`);
+                addFlash(`Cooldown '${id}' updated`, "success");
             } else {
-                const errorData = await res.json();
-                alert(errorData.error || 'Error updating Cooldown');
+                addFlash("Database Error", "error");
             }
         } catch (err) {
             console.error(err);
-            setError('Failed to update Cooldown');
+            addFlash("Connection Error", "error");
+
         }
     };
 
@@ -94,7 +96,6 @@ const ViewCooldown = () => {
             >
                 <PageMetaBox type="cooldown" id={id!} deletePerm='portal.cooldowns.delete' />
                 <div style={{ flex: 3 }}>
-                    {error && <div className="error-message">{error}</div>}
                     {locked && (
                         <div className="alert alert-warning page-input">
                             This Cooldown is locked and cannot be edited.

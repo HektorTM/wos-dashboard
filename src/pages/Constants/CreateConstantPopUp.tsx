@@ -5,14 +5,15 @@ import { createPageMeta } from '../../helpers/PageMeta';
 import { parseID } from '../../utils/parser';
 import {useNavigate} from "react-router-dom";
 import {CreateConstantPopupProps} from '../../types/Constant.tsx';
+import {useFlash} from "../../context/FlashContext.tsx";
 
 const CreateConstantPopup = ({ onClose, onCreate }: CreateConstantPopupProps) => {
     const { authUser } = useAuth();
     const { theme } = useTheme();
+    const { addFlash } = useFlash();
     const [id, setId] = useState('');
     const [value, setValue] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const navigate = useNavigate();
     const [created, setCreated] = useState('');
 
@@ -32,8 +33,6 @@ const CreateConstantPopup = ({ onClose, onCreate }: CreateConstantPopupProps) =>
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
-
-            const result = await res.json();
             if (res.ok) {
                 await createPageMeta('constant', `${parseID(id)}`, `${authUser?.uuid}`);
                 onCreate({
@@ -41,12 +40,13 @@ const CreateConstantPopup = ({ onClose, onCreate }: CreateConstantPopupProps) =>
                     value: value
                 });
                 setCreated(id);
+                addFlash(`Created Constant '${id}'`, "success");
             } else {
-                setError(`Error: ${result.error}`);
+                addFlash("Database Error", "error");
             }
         } catch (err) {
             console.error(err);
-            setError('Connection to server failed.');
+            addFlash("Connection Error", "error");
         } finally {
             setLoading(false);
         }
@@ -69,9 +69,6 @@ const CreateConstantPopup = ({ onClose, onCreate }: CreateConstantPopupProps) =>
                         ×
                     </button>
                 </div>
-
-                {error && <div className="error-message">{error}</div>}
-
                 <form onSubmit={handleSubmit}>
                     {!created && (
                         <div className="form-group">

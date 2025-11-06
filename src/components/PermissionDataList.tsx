@@ -9,7 +9,7 @@ const PermissionList = () => {
         const run = async () => {
 
             try {
-                const pRes = await fetch(`${base}/api/permissions`, { credentials: 'include' });
+                const pRes = await fetch(`${base}/api/permissions`, {credentials: 'include'});
                 if (!pRes.ok) throw new Error('Failed to load players list');
                 const pData = await pRes.json();
                 const perms = pData.map((p: { permission: string }) => p.permission);
@@ -19,13 +19,12 @@ const PermissionList = () => {
             }
         };
         run();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 
     return (
         <datalist id="permission_nodes">
-            { permissions.map((perm, index) => (
+            {permissions.map((perm, index) => (
                 <option key={index} value={perm}>{perm}</option>
             ))}
         </datalist>

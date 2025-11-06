@@ -27,3 +27,13 @@ export interface DialogAnswer {
     answer_text: string;
     answer_action: string;
 }
+
+export type CreateDialogPopupProps = {
+    onClose: () => void;
+    onCreate: (newDialog: Dialog) => void;
+};
+
+export type DialogList = {
+    dialog_id: string;
+    char_name: string;
+};

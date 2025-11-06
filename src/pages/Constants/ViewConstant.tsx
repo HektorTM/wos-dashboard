@@ -8,14 +8,15 @@ import { fetchPageItem } from '../../helpers/FetchPageItem';
 import Spinner from '../../components/Spinner';
 import TitleComp from '../../components/TitleComponent';
 import {Constant} from "../../types/Constant.tsx";
+import {useFlash} from "../../context/FlashContext.tsx";
 
 const ViewConstant = () => {
     const { authUser } = useAuth();
     const { id } = useParams();
+    const { addFlash } = useFlash();
     const [constant, setConstant] = useState<Constant>();
     const [loading, setLoading] = useState(true);
     const { theme } = useTheme();
-    const [error, setError] = useState('');
     const [locked, setLocked] = useState(false);
     const APIBASE = `${import.meta.env.VITE_API_URL}/api/constants`
 
@@ -33,7 +34,7 @@ const ViewConstant = () => {
             });
         } catch (err) {
             console.error(err);
-            setError('Failed to fetch constant details.');
+            addFlash("Failed to fetch constant details.", "error");
         } finally {
             setLoading(false);
         }
@@ -68,15 +69,14 @@ const ViewConstant = () => {
 
             if (res.ok) {
                 await touchPageMeta('constant', `${id}`, `${authUser?.uuid}`);
-                alert('Constant updated!');
-
+                addFlash(`Constant '${id}' updated`, "success");
             } else {
-                const errorData = await res.json();
-                alert(errorData.error || 'Error updating Constant');
+                addFlash("Database Error", "error");
             }
         } catch (err) {
             console.error(err);
-            setError('Failed to update Constant');
+            addFlash("Connection Error", "error");
+
         }
     };
 
@@ -90,7 +90,6 @@ const ViewConstant = () => {
             >
                 <PageMetaBox type="constant" id={id!} deletePerm='portal.constants.delete' />
                 <div style={{ flex: 3 }}>
-                    {error && <div className="error-message">{error}</div>}
                     {locked && (
                         <div className="alert alert-warning page-input">
                             This Constant is locked and cannot be edited.
