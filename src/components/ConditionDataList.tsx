@@ -17,6 +17,8 @@
             <option value="is_not_in_region"></option>
             <option value="has_active_cooldown"></option>
             <option value="has_not_active_cooldown"></option>
+            <option value="has_active_local_cooldown"></option>
+            <option value="has_not_active_local_cooldown"></option>
             <option value="has_badge"></option>
             <option value="has_not_badge"></option>
             <option value="has_prefix"></option>
