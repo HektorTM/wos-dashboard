@@ -36,7 +36,7 @@ async function updateUsername(uuid) {
 
 // --- Register ---
 router.post('/register', async (req, res) => {
-  const { uuid, password, permissions, editorUUID } = req.body;
+  const { uuid, password, editorUUID } = req.body;
 
   if (!uuid || !password) {
     return res.status(400).json({ error: 'UUID and password are required' });
@@ -77,11 +77,17 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { resolvedUUID, password } = req.body;
 
+  console.log(password);
+  console.log(resolvedUUID);
+
   if (!resolvedUUID || !password) {
     return res.status(400).json({ error: 'UUID and password are required' });
   }
 
   const user = await getUserByUUID(resolvedUUID);
+
+  console.log(user);
+
   if (!user) return res.status(404).json({ error: 'Admin not found' });
 
   if (!user.is_active) {
@@ -118,11 +124,15 @@ router.post('/login', async (req, res) => {
 // --- Logout ---
 router.post('/logout', (req, res) => {
   req.session.destroy(() => {
-    res.clearCookie('connect.sid');
+    res.clearCookie('connect.sid', {
+      path: '/',
+      sameSite: process.env.COOKIE_SAMESITE,
+      secure: process.env.COOKIE_SECURE === 'true'
+    });
     res.json({ message: 'Logged out' });
   });
 });
-
+router.use(requireAuth);
 // --- Update user ---
 router.put('/:uuid', async (req, res) => {
   const { uuid } = req.params;
@@ -158,27 +168,8 @@ router.put('/:uuid', async (req, res) => {
   }
 });
 
-router.use(requireAuth);
 
-// --- Permissions ---
-router.get('/permissions/:uuid', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT permissions FROM users WHERE uuid = ?', [req.params.uuid]);
-    if (rows.length === 0) return res.status(404).json({ error: 'Admin not found' });
 
-    let permissions;
-    try {
-      permissions = JSON.parse(rows[0].permissions);
-    } catch (err) {
-      return res.status(500).json({ error: 'Failed to parse permissions' });
-    }
-
-    res.json({ permissions });
-  } catch (err) {
-    console.error('Error in GET /permissions/:uuid', err);
-    res.status(500).json({ error: 'Database error' });
-  }
-});
 
 // --- Reactivate user ---
 router.post('/:uuid/reactivate', async (req, res) => {
@@ -206,30 +197,18 @@ router.post('/:uuid/reactivate', async (req, res) => {
 });
 
 // --- Get logged-in user ---
-router.get('/me', async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Not authenticated' });
-  }
-
-  try {
-    const user = await getUserByUUID(req.session.user.uuid);
-    if (!user) {
-      return res.status(404).json({error: 'Admin not found'});
+// --- Auth check (used by Next.js middleware) ---
+router.get('/me', requireAuth, (req, res) => {
+  res.status(200).json({
+    user: {
+      uuid: req.user.uuid,
+      username: req.user.username,
+      permissions: req.user.permissions,
+      is_active: req.user.is_active
     }
-
-    res.json({ user: {
-      uuid: user.uuid,
-      username: user.username,
-      permissions: JSON.parse(user.permissions || '[]')
-    } });
-
-  } catch (err) {
-    console.error('Error in GET /me:', err);
-    res.status(500).json({error: 'Database error'});
-  }
-
-
+  });
 });
+
 
 // --- Get all users ---
 router.get('/', async (req, res) => {

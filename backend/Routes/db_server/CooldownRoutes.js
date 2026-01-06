@@ -33,7 +33,10 @@ router.get('/:id', async (req, res) => {
 
 // 3. Create a new cooldown
 router.post('/', async (req, res) => {
-  const { id, duration, start_interaction, end_interaction, uuid } = req.body;
+  const { id, duration, start_interaction, end_interaction } = req.body;
+  const { uuid } = req.query;
+
+  console.log(uuid);
 
   if (!id || !duration) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -56,7 +59,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({ message: 'Cooldown created successfully' });
 
-    logActivity({
+    await logActivity({
       type: 'Cooldown',
       target_id: id,
       user: uuid,

@@ -2,7 +2,7 @@
 const mysql = require('mysql2/promise');
 
 // Create the  pool
-const webMetaDB = mysql.createPool({
+const db = mysql.createPool({
   host: process.env.DB2_HOST,
   user: process.env.DB2_USER,
   password: process.env.DB2_PASSWORD,
@@ -12,4 +12,4 @@ const webMetaDB = mysql.createPool({
   queueLimit: 0
 });
 
-module.exports = webMetaDB;
+module.exports = db;

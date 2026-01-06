@@ -60,7 +60,7 @@ app.use(express.json());
 app.set('trust proxy', 1);
 
 app.use(cors({
-  origin: ['https://admin.worldofsorcery.com', 'https://dev.worldofsorcery.com', 'https://worldofsorcery.com', 'http://localhost:5173'],
+  origin: ['https://admin.worldofsorcery.com', 'https://dev.worldofsorcery.com', 'https://worldofsorcery.com', 'http://localhost:3000'],
   credentials: true,
 }));
 
@@ -84,6 +84,7 @@ app.use('/api/users', UserRoutes);
 app.use('/api/mc-user', MinecraftRoutes);
 app.use('/api/stacktrace', stacktraceRoutes);
 
+
 if (process.env.IP !== 'localhost') {
   app.use('/api', requireAuth);
 }
@@ -102,7 +103,7 @@ app.use('/api/stats', StatsRoutes);
 app.use('/api/interactions', InteractionRoutes);
 app.use('/api/conditions', ConditionRoutes);
 app.use('/api/playerdata', PlayerDataRoutes);
-app.use('/api/fishies', FishingRoutes);
+app.use('/api/fishing', FishingRoutes);
 app.use('/api/requests', RequestRoutes);
 app.use('/api/bugs', GithubRoutes);
 app.use('/api/cooldowns', CooldownRoutes);
