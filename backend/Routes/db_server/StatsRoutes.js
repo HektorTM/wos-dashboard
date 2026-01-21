@@ -33,7 +33,8 @@ router.get('/:id', async (req, res) => {
 
 // 3. Create a new unlockable
 router.post('/', async (req, res) => {
-  const { id, max, capped, uuid } = req.body;
+  const { id, max, capped } = req.body;
+  const { uuid } = req.query;
 
   if (!id) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -48,7 +49,7 @@ router.post('/', async (req, res) => {
 
     await db.query('INSERT INTO stats (id, max, capped) VALUES (?, ?, ?)', [id, max, capped ? 1 : 0]);
 
-    res.status(201).json({ message: 'Stat created successfully' });
+    const [rows] = await db.query('SELECT * FROM stats WHERE id = ?', [id]);
 
     logActivity({
       type: 'Stat',
@@ -56,6 +57,8 @@ router.post('/', async (req, res) => {
       user: uuid,
       action: 'Created',
     });
+
+    res.status(201).json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

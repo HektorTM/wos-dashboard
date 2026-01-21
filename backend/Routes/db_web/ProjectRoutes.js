@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../webmeta');
 const logActivity = require("../../utils/LogActivity");
+const {generateUUID} = require("../util/uuid");
 
 router.get('/', async (req, res) => {
     try {
@@ -99,7 +100,10 @@ router.delete('/:id/user', async (req, res) => {
 
 
 router.post('/', async (req, res) => {
-    const {id, uuid, name, publicState} = req.body;
+    const {name, publicState} = req.body;
+    const { uuid } = req.query;
+
+    const id = generateUUID(10);
 
     try {
         await db.query(`
@@ -107,15 +111,17 @@ router.post('/', async (req, res) => {
           VALUES (?, ?, ?, ?)
         `, [id, uuid, publicState | 0, name]);
 
+        const [rows] = await db.query(`SELECT 1 from projects WHERE id = ?`, [id]);
 
 
-        logActivity({
+        await logActivity({
             type: 'Project',
             target_id: name,
             user: uuid,
             action: 'Created',
         });
-        res.status(201).json({ message: 'Project created' });
+
+        res.status(201).json(rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
       }

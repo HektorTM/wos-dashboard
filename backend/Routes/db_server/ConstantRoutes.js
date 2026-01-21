@@ -50,6 +50,11 @@ router.post('/', async (req, res) => {
 
 
         await db.query('INSERT INTO constants (id, value) VALUES (?,?)', [id, value]);
+        const [rows] = await db.query(
+            'SELECT * FROM constants WHERE id = ?',
+            [id]
+        );
+
         await logActivity({
             type: 'constant',
             target_id: id,
@@ -57,7 +62,7 @@ router.post('/', async (req, res) => {
             action: 'Created',
         });
 
-        res.status(200).json({message: 'Successfully created Constant'});
+        res.status(201).json(rows[0]);
     } catch (e) {
         res.status(500).json({error: e});
         console.log(e);

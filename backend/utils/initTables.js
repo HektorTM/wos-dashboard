@@ -87,8 +87,32 @@ const db = require('../webmeta');
       id VARCHAR(255) NOT NULL,
       uuid VARCHAR(255) NOT NULL
     )
-    
     `)
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS folders (
+        id integer AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        parent_id INT NULL,
+        permission VARCHAR(255) NULL,
+        CONSTRAINT fk_folder_parent FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE
+    )
+  `)
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS files (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        folder_id INT NOT NULL,
+        content LONGTEXT NULL,
+        permission VARCHAR(255) NULL,
+        created_by CHAR(36) NOT NULL,
+        edited_by CHAR(36) NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        edited_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_file_folder FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE
+    )
+  `)
 
   console.log("Tables initialized.");
 })();

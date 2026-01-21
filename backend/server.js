@@ -36,6 +36,7 @@ const dialogRoutes = require('./Routes/db_server/DialogRoutes');
 const constantRoutes = require('./Routes/db_server/ConstantRoutes');
 const loottableRoutes = require('./Routes/db_server/LoottablesRoutes');
 const globalStatsRoutes = require('./Routes/db_server/GlobalStatsRoutes');
+const docsRoutes = require('./Routes/db_web/DocRoutes');
 
 require('./utils/initTables');
 
@@ -60,7 +61,7 @@ app.use(express.json());
 app.set('trust proxy', 1);
 
 app.use(cors({
-  origin: ['https://admin.worldofsorcery.com', 'https://dev.worldofsorcery.com', 'https://worldofsorcery.com', 'http://localhost:3000'],
+  origin: ['https://admin.worldofsorcery.com', 'https://dev.worldofsorcery.com', 'https://worldofsorcery.com', 'http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
 }));
 
@@ -116,25 +117,12 @@ app.use('/api/permissions', LuckpermsRoutes);
 app.use('/api/dialogs', dialogRoutes);
 app.use('/api/constants', constantRoutes);
 app.use('/api/loottables', loottableRoutes);
-app.use('/api/globalstats', globalStatsRoutes)
+app.use('/api/globalstats', globalStatsRoutes);
+app.use('/api/docs', docsRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 
 
 app.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`);
-});
-
-cron.schedule('0 3 * * *', () => {
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
-  db.prepare(`
-    UPDATE users
-    SET is_active = 0
-    WHERE last_login IS NOT NULL
-      AND datetime(last_login) < datetime(?)
-  `).run(oneMonthAgo.toISOString());
-
-  console.log('[CRON] Deactivated users inactive for over a month');
 });

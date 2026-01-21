@@ -22,7 +22,7 @@
             <option value="has_badge"></option>
             <option value="has_not_badge"></option>
             <option value="has_prefix"></option>
-            <option value="has_not_prefix"></option>
+            <option value="has_not_prefix"></option>np
             <option value="has_title"></option>
             <option value="has_not_title"></option>
             <option value="has_currency"></option>
