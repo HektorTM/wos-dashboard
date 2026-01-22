@@ -180,7 +180,7 @@ router.get('/tree', async (req, res) => {
     `)
 
         const [files] = await db.query(`
-      SELECT id, name, permission, folder_id FROM files
+      SELECT id, name, permission, folder_id, created_by FROM files
     `)
 
         // Build lookup
@@ -205,6 +205,7 @@ router.get('/tree', async (req, res) => {
                 id: `${file.name}-${file.id}`,
                 name: file.name,
                 permission: file.permission,
+                created_by: file.created_by,
             })
         })
 
