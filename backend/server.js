@@ -37,6 +37,7 @@ const constantRoutes = require('./Routes/db_server/ConstantRoutes');
 const loottableRoutes = require('./Routes/db_server/LoottablesRoutes');
 const globalStatsRoutes = require('./Routes/db_server/GlobalStatsRoutes');
 const docsRoutes = require('./Routes/db_web/DocRoutes');
+const bookmarkRoutes = require('./Routes/db_web/BookmarkRoutes');
 
 require('./utils/initTables');
 
@@ -119,6 +120,7 @@ app.use('/api/constants', constantRoutes);
 app.use('/api/loottables', loottableRoutes);
 app.use('/api/globalstats', globalStatsRoutes);
 app.use('/api/docs', docsRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 

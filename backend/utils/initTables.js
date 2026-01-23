@@ -106,11 +106,23 @@ const db = require('../webmeta');
         folder_id INT NOT NULL,
         content LONGTEXT NULL,
         permission VARCHAR(255) NULL,
+        is_locked boolean NOT NULL,
         created_by CHAR(36) NOT NULL,
         edited_by CHAR(36) NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         edited_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT fk_file_folder FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE
+    )
+  `)
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS bookmarks (
+        id INTEGER AUTO_INCREMENT PRIMARY KEY,
+        uuid CHAR(36) NOT NULL,
+        type VARCHAR(255) NOT NULL,
+        item_id VARCHAR(255) NOT NULL,
+        url VARCHAR(255) NOT NULL,
+        added_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `)
 

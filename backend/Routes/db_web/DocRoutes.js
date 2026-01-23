@@ -103,9 +103,9 @@ router.post('/files', async (req, res) => {
 
     try {
         const [result] = await db.query(
-            `INSERT INTO files (name, folder_id, content, permission, created_by, edited_by)
+            `INSERT INTO files (name, folder_id, content, permission, created_by, edited_by, is_locked)
        VALUES (?, ?, ?, ?, ?, ?)`,
-            [name, folder_id, content || null, permission || null, uuid, uuid]
+            [name, folder_id, content || null, permission || null, uuid, uuid, false]
         );
 
         res.status(201).json({ id: result.insertId, message: 'File created' });
@@ -122,6 +122,25 @@ router.put('/files/:id', async (req, res) => {
         const [result] = await db.query(
             `UPDATE files SET content = ?, edited_by = ?, edited_at = CURRENT_TIMESTAMP WHERE id = ?`,
             [content, uuid, req.params.id]
+        );
+
+        if (!result.affectedRows) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+
+        res.status(200).json({ message: 'File updated' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.put('/files/:id/lock', async (req, res) => {
+    const { locked, uuid } = req.body;
+
+    try {
+        const [result] = await db.query(
+            `UPDATE files SET is_locked = ?, edited_by = ?, edited_at = CURRENT_TIMESTAMP WHERE id = ?`,
+            [locked, uuid, req.params.id]
         );
 
         if (!result.affectedRows) {
