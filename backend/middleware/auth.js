@@ -10,7 +10,7 @@ async function requireAuth(req, res, next) {
 
   try {
     const [rows] = await db.execute(
-        'SELECT uuid, username, permissions, is_active FROM users WHERE uuid = ?',
+        'SELECT uuid, username, role, is_active FROM users WHERE uuid = ?',
         [req.session.user.uuid]
     );
 
@@ -35,7 +35,7 @@ async function requireAuth(req, res, next) {
     req.user = {
       uuid: user.uuid,
       username: user.username,
-      permissions: JSON.parse(user.permissions || '[]'),
+      role: user.role,
       is_active: user.is_active
     };
 

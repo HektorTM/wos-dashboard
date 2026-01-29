@@ -194,6 +194,18 @@ router.post('/user/:uuid/permission', async (req, res) => {
     }
 })
 
+router.get('/user/:uuid/groups', async (req, res) => {
+    const { uuid } = req.params;
+
+    try {
+        const [groups] = await db.query('SELECT permission FROM luckperms_user_permissions WHERE uuid = ? AND value = 1 AND permission LIKE "group.%"', [uuid]);
+        const rGroups = groups.map(r => r.permission);
+        return res.status(200).json(rGroups);
+    } catch (e) {
+        console.error(e);
+    }
+})
+
 router.post('/user/:uuid/group', async (req, res) => {
     const { uuid } = req.params;
     const { group } = req.body;

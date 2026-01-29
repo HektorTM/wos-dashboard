@@ -56,8 +56,8 @@ router.post('/register', async (req, res) => {
 
   try {
     await db.query(
-      'INSERT INTO users (uuid, username, password_hash, permissions) VALUES (?, ?, ?, ?)',
-      [uuid, username, hashed, JSON.stringify(permissions)]
+      'INSERT INTO users (uuid, username, password_hash) VALUES (?, ?, ?)',
+      [uuid, username, hashed]
     );
 
     await logActivity({
@@ -114,8 +114,8 @@ router.post('/login', async (req, res) => {
     user: {
       uuid: user.uuid,
       username: user.username,
+      role: user.role,
       is_active: user.is_active,
-      permissions: JSON.parse(user.permissions || '[]'),
     },
   });
   
@@ -136,7 +136,7 @@ router.use(requireAuth);
 // --- Update user ---
 router.put('/:uuid', async (req, res) => {
   const { uuid } = req.params;
-  const { username, permissions, password, is_active = 1, editorUUID } = req.body;
+  const { username, password, is_active = 1, editorUUID } = req.body;
 
   const user = await getUserByUUID(uuid);
   if (!user) {
@@ -145,8 +145,8 @@ router.put('/:uuid', async (req, res) => {
 
   try {
     await db.query(
-      'UPDATE users SET username = ?, permissions = ?, is_active = ? WHERE uuid = ?',
-      [username, JSON.stringify(permissions), is_active, uuid]
+      'UPDATE users SET username = ?, is_active = ? WHERE uuid = ?',
+      [username, is_active, uuid]
     );
 
     if (password?.trim()) {
@@ -203,7 +203,7 @@ router.get('/me', requireAuth, (req, res) => {
     user: {
       uuid: req.user.uuid,
       username: req.user.username,
-      permissions: req.user.permissions,
+      role: req.user.role,
       is_active: req.user.is_active
     }
   });
@@ -223,11 +223,10 @@ router.get('/', async (req, res) => {
 // --- Get user by UUID ---
 router.get('/:uuid', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT uuid, username, is_active FROM users WHERE uuid = ?', [req.params.uuid]);
+    const [rows] = await db.query('SELECT uuid, username, role FROM users WHERE uuid = ?', [req.params.uuid]);
     if (rows.length === 0) return res.status(404).json({ error: 'Admin not found' });
 
     const user = rows[0];
-    user.permissions = JSON.parse(user.permissions || '[]');
 
     res.json(user);
   } catch (err) {
@@ -323,6 +322,33 @@ router.post('/change-password', async (req, res) => {
     console.error('Password change error:', err);
     res.status(500).json({ error: 'Failed to change password' });
   }
+});
+
+
+router.post('/role', async (req, res) => {
+  const { role } = req.body;
+
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    const user = await getUserByUUID(req.session.user.uuid);
+    if (!user) {
+      return res.status(404).json({error: 'Admin not found'});
+    }
+
+    await db.query('UPDATE users SET role = ? WHERE uuid = ?', [
+      role,
+      req.session.user.uuid
+    ]);
+
+    res.status(200).json({ message: 'Password changed successfully' });
+
+  } catch (e) {
+    console.error(e);
+  }
+
 });
 
 module.exports = router;
