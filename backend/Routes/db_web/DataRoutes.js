@@ -33,11 +33,10 @@ router.get('/:uuid', async (req, res) => {
   const { uuid } = req.params; 
 
   try {
-    const rows = await db.query('SELECT * FROM page_data WHERE created_by = ?', [uuid]);
-    if (rows.length === 0) {
-      return res.status(404).json({error: 'Page Data not found'});
-    }
-    res.status(200).json(rows[0])
+    const created = await db.query('SELECT * FROM page_data WHERE created_by = ? ORDER BY created_at DESC', [uuid]);
+    const edited = await db.query('SELECT * FROM page_data WHERE edited_by = ? ORDER BY edited_at DESC', [uuid]);
+
+    res.status(200).json({created: created[0], edited: edited[0]});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -94,7 +93,7 @@ router.put('/:type/:id/lock', async (req, res) => {
       UPDATE page_data
       SET locked = ?, edited_by = ?, edited_at = CURRENT_TIMESTAMP
       WHERE type = ? AND id = ?
-    `, [locked ? 1 : 0, uuid, type, id]);
+    `, [locked ? 0 : 1, uuid, type, id]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Page not found' });

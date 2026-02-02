@@ -80,7 +80,8 @@ router.post('/', async (req, res) => {
 // 4. Update an existing unlockable
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { temp, uuid } = req.body;
+  const { temp } = req.body;
+  const { uuid } = req.query;
 
   try {
     const [existingRows] = await db.query('SELECT * FROM unlockables WHERE id = ?', [id]);
