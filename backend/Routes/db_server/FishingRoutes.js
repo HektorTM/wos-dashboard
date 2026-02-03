@@ -33,7 +33,8 @@ router.get('/:id', async (req, res) => {
 
 // 3. Create a new unlockable
 router.post('/', async (req, res) => {
-  const { id, citem_id, catch_interaction, rarity, regions, uuid } = req.body;
+  const { id, citem_id, catch_interaction, rarity, regions } = req.body;
+  const { uuid } = req.query;
 
   if (!id) {
     return res.status(400).json({ error: 'Missing required fields' });

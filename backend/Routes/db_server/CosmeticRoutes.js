@@ -43,7 +43,7 @@ router.get('/:id', async (req, res) => {
 // 3. Create a new cosmetic
 router.post('/', async (req, res) => {
     const { type, id, display, description, permission } = req.body;
-    const { uuid } = req.body;
+    const { uuid } = req.query;
     
     if (!type || !id || !display || !description) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -79,7 +79,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { type, display, description, permission } = req.body;
-    const { uuid } = req.body;
+    const { uuid } = req.query;
 
     if (!display || !description) {
         return res.status(400).json({ error: 'Display and Description are required.' });
