@@ -353,7 +353,8 @@ router.put('/:id/particles/:particleId', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { id, uuid } = req.body;
+    const { id } = req.body;
+    const { uuid } = req.query;
   
     if (!id) {
       return res.status(400).json({ error: 'Missing required fields' });

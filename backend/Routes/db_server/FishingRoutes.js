@@ -63,7 +63,8 @@ router.post('/', async (req, res) => {
 // 4. Update an existing unlockable
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { citem_id, catch_interaction, rarity, regions, uuid } = req.body;
+  const { citem_id, catch_interaction, rarity, regions } = req.body;
+  const { uuid } = req.query;
 
   try {
     const [existingRows] = await db.query('SELECT * FROM fishing WHERE id = ?', [id]);
