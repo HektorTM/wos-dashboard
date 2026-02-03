@@ -139,8 +139,8 @@ router.put('/files/:id/lock', async (req, res) => {
 
     try {
         const [result] = await db.query(
-            `UPDATE files SET is_locked = ?, edited_by = ?, edited_at = CURRENT_TIMESTAMP WHERE id = ?`,
-            [locked, uuid, req.params.id]
+            `UPDATE files SET isLocked = ?, edited_by = ?, edited_at = CURRENT_TIMESTAMP WHERE id = ?`,
+            [locked ? 0 : 1, uuid, req.params.id]
         );
 
         if (!result.affectedRows) {

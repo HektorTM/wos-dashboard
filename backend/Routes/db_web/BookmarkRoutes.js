@@ -42,7 +42,6 @@ router.post('/:uuid', async (req, res) => {
     try {
         const [result] = await db.query('INSERT INTO bookmarks (uuid, type, item_id, url, added_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)', [req.params.uuid, type, item_id, url]);
 
-
         res.status(201).json({ id: result.insertId, message: 'Bookmark added' });
     } catch (e) {
         res.status(500).json({error: e.message});
@@ -61,7 +60,5 @@ router.delete('/:uuid/:type/:item_id', async (req, res) => {
         res.status(500).json({error: e.message});
     }
 })
-
-
 
 module.exports = router;

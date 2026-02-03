@@ -88,7 +88,7 @@ router.post('/login', async (req, res) => {
 
   console.log(user);
 
-  if (!user) return res.status(404).json({ error: 'Admin not found' });
+  if (!user) return res.status(404).json({ error: 'User not found' });
 
   if (!user.is_active) {
     return res.status(403).json({ error: 'Account is deactivated. Please contact admin.' });
