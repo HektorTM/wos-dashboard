@@ -62,11 +62,11 @@ router.post('/issues', async (req, res) => {
     }
 
     res.json({
-      id: data.id,
-      number: data.number,
-      html_url: data.html_url,
-      title: data.title,
-      state: data.state,
+      id: issue.id,
+      number: issue.number,
+      html_url: issue.html_url,
+      title: issue.title,
+      state: issue.state,
       branch: newBranchName,
         branch_url: `https://github.com/${owner}/${repoName}/tree/${newBranchName}`,
     });
@@ -84,11 +84,8 @@ router.get('/issues', async (req, res) => {
     // Define all repositories you want to query when 'all' is selected
     const allRepos = [
       { owner: 'HektorTM', repo: 'wos-dashboard' },
+      { owner: "HektorTM", repo: 'AdminPortal' },
       { owner: 'WorldOfSorcery', repo: 'Systems' },
-      { owner: 'WorldOfSorcery', repo: 'Core' },
-      { owner: 'WorldOfSorcery', repo: 'Essentials'},
-      { owner: 'WorldOfSorcery', repo: 'Friends'},
-      { owner: 'WorldOfSorcery', repo: 'PvP'}
     ];
 
     // If a specific repo is selected, filter to just that one
