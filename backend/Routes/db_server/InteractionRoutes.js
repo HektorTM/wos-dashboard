@@ -14,33 +14,65 @@ router.get('/', async (req, res) => {
 });
 
 // ✅ Get interaction by ID (with actions + holograms + blocks + npcs)
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
+router.get("/:id", async (req, res) => {
+  const { id } = req.params
 
   try {
-    const [interactionRows] = await db.query('SELECT * FROM interactions WHERE id = ?', [id]);
-    if (interactionRows.length === 0) {
-      return res.status(404).json({ error: 'Interaction not found' });
+    const [[interaction]] = await db.query(
+        "SELECT id FROM interactions WHERE id = ?",
+        [id]
+    )
+    if (!interaction) {
+      return res.status(404).json({ error: "Interaction not found" })
     }
 
-    const [actions] = await db.query('SELECT * FROM inter_actions WHERE id = ? ORDER BY action_id ASC', [id]);
-    const [particles] = await db.query('SELECT * FROM inter_particles WHERE id = ?', [id]);
-    const [holograms] = await db.query('SELECT * FROM inter_holograms WHERE interaction_id = ?', [id]);
-    const [blocks] = await db.query('SELECT location FROM inter_blocks WHERE interaction_id = ?', [id]);
-    const [npcs] = await db.query('SELECT npc_id FROM inter_npcs WHERE interaction_id = ?', [id]);
+    const [actionRows] = await db.query(
+        "SELECT * FROM inter_actions WHERE id = ? ORDER BY action_id ASC",
+        [id]
+    )
+
+    const [conditionRows] = await db.query(
+        "SELECT * FROM conditions WHERE type = ? AND type_id LIKE ?",
+        ["interaction", `${id}:%`]
+    )
+
+    // Build condition map
+    const conditionsBySubId = {}
+    for (const row of conditionRows) {
+      const [, subId] = row.type_id.split(":")
+      const key = Number(subId)
+
+      if (!conditionsBySubId[key]) {
+        conditionsBySubId[key] = []
+      }
+
+      conditionsBySubId[key].push({
+        type: row.type,
+        type_id: row.type_id,
+        condition_id: row.condition_id,
+        condition_key: row.condition_key,
+        value: row.value,
+        parameter: row.parameter,
+      })
+    }
+
+    const actions = actionRows.map(row => ({
+      action_id: row.action_id,
+      behaviour: row.behaviour,
+      matchtype: row.matchtype,
+      actions: JSON.parse(row.actions),
+      conditions: conditionsBySubId[row.action_id] ?? [],
+    }))
 
     res.json({
       id,
       actions,
-      particles,
-      holograms,
-      blocks,
-      npcs
-    });
+    })
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err)
+    res.status(500).json({ error: "Failed to fetch interaction" })
   }
-});
+})
 
 // ✅ Get only actions for interaction
 router.get('/:id/actions', async (req, res) => {
