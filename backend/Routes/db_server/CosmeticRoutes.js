@@ -61,6 +61,8 @@ router.post('/', async (req, res) => {
             INSERT INTO cosmetics (type, id, display, description, permission)
             VALUES (?, ?, ?, ?, ?)
         `, [type, id, display, description, permission ?? null]);
+
+        const [rows] = await db.query('SELECT * FROM cosmetics WHERE id = ?', [id]);
         
         await logActivity({
             type: type,
@@ -69,7 +71,7 @@ router.post('/', async (req, res) => {
             action: 'Created',
         });
         
-        res.status(201).json({ message: 'Cosmetic created successfully' });
+        res.status(201).json(rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

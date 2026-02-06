@@ -57,7 +57,9 @@ router.post('/', async (req, res) => {
       end_interaction ? end_interaction : null
     ]);
 
-    res.status(201).json({ message: 'Cooldown created successfully' });
+    const [rows] = await db.query('SELECT * FROM cooldowns WHERE id = ?', [id]);
+
+    res.status(201).json(rows[0]);
 
     await logActivity({
       type: 'Cooldown',

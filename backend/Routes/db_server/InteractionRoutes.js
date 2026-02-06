@@ -400,8 +400,10 @@ router.post('/', async (req, res) => {
 
 
       await db.query('INSERT INTO interactions (id) VALUES (?)', [id]);
+
+      const [rows] = await db.query('SELECT * FROM interactions WHERE id = ?', [id]);
   
-      res.status(201).json({ message: 'Interaction created successfully' });
+      res.status(201).json(rows[0]);
   
       logActivity({
         type: 'Interaction',

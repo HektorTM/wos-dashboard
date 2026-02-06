@@ -70,6 +70,8 @@ router.post('/', async (req, res) => {
       permission,
       radius
     ]);
+
+    const [rows] = await db.query('SELECT * FROM channels WHERE name = ?', [name]);
     
     await logActivity({
       type: 'Channel',
@@ -78,7 +80,7 @@ router.post('/', async (req, res) => {
       action: 'Created',
     });
     
-    res.status(201).json({ message: 'Channel created successfully' });
+    res.status(201).json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

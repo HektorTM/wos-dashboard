@@ -47,7 +47,9 @@ router.post('/', async (req, res) => {
 
     await db.query('INSERT INTO fishing (id, citem_id, catch_interaction, rarity, regions) VALUES (?, ?, ?, ?, ?)', [id, citem_id, catch_interaction, rarity, regions]);
 
-    res.status(201).json({ message: 'Fish created successfully' });
+    const [rows] = await db.query('SELECT * FROM fishing WHERE id = ?', [id]);
+
+    res.status(201).json(rows[0]);
 
     logActivity({
       type: 'Fish',

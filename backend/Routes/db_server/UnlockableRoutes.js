@@ -64,7 +64,9 @@ router.post('/', async (req, res) => {
 
     await db.query('INSERT INTO unlockables (id, temp) VALUES (?, ?)', [id, temp ? 1 : 0]);
 
-    res.status(201).json({ message: 'Unlockable created successfully' });
+    const [rows] = await db.query('SELECT * FROM unlockables WHERE id = ?', [id]);
+
+    res.status(201).json(rows[0]);
 
     logActivity({
       type: 'Unlockable',

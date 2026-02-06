@@ -26,9 +26,12 @@ router.post('/', async (req, res) => {
         if (exisingRows.length > 0) {
             return res.status(400).json({ error: 'Dialog with this ID already exists' });
         }
-        const [result] = await db.query('INSERT INTO dialogs (dialog_id, char_name) VALUES (?, ?)', [dialog_id, char_name]);
+        await db.query('INSERT INTO dialogs (dialog_id, char_name) VALUES (?, ?)', [dialog_id, char_name]);
 
-        res.status(201).json({ message: 'Dialog created successfully'});
+        const [rows] = await db.query('SELECT * FROM dialogs WHERE dialog_id = ?', [dialog_id]);
+
+        res.status(201).json(rows[0]);
+
         await logActivity(
             {
                 type: 'Dialog',

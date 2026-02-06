@@ -50,6 +50,8 @@ router.post('/', async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [id, name, message || null, isDefault ? 1 : 0, date || null, start_time, end_time, start_interaction || null, end_interaction || null]);
 
+        const [rows] = await db.query('SELECT * FROM activities WHERE id = ?', [id]);
+
         logActivity({
             type: 'Time Event',
             target_id: id,
@@ -57,7 +59,7 @@ router.post('/', async (req, res) => {
             action: 'Created',
         });
 
-        res.status(201).json({ message: 'Time Event created successfully' });
+        res.status(201).json(rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

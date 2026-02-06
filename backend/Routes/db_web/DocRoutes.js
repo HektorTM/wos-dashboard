@@ -103,9 +103,9 @@ router.post('/files', async (req, res) => {
 
     try {
         const [result] = await db.query(
-            `INSERT INTO files (name, folder_id, content, permission, created_by, edited_by, is_locked)
+            `INSERT INTO files (name, folder_id, content, permission, created_by, edited_by)
        VALUES (?, ?, ?, ?, ?, ?)`,
-            [name, folder_id, content || null, permission || null, uuid, uuid, false]
+            [name, folder_id, content || null, permission || null, uuid, uuid]
         );
 
         res.status(201).json({ id: result.insertId, message: 'File created' });

@@ -166,8 +166,10 @@ router.post('/', async (req, res) => {
         }
 
       await db.query('INSERT INTO guis (id, title, size) VALUES (?, ?, ?)', [id, title, size]);
+
+      const [rows] = await db.query('SELECT * FROM guis WHERE id = ?', [id]);
   
-      res.status(201).json({ message: 'GUI created successfully' });
+      res.status(201).json(rows[0]);
   
       logActivity({
         type: 'GUI',

@@ -50,6 +50,8 @@ router.post('/', async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?)
     `, [id, name, short_name, icon || null, color, hidden_if_zero ? 1 : 0]);
 
+    const [rows] = await db.query('SELECT * FROM currencies WHERE id = ?', [id]);
+
     logActivity({
       type: 'Currency',
       target_id: id,
@@ -57,7 +59,7 @@ router.post('/', async (req, res) => {
       action: 'Created',
     });
 
-    res.status(201).json({ message: 'Currency created successfully' });
+    res.status(201).json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

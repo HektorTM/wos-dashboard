@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
     const searchPattern = `%${searchTerm.toLowerCase()}%`;
 
     const query = `
-        SELECT name AS id, name AS label, 'channels' AS type
+        SELECT name AS id, name AS label, 'channels' AS type, NULL AS parentId
         FROM channels
         WHERE LOWER(name) LIKE ?
            OR LOWER('format') LIKE ?
@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
 
         SELECT id COLLATE utf8mb4_general_ci AS id,
                id COLLATE utf8mb4_general_ci AS label,
-               'citems' AS type
+               'citems' AS type, NULL AS parentId
         FROM items
         WHERE LOWER(id) LIKE ?
 
@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
 
         SELECT id COLLATE utf8mb4_general_ci AS id,
                id COLLATE utf8mb4_general_ci AS label,
-               'constants' AS type
+               'constants' AS type, NULL AS parentId
         FROM constants
         WHERE LOWER(id) LIKE ?
 
@@ -51,7 +51,7 @@ router.get("/", async (req, res) => {
 
         SELECT id COLLATE utf8mb4_general_ci AS id,
                id COLLATE utf8mb4_general_ci AS label,
-               'cooldowns' AS type
+               'cooldowns' AS type, NULL AS parentId
         FROM cooldowns
         WHERE LOWER(id) LIKE ?
 
@@ -59,13 +59,13 @@ router.get("/", async (req, res) => {
 
         SELECT command AS id,
                command AS label,
-               'commands' AS type
+               'commands' AS type, NULL AS parentId
         FROM commands
         WHERE LOWER(command) LIKE ?
 
         UNION ALL
 
-        SELECT id AS id, id AS label, 'cosmetics' AS type
+        SELECT id AS id, id AS label, 'cosmetics' AS type, NULL AS parentId
         FROM cosmetics
         WHERE type IN ('prefix', 'title', 'badge')
           AND (
@@ -76,71 +76,81 @@ router.get("/", async (req, res) => {
 
         UNION ALL
 
-        SELECT id AS id, id AS label, 'currencies' AS type
+        SELECT id AS id, id AS label, 'currencies' AS type, NULL AS parentId
         FROM currencies
         WHERE LOWER(id) LIKE ?
            OR LOWER(name) LIKE ?
 
         UNION ALL
 
-        SELECT dialog_id AS id, dialog_id AS label, 'dialogs' AS type
+        SELECT dialog_id AS id, dialog_id AS label, 'dialogs' AS type, NULL AS parentId
         FROM dialogs
         WHERE LOWER(dialog_id) LIKE ?
 
         UNION ALL
 
-        SELECT id AS id, id AS label, 'fishing' AS type
+        SELECT id AS id, id AS label, 'fishing' AS type, NULL AS parentId
         FROM fishing
         WHERE LOWER(id) LIKE ?
 
         UNION ALL
 
-        SELECT id AS id, id AS label, 'global_stats' AS type
+        SELECT id AS id, id AS label, 'globalstats' AS type, NULL AS parentId
         FROM global_stats
         WHERE LOWER(id) LIKE ?
 
         UNION ALL
 
-        SELECT id AS id, id AS label, 'guis' AS type
+        SELECT id AS id, id AS label, 'guis' AS type, NULL AS parentId
         FROM guis
         WHERE LOWER(id) LIKE ?
            OR LOWER(title) LIKE ?
         
         UNION ALL
 
-        SELECT id AS id, id AS label, 'interactions' AS type
+        SELECT id AS id, id AS label, 'interactions' AS type, NULL AS parentId
         FROM interactions
         WHERE LOWER(id) LIKE ?
 
         UNION ALL
 
-        SELECT id AS id, id AS label, 'loottables' AS type
+        SELECT id AS id, id AS label, 'loottables' AS type, NULL AS parentId
         FROM loottables
         WHERE LOWER(id) LIKE ?
 
         UNION ALL
         
-        SELECT id AS id, id AS label, 'stats' AS type
+        SELECT id AS id, id AS label, 'stats' AS type, NULL AS parentId
         FROM stats
         WHERE LOWER(id) LIKE ?
 
         UNION ALL
 
-        SELECT id AS id, id AS label, 'time_events' AS type
+        SELECT id AS id, id AS label, 'timeevents' AS type, NULL AS parentId
         FROM activities
         WHERE LOWER(id) LIKE ?
 
         UNION ALL
 
-        SELECT id AS id, id AS label, 'unlockables' AS type
+        SELECT id AS id, id AS label, 'unlockables' AS type, NULL AS parentId
         FROM unlockables
         WHERE LOWER(id) LIKE ?
 
         UNION ALL
 
-        SELECT uuid AS id, username AS label, 'players' AS type
+        SELECT uuid AS id, username AS label, 'players' AS type, NULL AS parentId
         FROM playerdata
         WHERE LOWER(username) LIKE ?
+
+        UNION ALL
+
+        SELECT
+            id AS id,
+            name AS label,
+            'docs' AS type,
+            folder_id AS parentId
+        FROM webmeta.files
+        WHERE LOWER(name) LIKE ?
        
     `;
 
@@ -171,6 +181,7 @@ router.get("/", async (req, res) => {
         1, // time_events
         1, // unlockables
         1, // players
+        1, // docs
     ];
 
     const params = PARAMS.flatMap((count) =>
@@ -188,14 +199,24 @@ router.get("/", async (req, res) => {
         // Group by type
         const grouped = rows.reduce((acc, row) => {
             if (!acc[row.type]) acc[row.type] = [];
+
+            let nav;
+            if (row.type === "docs") {
+                nav = `/docs/${row.parentId}/${row.label}-${row.id}`;
+            } else {
+                nav = `/${row.type}/${row.id}`;
+            }
+
             acc[row.type].push({
                 id: row.id,
                 label: row.label,
-                nav: `/${row.type}/${row.id}`, // 👈 centralized routing
-                icon: row.type,               // 👈 frontend icon map
+                nav,
+                icon: row.type,
             });
+
             return acc;
         }, {});
+
 
         res.json({
             query: searchTerm,

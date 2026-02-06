@@ -77,6 +77,8 @@ router.post('/', async (req, res) => {
 
         await db.query('INSERT INTO loottables (id, amount, name) VALUES (?, ?, ?)', [id, amount || 0, name || ""]);
 
+        const [rows] = await db.query('SELECT * FROM loottables WHERE id = ?', [id]);
+
         await logActivity({
             type: 'loottable',
             target_id: id,
@@ -84,7 +86,7 @@ router.post('/', async (req, res) => {
             action: 'Created',
         });
 
-        res.json({message: 'Loot tables created'});
+        res.json(rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
