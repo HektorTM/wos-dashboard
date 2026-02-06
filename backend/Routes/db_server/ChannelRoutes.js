@@ -40,7 +40,7 @@ router.get('/:name', async (req, res) => {
 // 3. Create a new channel
 router.post('/', async (req, res) => {
   const { name, short_name, color, format, default_channel, autojoin, forcejoin, hidden, broadcastable, permission, radius } = req.body;
-  const { uuid } = req.body;
+  const { uuid } = req.query;
   
   if (!name || !short_name || !color || !format) {
     return res.status(400).json({ error: 'Missing required fields' });

@@ -152,7 +152,8 @@ router.get('/:id/slots/:slot/:slotId', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { id, title, size, uuid } = req.body;
+    const { id, title, size } = req.body;
+    const { uuid } = req.query;
   
     if (!id || !title || !size) {
       return res.status(400).json({ error: 'Missing required fields' });

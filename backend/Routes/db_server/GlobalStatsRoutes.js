@@ -68,7 +68,8 @@ router.post('/', async (req, res) => {
 // 4. Update an existing unlockable
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { max, capped, uuid } = req.body;
+    const { max, capped } = req.body;
+    const { uuid } = req.query;
 
     try {
         const [existingRows] = await db.query('SELECT * FROM global_stats WHERE id = ?', [id]);

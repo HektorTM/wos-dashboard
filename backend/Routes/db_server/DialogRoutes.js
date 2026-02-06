@@ -15,7 +15,8 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { dialog_id, char_name, uuid } = req.body;
+    const { dialog_id, char_name } = req.body;
+    const { uuid } = req.query;
     try {
         if (!dialog_id || !char_name) {
             return res.status(400).json({ error: 'Missing required field' });
@@ -102,7 +103,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
    const { id } = req.params;
-   const { uuid } = req.body;
+   const { uuid } = req.query;
    try {
        await db.query('DELETE FROM dialog_pages WHERE dialog_id = ?', [id]);
        await db.query('DELETE FROM page_lines WHERE dialog_id = ?', [id]);

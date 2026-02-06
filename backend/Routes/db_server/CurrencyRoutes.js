@@ -34,7 +34,8 @@ router.get('/:id', async (req, res) => {
 
 // 3. Create a new currency
 router.post('/', async (req, res) => {
-  const { id, name, short_name, icon, color, hidden_if_zero, uuid } = req.body;
+  const { id, name, short_name, icon, color, hidden_if_zero } = req.body;
+  const { uuid } = req.query;
 
   if (!id || !name || !short_name || !color) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -65,7 +66,8 @@ router.post('/', async (req, res) => {
 // 4. Update a currency
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, short_name, icon, color, hidden_if_zero, uuid } = req.body;
+  const { name, short_name, icon, color, hidden_if_zero } = req.body;
+  const { uuid } = req.query;
 
   if (!name || !short_name || !color) {
     return res.status(400).json({ error: 'Name, short name, and color are required.' });

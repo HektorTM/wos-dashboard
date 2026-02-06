@@ -73,7 +73,8 @@ router.post('/', async (req, res) => {
 // 4. Update an existing cooldown
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { duration, start_interaction, end_interaction, uuid } = req.body;
+  const { duration, start_interaction, end_interaction } = req.body;
+  const { uuid } = req.query;
 
   try {
     const [existingRows] = await db.query('SELECT * FROM cooldowns WHERE id = ?', [id]);

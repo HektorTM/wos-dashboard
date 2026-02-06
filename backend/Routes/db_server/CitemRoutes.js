@@ -31,6 +31,7 @@ router.get('/:id', async (req, res) => {
 // 3. Delete a currency by ID
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
+  const { uuid } = req.query;
 
   try {
     const [result] = await db.query('DELETE FROM items WHERE id = ?', [id]);
