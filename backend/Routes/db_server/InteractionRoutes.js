@@ -13,7 +13,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ Get interaction by ID (with actions + holograms + blocks + npcs)
 router.get("/:id", async (req, res) => {
   const { id } = req.params
 
@@ -64,9 +63,48 @@ router.get("/:id", async (req, res) => {
       conditions: conditionsBySubId[row.action_id] ?? [],
     }))
 
+    const [particleRows] = await db.query(
+        "SELECT * FROM inter_particles WHERE id = ? ORDER BY particle_id ASC",
+        [id]
+    )
+
+    const [particleConditionRows] = await db.query(
+        "SELECT * FROM conditions WHERE type = ? AND type_id LIKE ?",
+        ["particle", `${id}:%`]
+    )
+
+    const particleConditionsBySubId = {}
+    for (const row of particleConditionRows) {
+      const [, subId] = row.type_id.split(":")
+      const key = Number(subId)
+
+      if (!particleConditionsBySubId[key]) {
+        particleConditionsBySubId[key] = []
+      }
+
+      particleConditionsBySubId[key].push({
+        type: row.type,
+        type_id: row.type_id,
+        condition_id: row.condition_id,
+        condition_key: row.condition_key,
+        value: row.value,
+        parameter: row.parameter,
+      })
+    }
+
+    const particles = particleRows.map(row => ({
+      particle_id: row.particle_id,
+      behaviour: row.behaviour,
+      matchtype: row.matchtype,
+      particle: row.particle,
+      particle_color: row.particle_color,
+      conditions: particleConditionsBySubId[row.particle_id] ?? [],
+    }))
+
     res.json({
       id,
       actions,
+      particles,
     })
   } catch (err) {
     console.error(err)
@@ -207,6 +245,82 @@ router.put('/:id/actions/:actionId/move', async (req, res) => {
 
       await conn.commit();
       res.json({ message: 'Action moved successfully' });
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/:id/particles/:particleId/move', async (req, res) => {
+  const { id, particleId } = req.params;
+  const { direction } = req.query;
+
+  if (!['up', 'down'].includes(direction)) {
+    return res.status(400).json({ error: 'Invalid direction' });
+  }
+
+  try {
+    const conn = await db.getConnection();
+    await conn.beginTransaction();
+
+    try {
+      const [currentAction] = await conn.query(
+        'SELECT * FROM inter_particles WHERE id = ? AND particle_id = ?',
+        [id, particleId]
+      );
+
+      if (currentAction.length === 0) {
+        throw new Error('Particle not found');
+      }
+
+      const targetOffset = direction === 'up' ? -1 : 1;
+      const [adjacentParticle] = await conn.query(
+        'SELECT * FROM inter_particles WHERE id = ? AND particle_id = ?',
+        [id, parseInt(particleId) + targetOffset]
+      );
+
+      if (adjacentParticle.length === 0) {
+        throw new Error('No adjacent particle to swap with');
+      }
+      const targetParticle = adjacentParticle[0];
+
+      const tempId = -999;
+      await conn.query(
+        'UPDATE inter_particles SET particle_id = ? WHERE id = ? AND particle_id = ?',
+        [tempId, id, particleId]
+      );
+
+      await conn.query(
+        'UPDATE inter_particles SET particle_id = ? WHERE id = ? AND particle_id = ?',
+        [particleId, id, targetParticle.particle_id]
+      );
+
+      await conn.query(
+        'UPDATE inter_particles SET particle_id = ? WHERE id = ? AND particle_id = ?',
+        [targetParticle.particle_id, id, tempId]
+      );
+
+      const updateConditions = async (oldParticleId, newParticleId) => {
+        const oldTypeId = `${id}:${oldParticleId}`;
+        const newTypeId = `${id}:${newParticleId}`;
+
+        await conn.query(
+          'UPDATE conditions SET type_id = ? WHERE type = ? AND type_id = ?',
+          [newTypeId, 'particle', oldTypeId]
+        );
+      };
+
+      await updateConditions(particleId, targetParticle.particle_id);
+      await updateConditions(targetParticle.particle_id, particleId);
+
+      await conn.commit();
+      res.json({ message: 'Particle moved successfully' });
     } catch (err) {
       await conn.rollback();
       throw err;
