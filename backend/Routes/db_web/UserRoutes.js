@@ -8,10 +8,18 @@ const requireAuth = require('../../middleware/auth.js');
 
 async function fetchUsername(uuid) {
   try {
-    const response = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`);
+    // Mojang API prefers trimmed UUIDs (no dashes)
+    const cleanUuid = uuid.replace(/-/g, '');
+    const response = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${cleanUuid}`);
+
+    if (response.status === 204 || response.status === 404) {
+      return null; // Player doesn't exist
+    }
+
     const data = await response.json();
     return data.name;
-  } catch {
+  } catch (err) {
+    console.error("Mojang Fetch Error:", err);
     return null;
   }
 }
@@ -36,7 +44,8 @@ async function updateUsername(uuid) {
 
 // --- Register ---
 router.post('/register', async (req, res) => {
-  const { uuid, password, editorUUID } = req.body;
+  const { uuid, username, password } = req.body;
+  const { editorUUID } = req.query;
 
   if (!uuid || !password) {
     return res.status(400).json({ error: 'UUID and password are required' });
@@ -45,11 +54,6 @@ router.post('/register', async (req, res) => {
   const existing = await getUserByUUID(uuid);
   if (existing) {
     return res.status(409).json({ error: 'Admin already exists' });
-  }
-
-  const username = await fetchUsername(uuid);
-  if (!username) {
-    return res.status(404).json({ error: 'Invalid Minecraft UUID' });
   }
 
   const hashed = await bcrypt.hash(password, 10);

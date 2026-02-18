@@ -18,11 +18,16 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const [items] = await db.query('SELECT * FROM loottable_items WHERE loottable_id = ?', [id]);
-        if (!items || !items.length) {
+        const [rows] = await db.query('SELECT * from loottables WHERE id = ?', [id]);
+        const lt = rows[0];
+
+        if (!rows || !rows.length) {
             return res.status(404).json({error: 'Not found'});
         }
-        res.json(items);
+
+        const [items] = await db.query('SELECT * FROM loottable_items WHERE loottable_id = ?', [id]);
+
+        res.json({id: lt.id, amount: lt.amount, name: lt.name, items: items});
     } catch (err) {
         res.status(500).json({ error: err.message });
         console.log(err.message);
@@ -132,7 +137,7 @@ router.post('/:id/item', async (req, res) => {
     const { id } = req.params;
     const { weight, type, value, parameter } = req.body;
 
-    if (!weight || !type || !value) {
+    if (!weight || !type || !value || (type === "citem" && !parameter)) {
         return res.status(400).json({error: "Required fields missing."})
     }
 

@@ -175,161 +175,174 @@ router.get('/:id/actions/:actionId', async (req, res) => {
   }
 });
 
-
-// Move Action Route
 router.put('/:id/actions/:actionId/move', async (req, res) => {
-  const { id, actionId } = req.params;
+  const { id, actionId } = req.params; // 'id' is "interaction1"
   const { direction } = req.query;
-  
+
   if (!['up', 'down'].includes(direction)) {
     return res.status(400).json({ error: 'Invalid direction' });
   }
 
+  const conn = await db.getConnection();
   try {
-    const conn = await db.getConnection();
     await conn.beginTransaction();
 
-    try {
-      // Get current action
-      const [currentAction] = await conn.query(
-        'SELECT * FROM inter_actions WHERE id = ? AND action_id = ?',
+    // 1. Verify current action exists using the readable 'id'
+    const [currentRows] = await conn.query(
+        'SELECT action_id FROM inter_actions WHERE id = ? AND action_id = ?',
         [id, actionId]
-      );
-      
-      if (currentAction.length === 0) {
-        throw new Error('Action not found');
-      }
+    );
 
-      // Determine target action ID based on direction
-      const targetOffset = direction === 'up' ? -1 : 1;
-      const [adjacentActions] = await conn.query(
-        'SELECT * FROM inter_actions WHERE id = ? AND action_id = ?',
-        [id, parseInt(actionId) + targetOffset]
-      );
+    if (currentRows.length === 0) {
+      throw new Error('Action not found');
+    }
 
-      if (adjacentActions.length === 0) {
-        throw new Error('No adjacent action to swap with');
-      }
-      const targetAction = adjacentActions[0];
+    // 2. Find the neighbor based on action_id order
+    const operator = direction === 'up' ? '<' : '>';
+    const order = direction === 'up' ? 'DESC' : 'ASC';
 
-      // Swap action IDs using temporary value
-      const tempId = -999; // Temporary ID for swapping
-      await conn.query(
+    const [neighbors] = await conn.query(
+        `SELECT action_id FROM inter_actions
+         WHERE id = ? AND action_id ${operator} ?
+         ORDER BY action_id ${order} LIMIT 1`,
+        [id, actionId]
+    );
+
+    if (neighbors.length === 0) {
+      throw new Error(`Cannot move ${direction}: already at the edge.`);
+    }
+
+    const neighborId = neighbors[0].action_id;
+    const tempId = -999; // Use a value unlikely to exist in action_id
+
+    // 3. Swap the action_ids in inter_actions
+    // Current -> Temp
+    await conn.query(
         'UPDATE inter_actions SET action_id = ? WHERE id = ? AND action_id = ?',
         [tempId, id, actionId]
-      );
-      
-      await conn.query(
+    );
+    // Neighbor -> Current's old spot
+    await conn.query(
         'UPDATE inter_actions SET action_id = ? WHERE id = ? AND action_id = ?',
-        [actionId, id, targetAction.action_id]
-      );
-      
-      await conn.query(
+        [actionId, id, neighborId]
+    );
+    // Temp -> Neighbor's old spot
+    await conn.query(
         'UPDATE inter_actions SET action_id = ? WHERE id = ? AND action_id = ?',
-        [targetAction.action_id, id, tempId]
+        [neighborId, id, tempId]
+    );
+
+    // 4. Update the conditions table
+    // Note: We use the readable 'id' here because your
+    // frontend sends parentId={`${interactionId}:${action.action_id}`}
+    const updateCond = async (oldIdx, newIdx) => {
+      const oldTypeId = `${id}:${oldIdx}`;
+      const newTypeId = `${id}:${newIdx}`;
+      await conn.query(
+          "UPDATE conditions SET type_id = ? WHERE type = 'interaction' AND type_id = ?",
+          [newTypeId, oldTypeId]
       );
+    };
 
-      // Update conditions' type_id references
-      const updateConditions = async (oldActionId, newActionId) => {
-        const oldTypeId = `${id}:${oldActionId}`;
-        const newTypeId = `${id}:${newActionId}`;
-        
-        await conn.query(
-          'UPDATE conditions SET type_id = ? WHERE type = ? AND type_id = ?',
-          [newTypeId, 'interaction', oldTypeId]
-        );
-      };
+    // Swap condition references using a temp string to avoid collisions
+    await updateCond(actionId, "TEMP_MOVE");
+    await updateCond(neighborId, actionId);
+    await updateCond("TEMP_MOVE", neighborId);
 
-      await updateConditions(actionId, targetAction.action_id);
-      await updateConditions(targetAction.action_id, actionId);
+    await conn.commit();
+    res.json({ message: 'Action moved successfully' });
 
-      await conn.commit();
-      res.json({ message: 'Action moved successfully' });
-    } catch (err) {
-      await conn.rollback();
-      throw err;
-    } finally {
-      conn.release();
-    }
   } catch (err) {
-    console.error(err);
+    await conn.rollback();
+    console.error("Move Error:", err);
     res.status(500).json({ error: err.message });
+  } finally {
+    conn.release();
   }
 });
-
 router.put('/:id/particles/:particleId/move', async (req, res) => {
-  const { id, particleId } = req.params;
+  const { id, particleId } = req.params; // 'id' is "interaction1"
   const { direction } = req.query;
 
   if (!['up', 'down'].includes(direction)) {
     return res.status(400).json({ error: 'Invalid direction' });
   }
 
+  const conn = await db.getConnection();
   try {
-    const conn = await db.getConnection();
     await conn.beginTransaction();
 
-    try {
-      const [currentAction] = await conn.query(
-        'SELECT * FROM inter_particles WHERE id = ? AND particle_id = ?',
+    // 1. Verify current action exists using the readable 'id'
+    const [currentRows] = await conn.query(
+        'SELECT particle_id FROM inter_particles WHERE id = ? AND particle_id = ?',
         [id, particleId]
-      );
+    );
 
-      if (currentAction.length === 0) {
-        throw new Error('Particle not found');
-      }
+    if (currentRows.length === 0) {
+      throw new Error('Action not found');
+    }
 
-      const targetOffset = direction === 'up' ? -1 : 1;
-      const [adjacentParticle] = await conn.query(
-        'SELECT * FROM inter_particles WHERE id = ? AND particle_id = ?',
-        [id, parseInt(particleId) + targetOffset]
-      );
+    // 2. Find the neighbor based on particle_id order
+    const operator = direction === 'up' ? '<' : '>';
+    const order = direction === 'up' ? 'DESC' : 'ASC';
 
-      if (adjacentParticle.length === 0) {
-        throw new Error('No adjacent particle to swap with');
-      }
-      const targetParticle = adjacentParticle[0];
+    const [neighbors] = await conn.query(
+        `SELECT particle_id FROM inter_particles
+         WHERE id = ? AND particle_id ${operator} ?
+         ORDER BY particle_id ${order} LIMIT 1`,
+        [id, particleId]
+    );
 
-      const tempId = -999;
-      await conn.query(
+    if (neighbors.length === 0) {
+      throw new Error(`Cannot move ${direction}: already at the edge.`);
+    }
+
+    const neighborId = neighbors[0].particle_id;
+    const tempId = -999; // Use a value unlikely to exist in particle_id
+
+    // 3. Swap the particle_ids in inter_actions
+    // Current -> Temp
+    await conn.query(
         'UPDATE inter_particles SET particle_id = ? WHERE id = ? AND particle_id = ?',
         [tempId, id, particleId]
-      );
-
-      await conn.query(
+    );
+    // Neighbor -> Current's old spot
+    await conn.query(
         'UPDATE inter_particles SET particle_id = ? WHERE id = ? AND particle_id = ?',
-        [particleId, id, targetParticle.particle_id]
-      );
-
-      await conn.query(
+        [particleId, id, neighborId]
+    );
+    // Temp -> Neighbor's old spot
+    await conn.query(
         'UPDATE inter_particles SET particle_id = ? WHERE id = ? AND particle_id = ?',
-        [targetParticle.particle_id, id, tempId]
+        [neighborId, id, tempId]
+    );
+
+    // 4. Update the conditions table
+    // Note: We use the readable 'id' here because your
+    // frontend sends parentId={`${interparticleId}:${action.particle_id}`}
+    const updateCond = async (oldIdx, newIdx) => {
+      const oldTypeId = `${id}:${oldIdx}`;
+      const newTypeId = `${id}:${newIdx}`;
+      await conn.query(
+          "UPDATE conditions SET type_id = ? WHERE type = 'particle' AND type_id = ?",
+          [newTypeId, oldTypeId]
       );
+    };
 
-      const updateConditions = async (oldParticleId, newParticleId) => {
-        const oldTypeId = `${id}:${oldParticleId}`;
-        const newTypeId = `${id}:${newParticleId}`;
+    // Swap condition references using a temp string to avoid collisions
+    await updateCond(particleId, "TEMP_MOVE");
+    await updateCond(neighborId, particleId);
+    await updateCond("TEMP_MOVE", neighborId);
 
-        await conn.query(
-          'UPDATE conditions SET type_id = ? WHERE type = ? AND type_id = ?',
-          [newTypeId, 'particle', oldTypeId]
-        );
-      };
+    await conn.commit();
+    res.json({ message: 'Action moved successfully' });
 
-      await updateConditions(particleId, targetParticle.particle_id);
-      await updateConditions(targetParticle.particle_id, particleId);
-
-      await conn.commit();
-      res.json({ message: 'Particle moved successfully' });
-    } catch (err) {
-      await conn.rollback();
-      throw err;
-    } finally {
-      conn.release();
-    }
   } catch (err) {
-    console.error(err);
+    await conn.rollback();
+    console.error("Move Error:", err);
     res.status(500).json({ error: err.message });
+  } finally {
+    conn.release();
   }
 });
 
