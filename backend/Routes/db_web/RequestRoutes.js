@@ -106,7 +106,7 @@ router.post('/', async (req, res) => {
 });
 
 // 4. Touch update
-router.patch('/:ind', async (req, res) => {
+router.put('/:ind', async (req, res) => {
   const { ind } = req.params;
   const { request_type, action, username, uuid } = req.body;
 
