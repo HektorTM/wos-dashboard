@@ -103,7 +103,7 @@ router.put('/:type/:id/lock', async (req, res) => {
       type,
       target_id: id,
       user: uuid,
-      action: locked ? 'Locked' : 'Unlocked',
+      action: locked ? 'Unlocked' : 'Locked',
     });
 
     res.status(200).json({ message: `Page successfully ${locked ? 'locked' : 'unlocked'}` });
