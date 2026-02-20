@@ -8,22 +8,20 @@ const logActivity = require("../../utils/LogActivity");
 router.get('/', async (req, res) => {
   try {
     const [entries] = await db.query(`
-      SELECT 
-        r.ind, 
-        r.request_type, 
-        r.type, 
-        r.id, 
-        r.description, 
-        r.request_time, 
-        r.action, 
-        r.action_time,
-        requester_user.username AS requester_username,
-        acceptor_user.username AS acceptor_username
-      FROM requests r
-      LEFT JOIN users requester_user ON r.requester = requester_user.uuid
-      LEFT JOIN users acceptor_user ON r.acceptor = acceptor_user.uuid
+      SELECT
+        ind,
+        request_type,
+        type,
+        id,
+        requester,
+        description,
+        request_time,
+        action,
+        action_time,
+        acceptor
+      FROM requests
     `);
-    
+
     res.status(200).json(entries);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -108,7 +106,7 @@ router.post('/', async (req, res) => {
 // 4. Touch update
 router.put('/:ind', async (req, res) => {
   const { ind } = req.params;
-  const { request_type, action, username, uuid } = req.body;
+  const { action, uuid } = req.body;
 
   try {
     const [result] = await db.query(`
@@ -120,13 +118,6 @@ router.put('/:ind', async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Request not found' });
     }
-
-    await logActivity({
-      type: `${request_type === "UNLOCK" ? 'Unlock' : 'Delete'} Request`,
-      target_id: username,
-      user: uuid,
-      action: `${action === 'APPROVED' ? 'Approved' : 'Denied'}`
-    });
 
     res.status(200).json({ message: 'Last edited timestamp updated' });
   } catch (err) {
