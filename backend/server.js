@@ -4,6 +4,8 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const cron = require('node-cron');
+const http = require("http");
+const { initSocket } = require("./chat/socket");
 const requireAuth = require('./middleware/auth');
 const MySQLStore = require('express-mysql-session')(session);
 const currencyRoutes = require('./Routes/db_server/CurrencyRoutes');
@@ -38,11 +40,14 @@ const loottableRoutes = require('./Routes/db_server/LoottablesRoutes');
 const globalStatsRoutes = require('./Routes/db_server/GlobalStatsRoutes');
 const docsRoutes = require('./Routes/db_web/DocRoutes');
 const bookmarkRoutes = require('./Routes/db_web/BookmarkRoutes');
+const chatRoutes = require('./Routes/db_web/ChatRoutes');
 
 require('./utils/initTables');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+const ORIGINS = ['https://admin.worldofsorcery.com', 'https://dev.worldofsorcery.com', 'https://worldofsorcery.com', 'http://localhost:3000', 'http://localhost:5173'];
 
 const mysqlOptions = {
   host: process.env.MYSQL_HOST,
@@ -55,6 +60,24 @@ const mysqlOptions = {
 
 const sessionStore = new MySQLStore(mysqlOptions);
 
+// Define session middleware as a variable first
+const sessionMiddleware = session({
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === 'true',
+    sameSite: process.env.COOKIE_SAMESITE,
+    maxAge: 24 * 60 * 60 * 1000
+  },
+  store: sessionStore
+});
+
+app.use(sessionMiddleware); // use the variable instead of inline
+
+
+
 console.log('Serverfile started')
 
 app.use(express.json());
@@ -62,7 +85,7 @@ app.use(express.json());
 app.set('trust proxy', 1);
 
 app.use(cors({
-  origin: ['https://admin.worldofsorcery.com', 'https://dev.worldofsorcery.com', 'https://worldofsorcery.com', 'http://localhost:3000', 'http://localhost:5173'],
+  origin: ORIGINS,
   credentials: true,
 }));
 
@@ -91,7 +114,7 @@ if (process.env.IP !== 'localhost') {
   app.use('/api', requireAuth);
 }
 
-//app.use('/api', requireAuth);
+app.use('/api', requireAuth);
 
 app.use('/api/currencies', currencyRoutes);
 app.use('/api/unlockables', UnlockableRoutes);
@@ -121,10 +144,13 @@ app.use('/api/loottables', loottableRoutes);
 app.use('/api/globalstats', globalStatsRoutes);
 app.use('/api/docs', docsRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 
+const server = http.createServer(app);
+initSocket(server, ORIGINS, sessionMiddleware);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`);
 });

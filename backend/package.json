@@ -25,6 +25,7 @@
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "octokit": "^5.0.3",
-    "react-bootstrap": "^2.10.9"
+    "react-bootstrap": "^2.10.9",
+    "socket.io": "^4.8.3"
   }
 }
