@@ -101,10 +101,51 @@ router.get("/:id", async (req, res) => {
       conditions: particleConditionsBySubId[row.particle_id] ?? [],
     }))
 
+    //---
+
+
+    const [hologramRows] = await db.query(
+        "SELECT * FROM inter_holograms WHERE interaction_id = ? ORDER BY hologram_id ASC",
+        [id]
+    )
+
+    const [hologramConditionRows] = await db.query(
+        "SELECT * FROM conditions WHERE type = ? AND type_id LIKE ?",
+        ["hologram", `${id}:%`]
+    )
+
+    const hologramConditionsBySubId = {}
+    for (const row of hologramConditionRows) {
+      const [, subId] = row.type_id.split(":")
+      const key = Number(subId)
+
+      if (!hologramConditionsBySubId[key]) {
+        hologramConditionsBySubId[key] = []
+      }
+
+      hologramConditionsBySubId[key].push({
+        type: row.type,
+        type_id: row.type_id,
+        condition_id: row.condition_id,
+        condition_key: row.condition_key,
+        value: row.value,
+        parameter: row.parameter,
+      })
+    }
+
+    const holograms = hologramRows.map(row => ({
+      hologram_id: row.hologram_id,
+      behaviour: row.behaviour,
+      matchtype: row.matchtype,
+      hologram: row.hologram,
+      conditions: hologramConditionsBySubId[row.hologram_id] ?? [],
+    }))
+
     res.json({
       id,
       actions,
       particles,
+      holograms,
     })
   } catch (err) {
     console.error(err)
@@ -346,6 +387,92 @@ router.put('/:id/particles/:particleId/move', async (req, res) => {
   }
 });
 
+router.put('/:id/holograms/:hologramId/move', async (req, res) => {
+  const { id, hologramId } = req.params; // 'id' is "interaction1"
+  const { direction } = req.query;
+
+  if (!['up', 'down'].includes(direction)) {
+    return res.status(400).json({ error: 'Invalid direction' });
+  }
+
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // 1. Verify current action exists using the readable 'id'
+    const [currentRows] = await conn.query(
+        'SELECT hologram_id FROM inter_holograms WHERE interaction_id = ? AND hologram_id = ?',
+        [id, hologramId]
+    );
+
+    if (currentRows.length === 0) {
+      throw new Error('Action not found');
+    }
+
+    // 2. Find the neighbor based on hologram_id order
+    const operator = direction === 'up' ? '<' : '>';
+    const order = direction === 'up' ? 'DESC' : 'ASC';
+
+    const [neighbors] = await conn.query(
+        `SELECT hologram_id FROM inter_holograms
+         WHERE interaction_id = ? AND hologram_id ${operator} ?
+         ORDER BY hologram_id ${order} LIMIT 1`,
+        [id, hologramId]
+    );
+
+    if (neighbors.length === 0) {
+      throw new Error(`Cannot move ${direction}: already at the edge.`);
+    }
+
+    const neighborId = neighbors[0].hologram_id;
+    const tempId = -999; // Use a value unlikely to exist in hologram_id
+
+    // 3. Swap the hologram_ids in inter_actions
+    // Current -> Temp
+    await conn.query(
+        'UPDATE inter_holograms SET hologram_id = ? WHERE interaction_id = ? AND hologram_id = ?',
+        [tempId, id, hologramId]
+    );
+    // Neighbor -> Current's old spot
+    await conn.query(
+        'UPDATE inter_holograms SET hologram_id = ? WHERE interaction_id = ? AND hologram_id = ?',
+        [hologramId, id, neighborId]
+    );
+    // Temp -> Neighbor's old spot
+    await conn.query(
+        'UPDATE inter_holograms SET hologram_id = ? WHERE interaction_id = ? AND hologram_id = ?',
+        [neighborId, id, tempId]
+    );
+
+    // 4. Update the conditions table
+    // Note: We use the readable 'id' here because your
+    // frontend sends parentId={`${interhologramId}:${action.hologram_id}`}
+    const updateCond = async (oldIdx, newIdx) => {
+      const oldTypeId = `${id}:${oldIdx}`;
+      const newTypeId = `${id}:${newIdx}`;
+      await conn.query(
+          "UPDATE conditions SET type_id = ? WHERE type = 'particle' AND type_id = ?",
+          [newTypeId, oldTypeId]
+      );
+    };
+
+    // Swap condition references using a temp string to avoid collisions
+    await updateCond(hologramId, "TEMP_MOVE");
+    await updateCond(neighborId, hologramId);
+    await updateCond("TEMP_MOVE", neighborId);
+
+    await conn.commit();
+    res.json({ message: 'Action moved successfully' });
+
+  } catch (err) {
+    await conn.rollback();
+    console.error("Move Error:", err);
+    res.status(500).json({ error: err.message });
+  } finally {
+    conn.release();
+  }
+});
+
 
 
 // POST /api/interactions/:id/actions
@@ -409,26 +536,39 @@ router.put('/:id/actions/:actionId', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-  
-// PUT /api/interactions/:id/holograms/:hologramId
+
 router.put('/:id/holograms/:hologramId', async (req, res) => {
-    const { id, hologramId } = req.params;
-    const { behaviour, matchtype, hologram } = req.body;
-  
-    try {
-      const [result] = await db.query(
-        'UPDATE inter_holograms SET behaviour = ?, matchtype = ?, hologram = ? WHERE interaction_id = ? AND hologram_id = ?',
-        [behaviour, matchtype, JSON.stringify(hologram), id, hologramId]
+  const { id, hologramId } = req.params;
+  const { behaviour, matchtype, hologram } = req.body;
+
+  try {
+    // First check if the action exists
+    const [existing] = await db.query(
+        'SELECT * FROM inter_holograms WHERE interaction_id = ? AND hologram_id = ?',
+        [id, hologramId]
+    );
+
+    if (existing.length === 0) {
+      // If not exists, create it
+      await db.query(
+          'INSERT INTO inter_holograms (interaction_id, hologram_id, behaviour, matchtype, hologram) VALUES (?, ?, ?, ?, ?)',
+          [id, hologramId, behaviour, matchtype, hologram]
       );
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ error: 'Hologram not found' });
-      }
-      res.json({ message: 'Hologram updated successfully' });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.status(201).json({ message: 'Hologram created successfully' });
     }
-  });
-  
+
+    // If exists, update it
+    const [result] = await db.query(
+        'UPDATE inter_holograms SET behaviour = ?, matchtype = ?, hologram = ?  WHERE interaction_id = ? AND hologram_id = ?',
+        [behaviour, matchtype, hologram, id, hologramId]
+    );
+
+    res.json({ message: 'Hologram updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
   // PARTICLES
 
