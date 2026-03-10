@@ -41,6 +41,7 @@ const globalStatsRoutes = require('./Routes/db_server/GlobalStatsRoutes');
 const docsRoutes = require('./Routes/db_web/DocRoutes');
 const bookmarkRoutes = require('./Routes/db_web/BookmarkRoutes');
 const chatRoutes = require('./Routes/db_web/ChatRoutes');
+const moduleRoutes = require('./Routes/db_web/ModuleRoutes');
 
 require('./utils/initTables');
 
@@ -145,6 +146,7 @@ app.use('/api/globalstats', globalStatsRoutes);
 app.use('/api/docs', docsRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/modules', moduleRoutes);
 
 app.use('/api/activity', ActivityRoutes);
 
