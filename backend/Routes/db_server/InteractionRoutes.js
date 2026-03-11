@@ -138,6 +138,7 @@ router.get("/:id", async (req, res) => {
       behaviour: row.behaviour,
       matchtype: row.matchtype,
       hologram: row.hologram,
+      settings: row.settings,
       conditions: hologramConditionsBySubId[row.hologram_id] ?? [],
     }))
 
@@ -537,9 +538,33 @@ router.put('/:id/actions/:actionId', async (req, res) => {
   }
 });
 
+router.post('/:id/holograms', async (req, res) => {
+  const { id } = req.params;
+  const { behaviour, matchtype, hologram, settings } = req.body;
+
+  try {
+    // First check if the action exists
+    const [maxIdResult] = await db.query(
+        'SELECT MAX(hologram_id) as maxId FROM inter_holograms WHERE interaction_id = ?',
+        [id]
+    );
+    const nextActionId = (maxIdResult[0].maxId || 0) + 1;
+
+      // If not exists, create it
+    await db.query(
+        'INSERT INTO inter_holograms (interaction_id, hologram_id, behaviour, matchtype, hologram, settings) VALUES (?, ?, ?, ?, ?, ?)',
+        [id, nextActionId, behaviour, matchtype, hologram, settings]
+    );
+    return res.status(201).json({ message: 'Hologram created successfully' });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.put('/:id/holograms/:hologramId', async (req, res) => {
   const { id, hologramId } = req.params;
-  const { behaviour, matchtype, hologram } = req.body;
+  const { behaviour, matchtype, hologram, settings } = req.body;
 
   try {
     // First check if the action exists
@@ -551,16 +576,16 @@ router.put('/:id/holograms/:hologramId', async (req, res) => {
     if (existing.length === 0) {
       // If not exists, create it
       await db.query(
-          'INSERT INTO inter_holograms (interaction_id, hologram_id, behaviour, matchtype, hologram) VALUES (?, ?, ?, ?, ?)',
-          [id, hologramId, behaviour, matchtype, hologram]
+          'INSERT INTO inter_holograms (interaction_id, hologram_id, behaviour, matchtype, hologram, settings) VALUES (?, ?, ?, ?, ?, ?)',
+          [id, hologramId, behaviour, matchtype, hologram, settings]
       );
       return res.status(201).json({ message: 'Hologram created successfully' });
     }
 
     // If exists, update it
     const [result] = await db.query(
-        'UPDATE inter_holograms SET behaviour = ?, matchtype = ?, hologram = ?  WHERE interaction_id = ? AND hologram_id = ?',
-        [behaviour, matchtype, hologram, id, hologramId]
+        'UPDATE inter_holograms SET behaviour = ?, matchtype = ?, hologram = ?, settings = ?  WHERE interaction_id = ? AND hologram_id = ?',
+        [behaviour, matchtype, hologram, settings, id, hologramId]
     );
 
     res.json({ message: 'Hologram updated successfully' });
@@ -702,6 +727,18 @@ router.delete('/:id/particles/:itemId', async (req, res) => {
     try {
       await db.query('DELETE FROM inter_particles WHERE id = ? AND particle_id = ?', [id, itemId]);
       res.status(200).json({ message: 'Particle deleted successfully'});
+
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+      console.error(err);
+    }
+});
+router.delete('/:id/holograms/:itemId', async (req, res) => {
+    const {id, itemId} = req.params;
+
+    try {
+      await db.query('DELETE FROM inter_holograms WHERE interaction_id = ? AND hologram_id = ?', [id, itemId]);
+      res.status(200).json({ message: 'Hologram deleted successfully'});
 
     } catch (err) {
       res.status(500).json({ error: err.message });
