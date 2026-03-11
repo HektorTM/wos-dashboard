@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
 
       await logActivity({
         type: 'citem',
-        id,
+        target_id: id,
         user: uuid,
         action: 'Created',
       });
