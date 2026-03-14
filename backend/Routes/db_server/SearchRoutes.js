@@ -83,9 +83,9 @@ router.get("/", async (req, res) => {
 
         UNION ALL
 
-        SELECT dialog_id AS id, dialog_id AS label, 'dialogs' AS type, NULL AS parentId
+        SELECT id AS id, id AS label, 'dialogs' AS type, NULL AS parentId
         FROM dialogs
-        WHERE LOWER(dialog_id) LIKE ?
+        WHERE LOWER(id) LIKE ?
 
         UNION ALL
 
