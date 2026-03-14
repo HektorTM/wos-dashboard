@@ -1,306 +1,408 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../db'); // MySQL connection
+const db = require('../../db');
 const logActivity = require('../../utils/LogActivity');
 
-// Get all GUIs
+// ─── GUIs ────────────────────────────────────────────────────────────────────
+
+// GET /api/guis
 router.get('/', async (req, res) => {
   try {
     const [guis] = await db.query('SELECT * FROM guis');
     res.status(200).json(guis);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-router.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-    const { uuid } = req.query; // if you need it
+// POST /api/guis
+router.post('/', async (req, res) => {
+  const { id, title, size, type } = req.body;
+  const { uuid } = req.query;
 
-    try {
-        // ... perform delete, check affected rows
-        await db.query('DELETE FROM gui_slots WHERE gui_id = ?', [id]);
-        await db.query('DELETE FROM conditions WHERE type = "guislot" AND type_id LIKE ?', [`${id}:%`]);
-        const [result] = await db.query('DELETE FROM guis WHERE id = ?', [id]);
+  if (!id || !title || !size || !type) {
+    return res.status(400).json({ error: 'id, title, size, and type are required' });
+  }
+  if (type !== 'fluid' && type !== 'static') {
+    return res.status(400).json({ error: 'type must be "fluid" or "static"' });
+  }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'GUI not found' });
-        }
-        await logActivity({
-            type: 'GUI',
-            target_id: id,
-            user: uuid,
-            action: 'Deleted',
-        });
-
-        return res.status(200).json({ ok: true });
-    } catch (e) {
-        console.error(e);
-        return res.status(500).json({ error: 'Internal error' });
+  try {
+    const [existing] = await db.query('SELECT id FROM guis WHERE id = ?', [id]);
+    if (existing.length > 0) {
+      return res.status(400).json({ error: 'GUI with this ID already exists' });
     }
+
+    await db.query(
+      'INSERT INTO guis (id, title, size, type) VALUES (?, ?, ?, ?)',
+      [id, title, size, type]
+    );
+
+    const [rows] = await db.query('SELECT * FROM guis WHERE id = ?', [id]);
+    res.status(201).json(rows[0]);
+
+    logActivity({ type: 'GUI', target_id: id, user: uuid, action: 'Created' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Get GUI by ID
+// GET /api/guis/:id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
-
   try {
     const [guiRows] = await db.query('SELECT * FROM guis WHERE id = ?', [id]);
     if (guiRows.length === 0) {
       return res.status(404).json({ error: 'GUI not found' });
     }
-    const [gui] = await db.query('SELECT * FROM guis WHERE id = ?', [id]);
-    const [slots] = await db.query('SELECT * FROM gui_slots WHERE gui_id = ? ORDER BY slot ASC', [id]);
 
-    res.json({
-      gui,
-      slots,
-    });
+    const [pages] = await db.query(
+      'SELECT * FROM gui_pages WHERE gui_id = ? ORDER BY page_id ASC',
+      [id]
+    );
+
+    const [slots] = await db.query(
+      'SELECT * FROM gui_slots WHERE gui_id = ? ORDER BY page_id ASC, slot_id ASC',
+      [id]
+    );
+
+    const [configs] = await db.query(
+      'SELECT * FROM gui_slot_configs WHERE gui_id = ? ORDER BY page_id ASC, slot_id ASC, config_id ASC',
+      [id]
+    );
+
+    res.json({ gui: guiRows[0], pages, slots, configs });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-
+// PUT /api/guis/:id
 router.put('/:id', async (req, res) => {
-    const { id } = req.params;
-    const { size, title, open_actions, close_actions } = req.body;
-    const { uuid } = req.body;
+  const { id } = req.params;
+  const { size, title, type, open_actions, close_actions, uuid } = req.body;
 
-    if (!size || !title) {
-        return res.status(400).json({ error: 'Size and Title are required.' });
+  if (!size || !title || !type) {
+    return res.status(400).json({ error: 'size, title, and type are required' });
+  }
+  if (type !== 'fluid' && type !== 'static') {
+    return res.status(400).json({ error: 'type must be "fluid" or "static"' });
+  }
+
+  try {
+    const [existing] = await db.query('SELECT id FROM guis WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ error: 'GUI not found' });
     }
 
-    try {
-        // Check if cosmetic exists
-        const [existingRows] = await db.query('SELECT * FROM guis WHERE id = ?', [id]);
-        if (!existingRows[0]) {
-            return res.status(404).json({ error: 'GUI not found' });
-        }
+    const [result] = await db.query(
+      'UPDATE guis SET size = ?, title = ?, type = ?, open_actions = ?, close_actions = ? WHERE id = ?',
+      [size, title, type, JSON.stringify(open_actions), JSON.stringify(close_actions), id]
+    );
 
-        // Update the cosmetic
-        const [result] = await db.query(`
-            UPDATE guis
-            SET size = ?, title = ?, open_actions = ?, close_actions = ?
-            WHERE id = ?
-        `, [size, title, open_actions, close_actions, id]);
-
-        if (result.affectedRows === 0) {
-            return res.status(400).json({ error: 'No changes were made to the GUI.' });
-        }
-
-        res.status(200).json({ message: 'GUI updated successfully' });
-        await logActivity({
-            type: 'GUI',
-            target_id: id,
-            user: uuid,
-            action: 'Edited',
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ error: 'No changes made' });
     }
+
+    res.status(200).json({ message: 'GUI updated successfully' });
+    logActivity({ type: 'GUI', target_id: id, user: uuid, action: 'Edited' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Get only slots for GUI
-router.get('/:id/slots', async (req, res) => {
+// DELETE /api/guis/:id
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { uuid } = req.query;
+
+  try {
+    await db.query('DELETE FROM gui_slot_configs WHERE gui_id = ?', [id]);
+    await db.query('DELETE FROM conditions WHERE type = "guislot" AND type_id LIKE ?', [`${id}:%`]);
+    await db.query('DELETE FROM gui_slots WHERE gui_id = ?', [id]);
+    await db.query('DELETE FROM gui_pages WHERE gui_id = ?', [id]);
+    const [result] = await db.query('DELETE FROM guis WHERE id = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'GUI not found' });
+    }
+
+    res.status(200).json({ ok: true });
+    logActivity({ type: 'GUI', target_id: id, user: uuid, action: 'Deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── Pages ───────────────────────────────────────────────────────────────────
+
+// GET /api/guis/:id/pages
+router.get('/:id/pages', async (req, res) => {
   const { id } = req.params;
   try {
-    const [slots] = await db.query('SELECT slot FROM gui_slots WHERE gui_id = ? ORDER BY slot ASC', [id]);
-    res.json(slots);
+    const [pages] = await db.query(
+      'SELECT * FROM gui_pages WHERE gui_id = ? ORDER BY page_id ASC',
+      [id]
+    );
+    res.json(pages);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Get single slot options for GUI
-router.get('/:id/slots/:slot', async (req, res) => {
-  const { id, slot } = req.params;
+// POST /api/guis/:id/pages
+router.post('/:id/pages', async (req, res) => {
+  const { id } = req.params;
   try {
-    const [slots] = await db.query(
-      'SELECT * FROM gui_slots WHERE gui_id = ? AND slot = ?', 
-      [id, slot]
+    const [maxResult] = await db.query(
+      'SELECT MAX(page_id) as maxId FROM gui_pages WHERE gui_id = ?',
+      [id]
     );
-    
-    if (slots.length === 0) {
-      return res.json(null);
+    const nextPageId = (maxResult[0].maxId ?? -1) + 1;
+
+    await db.query('INSERT INTO gui_pages (gui_id, page_id) VALUES (?, ?)', [id, nextPageId]);
+    res.status(201).json({ page_id: nextPageId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/guis/:id/pages/:pageId
+router.delete('/:id/pages/:pageId', async (req, res) => {
+  const { id, pageId } = req.params;
+  try {
+    await db.query(
+      'DELETE FROM gui_slot_configs WHERE gui_id = ? AND page_id = ?',
+      [id, pageId]
+    );
+    await db.query(
+      'DELETE FROM conditions WHERE type = "guislot" AND type_id LIKE ?',
+      [`${id}:${pageId}:%`]
+    );
+    await db.query('DELETE FROM gui_slots WHERE gui_id = ? AND page_id = ?', [id, pageId]);
+    const [result] = await db.query(
+      'DELETE FROM gui_pages WHERE gui_id = ? AND page_id = ?',
+      [id, pageId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Page not found' });
     }
-    
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── Slots ───────────────────────────────────────────────────────────────────
+
+// GET /api/guis/:id/pages/:pageId/slots
+router.get('/:id/pages/:pageId/slots', async (req, res) => {
+  const { id, pageId } = req.params;
+  try {
+    const [slots] = await db.query(
+      'SELECT * FROM gui_slots WHERE gui_id = ? AND page_id = ? ORDER BY slot_id ASC',
+      [id, pageId]
+    );
     res.json(slots);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// get Single ID from Slot
-router.get('/:id/slots/:slot/:slotId', async (req, res) => {
-  const { id, slot, slotId } = req.params;
+// POST /api/guis/:id/pages/:pageId/slots
+router.post('/:id/pages/:pageId/slots', async (req, res) => {
+  const { id, pageId } = req.params;
+  const { slot_id, active } = req.body;
+
+  if (slot_id === undefined) {
+    return res.status(400).json({ error: 'slot_id is required' });
+  }
+
   try {
-    const [slots] = await db.query(
-      'SELECT * FROM gui_slots WHERE gui_id = ? AND slot = ? AND slot_id = ?', 
-      [id, slot, slotId]
+    await db.query(
+      'INSERT INTO gui_slots (gui_id, page_id, slot_id, active) VALUES (?, ?, ?, ?)',
+      [id, pageId, slot_id, active ? 1 : 0]
     );
-    
-    if (slots.length === 0) {
+    res.status(201).json({ slot_id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/guis/:id/pages/:pageId/slots/:slotId
+router.put('/:id/pages/:pageId/slots/:slotId', async (req, res) => {
+  const { id, pageId, slotId } = req.params;
+  const { active } = req.body;
+
+  try {
+    const [result] = await db.query(
+      'UPDATE gui_slots SET active = ? WHERE gui_id = ? AND page_id = ? AND slot_id = ?',
+      [active ? 1 : 0, id, pageId, slotId]
+    );
+    if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Slot not found' });
     }
-    
-    res.json(slots[0]);
+    res.status(200).json({ message: 'Slot updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.post('/', async (req, res) => {
-    const { id, title, size } = req.body;
-    const { uuid } = req.query;
-  
-    if (!id || !title || !size) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    try {
-        const [existingRows] = await db.query('SELECT * FROM guis WHERE id = ?', [id]);
-        if (existingRows.length > 0) {
-            return res.status(400).json({ error: 'GUI with this ID already exists' });
-        }
-
-      await db.query('INSERT INTO guis (id, title, size) VALUES (?, ?, ?)', [id, title, size]);
-
-      const [rows] = await db.query('SELECT * FROM guis WHERE id = ?', [id]);
-  
-      res.status(201).json(rows[0]);
-  
-      logActivity({
-        type: 'GUI',
-        target_id: id,
-        user: uuid,
-        action: 'Created',
-      });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-router.post('/:id/slots/:slotNumber', async (req, res) => {
-  const { id, slotNumber } = req.params;
-  const { 
-    matchtype,
-    material,
-    display_name, 
-    lore, 
-    model,
-    color,
-    amount,
-    tooltip,
-    enchanted,
-    right_click,
-    left_click,
-    visible,
-  } = req.body;
-
-  
-
+// DELETE /api/guis/:id/pages/:pageId/slots/:slotId
+router.delete('/:id/pages/:pageId/slots/:slotId', async (req, res) => {
+  const { id, pageId, slotId } = req.params;
   try {
-    // Get the next available action_id
-    const [maxIdResult] = await db.query(
-      'SELECT MAX(slot_id) as maxId FROM gui_slots WHERE gui_id = ? AND slot = ?',
-      [id, slotNumber]
-    );
-    const nextSlotId = (maxIdResult[0].maxId || 0) + 1;
-    // Insert the new action
     await db.query(
-      'INSERT INTO gui_slots (gui_id, slot, slot_id, matchtype, material, display_name, lore, model, color, amount, tooltip, enchanted, right_click, left_click, visible) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [
-        id, 
-        slotNumber, 
-        nextSlotId, 
-        matchtype, 
-        material, 
-        display_name, 
-        JSON.stringify(lore),
-        model,
-        color,
-        amount,
-        tooltip,
-        enchanted ? 1 : 0, 
-        JSON.stringify(right_click), 
-        JSON.stringify(left_click), 
-        visible ? 1 : 0
-      ]
+      'DELETE FROM gui_slot_configs WHERE gui_id = ? AND page_id = ? AND slot_id = ?',
+      [id, pageId, slotId]
     );
-
-    res.status(201).json({
-      message: 'Slot Item created successfully',
-      slot_id: nextSlotId,
-    });
-
+    await db.query(
+      'DELETE FROM conditions WHERE type = "guislot" AND type_id LIKE ?',
+      [`${id}:${pageId}:${slotId}:%`]
+    );
+    await db.query(
+      'DELETE FROM gui_slots WHERE gui_id = ? AND page_id = ? AND slot_id = ?',
+      [id, pageId, slotId]
+    );
+    res.status(200).json({ ok: true });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-router.put('/:id/slots/:slotNumber/:slotId', async (req, res) => {
-  const { id, slotNumber, slotId } = req.params;
-  const { 
+// ─── Slot Configs ─────────────────────────────────────────────────────────────
+
+// GET /api/guis/:id/pages/:pageId/slots/:slotId/configs
+router.get('/:id/pages/:pageId/slots/:slotId/configs', async (req, res) => {
+  const { id, pageId, slotId } = req.params;
+  try {
+    const [configs] = await db.query(
+      'SELECT * FROM gui_slot_configs WHERE gui_id = ? AND page_id = ? AND slot_id = ? ORDER BY config_id ASC',
+      [id, pageId, slotId]
+    );
+    res.json(configs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/guis/:id/pages/:pageId/slots/:slotId/configs
+router.post('/:id/pages/:pageId/slots/:slotId/configs', async (req, res) => {
+  const { id, pageId, slotId } = req.params;
+  const {
     matchtype,
+    visible,
     material,
-    display_name, 
-    lore, 
+    display_name,
+    lore,
     model,
     color,
-    amount,
-    tooltip,
     enchanted,
-    right_click,
-    left_click,
-    visible,
+    global_actions,
+    right_actions,
+    left_actions,
   } = req.body;
 
   try {
+    const [maxResult] = await db.query(
+      'SELECT MAX(config_id) as maxId FROM gui_slot_configs WHERE gui_id = ? AND page_id = ? AND slot_id = ?',
+      [id, pageId, slotId]
+    );
+    const nextConfigId = (maxResult[0].maxId ?? -1) + 1;
+
     await db.query(
-      'UPDATE gui_slots SET matchtype = ?, material = ?, display_name = ?, lore = ?, model = ?, color = ?, amount = ?, tooltip = ?, enchanted = ?, right_click = ?, left_click = ?, visible = ? WHERE gui_id = ? AND slot = ? AND slot_id = ?',
+      `INSERT INTO gui_slot_configs
+        (gui_id, page_id, slot_id, config_id, matchtype, visible, material, display_name, lore, model, color, enchanted, global_actions, right_actions, left_actions)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        matchtype, 
-        material, 
-        display_name, 
-        JSON.stringify(lore),
-        model,
-        color,
-        amount,
-        tooltip,
-        enchanted ? 1 : 0, 
-        JSON.stringify(right_click), 
-        JSON.stringify(left_click), 
+        id, pageId, slotId, nextConfigId,
+        matchtype,
         visible ? 1 : 0,
-        id,
-        slotNumber,
-        slotId
+        material,
+        display_name,
+        JSON.stringify(lore ?? []),
+        model ?? null,
+        color ?? null,
+        enchanted ? 1 : 0,
+        JSON.stringify(global_actions ?? []),
+        JSON.stringify(right_actions ?? []),
+        JSON.stringify(left_actions ?? []),
       ]
     );
 
-    res.status(201).json({
-      message: 'Slot Item updated successfully',
-    });
-
+    res.status(201).json({ config_id: nextConfigId });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-router.delete('/:id/slots/:slotNumber/:slotID', async (req, res) => {
-  const {id, slotNumber, slotID} = req.params;
+// PUT /api/guis/:id/pages/:pageId/slots/:slotId/configs/:configId
+router.put('/:id/pages/:pageId/slots/:slotId/configs/:configId', async (req, res) => {
+  const { id, pageId, slotId, configId } = req.params;
+  const {
+    matchtype,
+    visible,
+    material,
+    display_name,
+    lore,
+    model,
+    color,
+    enchanted,
+    global_actions,
+    right_actions,
+    left_actions,
+  } = req.body;
 
-    try {
-      await db.query('DELETE FROM gui_slots WHERE gui_id = ? AND slot = ? AND slot_id = ?', [id, slotNumber, slotID]);
-      res.status(200).json({ message: 'Slot deleted successfully'});
+  try {
+    const [result] = await db.query(
+      `UPDATE gui_slot_configs
+       SET matchtype = ?, visible = ?, material = ?, display_name = ?, lore = ?, model = ?, color = ?, enchanted = ?, global_actions = ?, right_actions = ?, left_actions = ?
+       WHERE gui_id = ? AND page_id = ? AND slot_id = ? AND config_id = ?`,
+      [
+        matchtype,
+        visible ? 1 : 0,
+        material,
+        display_name,
+        JSON.stringify(lore ?? []),
+        model ?? null,
+        color ?? null,
+        enchanted ? 1 : 0,
+        JSON.stringify(global_actions ?? []),
+        JSON.stringify(right_actions ?? []),
+        JSON.stringify(left_actions ?? []),
+        id, pageId, slotId, configId,
+      ]
+    );
 
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-      console.error(err);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Config not found' });
     }
+    res.status(200).json({ message: 'Slot config updated' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/guis/:id/pages/:pageId/slots/:slotId/configs/:configId
+router.delete('/:id/pages/:pageId/slots/:slotId/configs/:configId', async (req, res) => {
+  const { id, pageId, slotId, configId } = req.params;
+  try {
+    await db.query(
+      'DELETE FROM conditions WHERE type = "guislot" AND type_id = ?',
+      [`${id}:${pageId}:${slotId}:${configId}`]
+    );
+    const [result] = await db.query(
+      'DELETE FROM gui_slot_configs WHERE gui_id = ? AND page_id = ? AND slot_id = ? AND config_id = ?',
+      [id, pageId, slotId, configId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Config not found' });
+    }
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;
